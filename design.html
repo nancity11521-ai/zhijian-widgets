@@ -249,8 +249,24 @@ body{
 .wx .dot.off{background:#4a4a52;}
 .wx .pill{font-size:var(--fz-mini);color:var(--orange);background:rgba(240,129,60,.14);padding:3px 9px;border-radius:9px;line-height:1.3;}
 .rec-dot{animation:pulse 1.4s ease-in-out infinite;}
-.w19 .val.hide{visibility:hidden;}
-.w20 .val.hide,.w20 .fm-scale.hide{visibility:hidden;}
+/* W19 录音机 · 重设计 */
+.w19{display:flex;flex-direction:column;height:100%;}
+.w19 .hd{display:flex;align-items:center;justify-content:space-between;font-size:var(--fz-sub);color:var(--ink-dim);letter-spacing:.5px;}
+.w19 .body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;}
+.w19 .foot{font-size:var(--fz-mini);color:var(--ink-dim);}
+.w19 .dot{width:8px;height:8px;border-radius:50%;background:var(--orange);flex-shrink:0;}
+.w19 .dot.off{background:#4a4a52;}
+/* W20 FM · 重设计 */
+.w20{display:flex;flex-direction:column;height:100%;}
+.w20 .hd{display:flex;align-items:center;justify-content:space-between;font-size:var(--fz-sub);color:var(--ink-dim);letter-spacing:.5px;}
+.w20 .body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:17px;}
+.w20 .val{display:flex;align-items:baseline;gap:8px;}
+.w20 .u{font-size:var(--fz-main);color:var(--ink-dim);}
+#fmOnBox{display:flex;flex-direction:column;align-items:center;gap:14px;}
+.w20 .fm-scale{position:relative;line-height:0;}
+.w20 .foot{font-size:var(--fz-mini);color:var(--ink-dim);}
+.wx .pill.pswitch,.w20 .pill.pswitch{cursor:pointer;transition:.2s;}
+
 .w24 .val.hide{visibility:hidden;}
 .wx .pill.pswitch{cursor:pointer;transition:.2s;}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.35;transform:scale(.78);}}
@@ -616,27 +632,29 @@ body{
     <!-- W19 · 2×2 录音机 -->
     <div class="card">
       <span class="tag">2×2</span>
-      <div class="w19 wx">
-        <div class="cap"><span>录音 RECORDER</span><i class="dot off" id="recDot"></i></div>
-        <div class="mid">
-          <span class="dm" id="recIco" data-icon="mic" data-igap="2.7" data-ir="1" data-icolor="#55555e"></span>
-          <div class="val hide" id="recTimeBox"><span class="dm" id="recTime" data-dm="12:34" data-gap="5" data-r="2.1" data-color="#f5f5f7" data-dim="transparent"></span></div>
+      <div class="w19">
+        <div class="hd"><span class="lbl">录音 RECORDER</span><i class="dot off" id="recDot"></i></div>
+        <div class="body">
+          <span class="dm" id="recIco" data-icon="mic" data-igap="3.6" data-ir="1.3" data-icolor="#55555e"></span>
+          <div class="val" id="recTimeBox" style="display:none;"><span class="dm" id="recTime" data-dm="00:00" data-gap="5" data-r="2.1" data-color="#f5f5f7" data-dim="transparent"></span></div>
+          <div class="foot" id="recFoot">未开始录制 · 轻触开始</div>
         </div>
-        <div class="foot" id="recFoot">未开始录制 · 轻触开始</div>
       </div>
     </div>
 
     <!-- W20 · 2×2 FM 收音机 -->
     <div class="card">
       <span class="tag">2×2</span>
-      <div class="w20 wx">
-        <div class="cap"><span>FM 收音机</span><span class="pill pswitch" id="fmPill" title="点击开关收音机">OFF</span></div>
-        <div class="mid">
-          <span class="dm" id="fmIco" data-icon="radio" data-igap="2.4" data-ir="0.95" data-icolor="#55555e"></span>
-          <div class="val hide" id="fmFreqBox"><span class="dm" id="fmNum" data-dm="98.6" data-gap="5.4" data-r="2.1" data-color="#f5f5f7" data-dim="transparent"></span><span class="u">MHz</span></div>
-          <div class="fm-scale hide" id="fmScaleBox"><span class="dm" data-icon="scale" data-igap="3" data-ir="0.9" data-icolor="#c8c8ce"></span><i class="fm-mark" id="fmMark" style="left:38%;"></i></div>
+      <div class="w20">
+        <div class="hd"><span class="lbl">FM 收音机</span><span class="pill pswitch" id="fmPill" title="点击开关收音机">OFF</span></div>
+        <div class="body">
+          <div id="fmOffBox"><span class="dm" data-icon="radio" data-igap="4" data-ir="1.35" data-icolor="#55555e"></span></div>
+          <div id="fmOnBox" style="display:none;">
+            <div class="val"><span class="dm" id="fmNum" data-dm="98.6" data-gap="5.2" data-r="2.1" data-color="#f5f5f7" data-dim="transparent"></span><span class="u">MHz</span></div>
+            <div class="fm-scale"><span class="dm" data-icon="scale" data-igap="3" data-ir="0.9" data-iw="41" data-icolor="#c8c8ce"></span><i class="fm-mark" id="fmMark" style="left:38%;"></i></div>
+          </div>
+          <div class="foot" id="fmName">未开启 · 轻触开启</div>
         </div>
-        <div class="foot" id="fmName">未开启 · 轻触开启</div>
       </div>
     </div>
 
@@ -1091,7 +1109,8 @@ function drawIcon(el){
     hs.forEach((h,x)=>{const s=Math.round((13-h)/2);for(let y=0;y<h;y++){add(x*2,s+y);add(x*2+1,s+y);}});
   }
   if(type==="scale"){
-    for(let x=0;x<21;x++){ add(x,0); if(x%5===0){add(x,-1);add(x,-2);} }
+    const iw=parseInt(el.dataset.iw||"21");
+    for(let x=0;x<iw;x++){ add(x,0); if(x%5===0){add(x,-1);add(x,-2);} }
   }
   if(type==="note"){
     NOTE.forEach((row,ry)=>{[...row].forEach((ch,rx)=>{if(ch==="1")add(rx,ry);});});
