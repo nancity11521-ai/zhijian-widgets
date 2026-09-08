@@ -251,6 +251,7 @@ body{
 .rec-dot{animation:pulse 1.4s ease-in-out infinite;}
 .w19 .val.hide{visibility:hidden;}
 .w20 .val.hide,.w20 .fm-scale.hide{visibility:hidden;}
+.w24 .val.hide{visibility:hidden;}
 .wx .pill.pswitch{cursor:pointer;transition:.2s;}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.35;transform:scale(.78);}}
 .fm-scale{position:relative;line-height:0;}
@@ -682,12 +683,12 @@ body{
     <div class="card">
       <span class="tag">2×2</span>
       <div class="w24 wx">
-        <div class="cap"><span>后台录像</span><i class="dot rec-dot" id="vidDot"></i></div>
+        <div class="cap"><span>后台录像</span><i class="dot off" id="vidDot"></i></div>
         <div class="mid">
-          <span class="dm" data-icon="camera" data-igap="2.4" data-ir="0.95" data-icolor="#f5f5f7"></span>
-          <div class="val"><span class="dm" id="vidTime" data-dm="01:24" data-gap="5" data-r="2.1" data-color="#f5f5f7" data-dim="transparent"></span></div>
+          <span class="dm" id="vidIco" data-icon="camera" data-igap="2.4" data-ir="0.95" data-icolor="#55555e"></span>
+          <div class="val hide" id="vidTimeBox"><span class="dm" id="vidTime" data-dm="01:24" data-gap="5" data-r="2.1" data-color="#f5f5f7" data-dim="transparent"></span></div>
         </div>
-        <div class="foot">720P 30fps · 省电模式</div>
+        <div class="foot" id="vidFoot">未开启录像 · 轻触开始</div>
       </div>
     </div>
 
