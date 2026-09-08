@@ -269,6 +269,7 @@ body{
 .wx .dot.off{background:#4a4a52;}
 .wx .pill{font-size:var(--fz-mini);color:var(--orange);background:rgba(240,129,60,.14);padding:3px 9px;border-radius:9px;line-height:1.3;}
 .rec-dot{animation:pulse 1.4s ease-in-out infinite;}
+.w19 .val.hide{visibility:hidden;}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.35;transform:scale(.78);}}
 .fm-scale{position:relative;line-height:0;}
 .fm-mark{position:absolute;bottom:-8px;width:7px;height:7px;border-radius:50%;background:var(--orange);transform:translateX(-50%);}
@@ -627,12 +628,12 @@ body{
     <div class="card">
       <span class="tag">2×2</span>
       <div class="w19 wx">
-        <div class="cap"><span>录音 RECORDER</span><i class="dot rec-dot" id="recDot"></i></div>
+        <div class="cap"><span>录音 RECORDER</span><i class="dot off" id="recDot"></i></div>
         <div class="mid">
-          <span class="dm" data-icon="wave" data-igap="2.7" data-ir="1" data-icolor="#f0813c"></span>
-          <div class="val"><span class="dm" id="recTime" data-dm="12:34" data-gap="5" data-r="2.1" data-color="#f5f5f7" data-dim="transparent"></span></div>
+          <span class="dm" id="recWave" data-icon="wave" data-igap="2.7" data-ir="1" data-icolor="#55555e"></span>
+          <div class="val hide" id="recTimeBox"><span class="dm" id="recTime" data-dm="12:34" data-gap="5" data-r="2.1" data-color="#f5f5f7" data-dim="transparent"></span></div>
         </div>
-        <div class="foot" id="recFoot">48kHz · 立体声 · MP3</div>
+        <div class="foot" id="recFoot">未开始录制 · 轻触开始</div>
       </div>
     </div>
 
@@ -1110,7 +1111,7 @@ const MON=["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DE
 const WKS=["SUNDAY","MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY","SATURDAY"];
 const WKS3=["SUN","MON","TUE","WED","THU","FRI","SAT"];
 
-const S={battery:100,water:0,torch:1,music:0,city:0,alt:1243,press:1013,bearing:0,live:1,rec:754,recOn:1,fm:0,steps:8432,mesh:0,db:68,vid:84,vidOn:1,rain:1,lamp:0};
+const S={battery:100,water:0,torch:1,music:0,city:0,alt:1243,press:1013,bearing:0,live:1,rec:0,recMode:"idle",fm:0,steps:8432,mesh:0,db:68,vid:84,vidOn:1,rain:1,lamp:0};
 const CITIES=[
  {name:"Toronto",cond:"Partly Cloudy",temp:30,hi:35,lo:16,ic:"sun",days:["cloud","sun","cloud","sun","sun","sun"],hi_:[-3,-1,-9,-4,-4,-4],lo_:[-6,-9,-10,-6,-6,-6]},
  {name:"Beijing",cond:"Sunny",temp:26,hi:32,lo:18,ic:"sun",days:["sun","sun","cloud","cloud","sun","sun"],hi_:[31,30,28,26,29,30],lo_:[18,19,17,16,18,19]},
@@ -1242,9 +1243,13 @@ const MESH_ST=[{d:"1.2",n:"3 台设备已连接"},{d:"2.4",n:"2 台设备已连�
 const LAMPS=[{p:"呼吸",f:"亮度 80% · 暖橙"},{p:"流光",f:"亮度 65% · 幻彩"},{p:"常亮",f:"亮度 100% · 冷白"},{p:"心跳",f:"亮度 45% · 玫红"}];
 const fmtT=s=>pad2(Math.floor(s/60))+":"+pad2(s%60);
 function renderRec(){
-  const t=$("#recTime"); if(t){t.dataset.dm=fmtT(S.rec);drawDM(t);}
-  const d=$("#recDot"); if(d)d.classList.toggle("off",!S.recOn);
-  const f=$("#recFoot"); if(f)f.textContent=S.recOn?"48kHz · 立体声 · MP3":"已暂停 · 点击继续录音";
+  const rec=S.recMode==="rec", idle=S.recMode==="idle";
+  const box=$("#recTimeBox"); if(box)box.classList.toggle("hide",idle);
+  const t=$("#recTime"); if(t&&!idle){t.dataset.dm=fmtT(S.rec);drawDM(t);}
+  const d=$("#recDot"); if(d){d.classList.toggle("off",!rec);d.classList.toggle("rec-dot",rec);}
+  const w=$("#recWave"); if(w){const c=rec?"#f0813c":"#55555e";if(w.dataset.icolor!==c){w.dataset.icolor=c;w.innerHTML="";drawIcon(w);}}
+  const f=$("#recFoot");
+  if(f)f.textContent=rec?"48kHz · 立体声 · MP3":(idle?"未开始录制 · 轻触开始":"已暂停 · 点击继续录音");
 }
 function renderFM(){
   const c=FM_ST[S.fm];
@@ -1287,7 +1292,7 @@ function renderLamp(){
   const d=$("#lampDots"); if(d){const k=Math.min(S.lamp,d.children.length-1);
     [...d.children].forEach((e,i)=>{e.style.opacity=i===k?"1":".38";e.style.boxShadow=i===k?"0 0 0 3px rgba(255,255,255,.10)":"none";});}
 }
-function tickRec(){ if(S.recOn)S.rec++; if(S.vidOn)S.vid++; renderRec(); renderVid(); }
+function tickRec(){ if(S.recMode==="rec")S.rec++; if(S.vidOn)S.vid++; renderRec(); renderVid(); }
 function refreshAll(){updClock();updDate();renderCity();renderBattery();renderWater();renderTorch();renderMusic();renderAlt();renderRec();renderFM();renderSteps();renderMesh();renderDB();renderVid();renderRain();renderLamp();}
 
 /* ===== 事件绑定 ===== */
@@ -1322,7 +1327,7 @@ if(cp){const c=cp.closest(".card");if(c){c.classList.add("act");c.title="点击�
     const g=cp.querySelector(".carrow"); if(g)g.style.transform="rotate("+S.bearing+"deg)";});}}
 // W19 录音机
 const c19=$(".w19")?$(".w19").closest(".card"):null;
-if(c19){c19.classList.add("act");c19.title="点击开始 / 暂停录音";c19.addEventListener("click",()=>{S.recOn=!S.recOn;renderRec();});}
+if(c19){c19.classList.add("act");c19.title="点击开始 / 暂停录音";c19.addEventListener("click",()=>{S.recMode=(S.recMode==="rec")?"pause":"rec";renderRec();});}
 // W20 FM
 const c20=$(".w20")?$(".w20").closest(".card"):null;
 if(c20){c20.classList.add("act");c20.title="点击切换频道";c20.addEventListener("click",()=>{S.fm=(S.fm+1)%FM_ST.length;renderFM();});}
@@ -1351,7 +1356,7 @@ function setLive(on){S.live=on?1:0;bl.classList.toggle("on",!!on);bl.textContent
   if(timer){clearInterval(timer);timer=null;}
   if(on)timer=setInterval(()=>{updClock();updDate();tickRec();},1000);}
 if(bl)bl.addEventListener("click",()=>setLive(!S.live));
-if(br)br.addEventListener("click",()=>{S.battery=100;S.water=0;S.torch=1;S.music=0;S.city=0;S.alt=1243;S.press=1013;S.bearing=0;S.rec=754;S.recOn=1;S.fm=0;S.steps=8432;S.mesh=0;S.db=68;S.vid=84;S.vidOn=1;S.rain=1;S.lamp=0;
+if(br)br.addEventListener("click",()=>{S.battery=100;S.water=0;S.torch=1;S.music=0;S.city=0;S.alt=1243;S.press=1013;S.bearing=0;S.rec=0;S.recMode="idle";S.fm=0;S.steps=8432;S.mesh=0;S.db=68;S.vid=84;S.vidOn=1;S.rain=1;S.lamp=0;
   const g=document.querySelector(".compass .carrow"); if(g)g.style.transform="rotate(0deg)";refreshAll();});
 
 refreshAll(); setLive(true);
