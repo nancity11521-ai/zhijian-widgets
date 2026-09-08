@@ -270,6 +270,8 @@ body{
 .wx .pill{font-size:var(--fz-mini);color:var(--orange);background:rgba(240,129,60,.14);padding:3px 9px;border-radius:9px;line-height:1.3;}
 .rec-dot{animation:pulse 1.4s ease-in-out infinite;}
 .w19 .val.hide{visibility:hidden;}
+.w20 .val.hide,.w20 .fm-scale.hide{visibility:hidden;}
+.wx .pill.pswitch{cursor:pointer;transition:.2s;}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.35;transform:scale(.78);}}
 .fm-scale{position:relative;line-height:0;}
 .fm-mark{position:absolute;bottom:-8px;width:7px;height:7px;border-radius:50%;background:var(--orange);transform:translateX(-50%);}
@@ -641,12 +643,13 @@ body{
     <div class="card">
       <span class="tag">2×2</span>
       <div class="w20 wx">
-        <div class="cap"><span>FM 收音机</span><span class="pill" id="fmPill">FM 98.6</span></div>
+        <div class="cap"><span>FM 收音机</span><span class="pill pswitch" id="fmPill" title="点击开关收音机">OFF</span></div>
         <div class="mid">
-          <div class="val"><span class="dm" id="fmNum" data-dm="98.6" data-gap="5.4" data-r="2.1" data-color="#f5f5f7" data-dim="transparent"></span><span class="u">MHz</span></div>
-          <div class="fm-scale"><span class="dm" data-icon="scale" data-igap="3" data-ir="0.9" data-icolor="#c8c8ce"></span><i class="fm-mark" id="fmMark" style="left:38%;"></i></div>
+          <span class="dm" id="fmIco" data-icon="radio" data-igap="2.4" data-ir="0.95" data-icolor="#55555e"></span>
+          <div class="val hide" id="fmFreqBox"><span class="dm" id="fmNum" data-dm="98.6" data-gap="5.4" data-r="2.1" data-color="#f5f5f7" data-dim="transparent"></span><span class="u">MHz</span></div>
+          <div class="fm-scale hide" id="fmScaleBox"><span class="dm" data-icon="scale" data-igap="3" data-ir="0.9" data-icolor="#c8c8ce"></span><i class="fm-mark" id="fmMark" style="left:38%;"></i></div>
         </div>
-        <div class="foot" id="fmName">频道 · 音乐之声</div>
+        <div class="foot" id="fmName">未开启 · 轻触开启</div>
       </div>
     </div>
 
@@ -1027,6 +1030,18 @@ const BULB=[
 "00000100000",
 "00001110000",
 "00001110000"];
+const RADIO=[
+"0000000011000",
+"0000000001100",
+"0000000000100",
+"1111111111111",
+"1100000000011",
+"1011001111001",
+"1011111111101",
+"1011001111001",
+"1100000000011",
+"1111111111111"];
+
 const MESH=[
 "0000000010000",
 "0000000111000",
@@ -1070,6 +1085,7 @@ function drawIcon(el){
   if(type==="camera"){ CAMERA.forEach((row,ry)=>{[...row].forEach((ch,rx)=>{if(ch==="1")add(rx,ry);});}); }
   if(type==="umbrella"){ UMBRELLA.forEach((row,ry)=>{[...row].forEach((ch,rx)=>{if(ch==="1")add(rx,ry);});}); }
   if(type==="bulb"){ BULB.forEach((row,ry)=>{[...row].forEach((ch,rx)=>{if(ch==="1")add(rx,ry);});}); }
+  if(type==="radio"){ RADIO.forEach((row,ry)=>{[...row].forEach((ch,rx)=>{if(ch==="1")add(rx,ry);});}); }
   if(type==="mesh"){ MESH.forEach((row,ry)=>{[...row].forEach((ch,rx)=>{if(ch==="1")add(rx,ry);});}); }
   if(type==="wave"){
     const hs=[3,5,9,13,9,5,3];
@@ -1111,7 +1127,7 @@ const MON=["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DE
 const WKS=["SUNDAY","MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY","SATURDAY"];
 const WKS3=["SUN","MON","TUE","WED","THU","FRI","SAT"];
 
-const S={battery:100,water:0,torch:1,music:0,city:0,alt:1243,press:1013,bearing:0,live:1,rec:0,recMode:"idle",fm:0,steps:8432,mesh:0,db:68,vid:84,vidOn:1,rain:1,lamp:0};
+const S={battery:100,water:0,torch:1,music:0,city:0,alt:1243,press:1013,bearing:0,live:1,rec:0,recMode:"idle",fm:0,fmOn:0,steps:8432,mesh:0,db:68,vid:84,vidOn:1,rain:1,lamp:0};
 const CITIES=[
  {name:"Toronto",cond:"Partly Cloudy",temp:30,hi:35,lo:16,ic:"sun",days:["cloud","sun","cloud","sun","sun","sun"],hi_:[-3,-1,-9,-4,-4,-4],lo_:[-6,-9,-10,-6,-6,-6]},
  {name:"Beijing",cond:"Sunny",temp:26,hi:32,lo:18,ic:"sun",days:["sun","sun","cloud","cloud","sun","sun"],hi_:[31,30,28,26,29,30],lo_:[18,19,17,16,18,19]},
@@ -1252,11 +1268,16 @@ function renderRec(){
   if(f)f.textContent=rec?"48kHz · 立体声 · MP3":(idle?"未开始录制 · 轻触开始":"已暂停 · 点击继续录音");
 }
 function renderFM(){
-  const c=FM_ST[S.fm];
-  const n=$("#fmNum"); if(n){n.dataset.dm=c.f;drawDM(n);}
+  const on=!!S.fmOn, c=FM_ST[S.fm];
+  const fb=$("#fmFreqBox"); if(fb)fb.classList.toggle("hide",!on);
+  const sb=$("#fmScaleBox"); if(sb)sb.classList.toggle("hide",!on);
+  const n=$("#fmNum"); if(n&&on){n.dataset.dm=c.f;drawDM(n);}
   const m=$("#fmMark"); if(m)m.style.left=c.p+"%";
-  const nm=$("#fmName"); if(nm)nm.textContent=c.n;
-  const p=$("#fmPill"); if(p)p.textContent="FM "+c.f;
+  const nm=$("#fmName"); if(nm)nm.textContent=on?c.n:"未开启 · 轻触开启";
+  const p=$("#fmPill"); if(p){p.textContent=on?("FM "+c.f):"OFF";
+    p.style.color=on?"var(--orange)":"var(--ink-dim)";
+    p.style.background=on?"rgba(240,129,60,.14)":"rgba(255,255,255,.06)";}
+  const i=$("#fmIco"); if(i){const col=on?"#f5f5f7":"#55555e";if(i.dataset.icolor!==col){i.dataset.icolor=col;i.innerHTML="";drawIcon(i);}}
 }
 function renderSteps(){
   const n=$("#stepNum"); if(n){n.dataset.dm=String(S.steps);drawDM(n);}
@@ -1330,7 +1351,10 @@ const c19=$(".w19")?$(".w19").closest(".card"):null;
 if(c19){c19.classList.add("act");c19.title="点击开始 / 暂停录音";c19.addEventListener("click",()=>{S.recMode=(S.recMode==="rec")?"pause":"rec";renderRec();});}
 // W20 FM
 const c20=$(".w20")?$(".w20").closest(".card"):null;
-if(c20){c20.classList.add("act");c20.title="点击切换频道";c20.addEventListener("click",()=>{S.fm=(S.fm+1)%FM_ST.length;renderFM();});}
+if(c20){c20.classList.add("act");c20.title="点击切换频道（右上角开关机）";
+  c20.addEventListener("click",()=>{if(!S.fmOn)S.fmOn=1;else S.fm=(S.fm+1)%FM_ST.length;renderFM();});}
+const fp=$("#fmPill");
+if(fp)fp.addEventListener("click",e=>{e.stopPropagation();S.fmOn=!S.fmOn;renderFM();});
 // W21 计步器
 const c21=$(".w21")?$(".w21").closest(".card"):null;
 if(c21){c21.classList.add("act");c21.title="点击增加步数";c21.addEventListener("click",()=>{S.steps=S.steps>=12000?0:S.steps+Math.round(300+Math.random()*400);renderSteps();});}
@@ -1356,7 +1380,7 @@ function setLive(on){S.live=on?1:0;bl.classList.toggle("on",!!on);bl.textContent
   if(timer){clearInterval(timer);timer=null;}
   if(on)timer=setInterval(()=>{updClock();updDate();tickRec();},1000);}
 if(bl)bl.addEventListener("click",()=>setLive(!S.live));
-if(br)br.addEventListener("click",()=>{S.battery=100;S.water=0;S.torch=1;S.music=0;S.city=0;S.alt=1243;S.press=1013;S.bearing=0;S.rec=0;S.recMode="idle";S.fm=0;S.steps=8432;S.mesh=0;S.db=68;S.vid=84;S.vidOn=1;S.rain=1;S.lamp=0;
+if(br)br.addEventListener("click",()=>{S.battery=100;S.water=0;S.torch=1;S.music=0;S.city=0;S.alt=1243;S.press=1013;S.bearing=0;S.rec=0;S.recMode="idle";S.fm=0;S.fmOn=0;S.steps=8432;S.mesh=0;S.db=68;S.vid=84;S.vidOn=1;S.rain=1;S.lamp=0;
   const g=document.querySelector(".compass .carrow"); if(g)g.style.transform="rotate(0deg)";refreshAll();});
 
 refreshAll(); setLive(true);
