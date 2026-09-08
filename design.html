@@ -619,7 +619,7 @@ body{
       <div class="w19 wx">
         <div class="cap"><span>录音 RECORDER</span><i class="dot off" id="recDot"></i></div>
         <div class="mid">
-          <span class="dm" id="recWave" data-icon="wave" data-igap="2.7" data-ir="1" data-icolor="#55555e"></span>
+          <span class="dm" id="recIco" data-icon="mic" data-igap="2.7" data-ir="1" data-icolor="#55555e"></span>
           <div class="val hide" id="recTimeBox"><span class="dm" id="recTime" data-dm="12:34" data-gap="5" data-r="2.1" data-color="#f5f5f7" data-dim="transparent"></span></div>
         </div>
         <div class="foot" id="recFoot">未开始录制 · 轻触开始</div>
@@ -1025,6 +1025,21 @@ const RADIO=[
 "1100000000011",
 "1111111111111"];
 
+const MIC=[
+"0000111100000",
+"0001111110000",
+"0001111110000",
+"0001111110000",
+"0001111110000",
+"0001111110000",
+"0001111110000",
+"0011000011000",
+"0011000011000",
+"0011000011000",
+"0011111111000",
+"0000011100000",
+"0001111111000"];
+
 const MESH=[
 "0000000010000",
 "0000000111000",
@@ -1069,6 +1084,7 @@ function drawIcon(el){
   if(type==="umbrella"){ UMBRELLA.forEach((row,ry)=>{[...row].forEach((ch,rx)=>{if(ch==="1")add(rx,ry);});}); }
   if(type==="bulb"){ BULB.forEach((row,ry)=>{[...row].forEach((ch,rx)=>{if(ch==="1")add(rx,ry);});}); }
   if(type==="radio"){ RADIO.forEach((row,ry)=>{[...row].forEach((ch,rx)=>{if(ch==="1")add(rx,ry);});}); }
+  if(type==="mic"){ MIC.forEach((row,ry)=>{[...row].forEach((ch,rx)=>{if(ch==="1")add(rx,ry);});}); }
   if(type==="mesh"){ MESH.forEach((row,ry)=>{[...row].forEach((ch,rx)=>{if(ch==="1")add(rx,ry);});}); }
   if(type==="wave"){
     const hs=[3,5,9,13,9,5,3];
