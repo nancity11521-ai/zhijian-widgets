@@ -238,6 +238,30 @@ body{
 .alt .u{font-size:var(--fz-main);color:var(--ink-dim);}
 .sep2{height:1px;background:#3a3a42;}
 
+/* ============ W19-W26 功能卡通用骨架 ============ */
+.wx{display:flex;flex-direction:column;height:100%;}
+.wx .cap{display:flex;align-items:center;justify-content:space-between;font-size:var(--fz-sub);color:var(--ink-dim);letter-spacing:.5px;}
+.wx .mid{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;}
+.wx .foot{font-size:var(--fz-mini);color:var(--ink-dim);}
+.wx .val{display:flex;align-items:baseline;gap:7px;}
+.wx .u{font-size:var(--fz-main);color:var(--ink-dim);}
+.wx .dot{width:8px;height:8px;border-radius:50%;background:var(--orange);flex-shrink:0;}
+.wx .dot.off{background:#4a4a52;}
+.wx .pill{font-size:var(--fz-mini);color:var(--orange);background:rgba(240,129,60,.14);padding:3px 9px;border-radius:9px;line-height:1.3;}
+.rec-dot{animation:pulse 1.4s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.35;transform:scale(.78);}}
+.fm-scale{position:relative;line-height:0;}
+.fm-mark{position:absolute;bottom:-8px;width:7px;height:7px;border-radius:50%;background:var(--orange);transform:translateX(-50%);}
+.dbbar{display:flex;align-items:flex-end;gap:5px;height:34px;}
+.dbbar i{width:9px;border-radius:2px;background:#3a3a42;}
+.dbbar i.on{background:var(--orange);}
+.dbbar i:nth-child(1){height:10px}.dbbar i:nth-child(2){height:16px}
+.dbbar i:nth-child(3){height:21px}.dbbar i:nth-child(4){height:26px}
+.dbbar i:nth-child(5){height:31px}.dbbar i:nth-child(6){height:34px}
+.lamp-dots{display:flex;gap:10px;}
+.lamp-dots i{width:13px;height:13px;border-radius:50%;display:block;transition:.25s;}
+.w21 .pbar{width:100%;}
+
 /* ============ 规范 ============ */
 .legend{grid-column:span 3;background:var(--card);border-radius:var(--radius);padding:22px 26px;height:auto;}
 .legend h3{font-size:var(--fz-title);margin-bottom:14px;}
@@ -585,6 +609,110 @@ body{
     </div>
 
 
+    <!-- W19 · 2×2 录音机 -->
+    <div class="card">
+      <span class="tag">2×2</span>
+      <div class="w19 wx">
+        <div class="cap"><span>录音 RECORDER</span><i class="dot rec-dot" id="recDot"></i></div>
+        <div class="mid">
+          <span class="dm" data-icon="wave" data-igap="2.7" data-ir="1" data-icolor="#f0813c"></span>
+          <div class="val"><span class="dm" id="recTime" data-dm="12:34" data-gap="5" data-r="2.1" data-color="#f5f5f7" data-dim="transparent"></span></div>
+        </div>
+        <div class="foot" id="recFoot">48kHz · 立体声 · MP3</div>
+      </div>
+    </div>
+
+    <!-- W20 · 2×2 FM 收音机 -->
+    <div class="card">
+      <span class="tag">2×2</span>
+      <div class="w20 wx">
+        <div class="cap"><span>FM 收音机</span><span class="pill" id="fmPill">FM 98.6</span></div>
+        <div class="mid">
+          <div class="val"><span class="dm" id="fmNum" data-dm="98.6" data-gap="5.4" data-r="2.1" data-color="#f5f5f7" data-dim="transparent"></span><span class="u">MHz</span></div>
+          <div class="fm-scale"><span class="dm" data-icon="scale" data-igap="3" data-ir="0.9" data-icolor="#c8c8ce"></span><i class="fm-mark" id="fmMark" style="left:38%;"></i></div>
+        </div>
+        <div class="foot" id="fmName">频道 · 音乐之声</div>
+      </div>
+    </div>
+
+    <!-- W21 · 2×2 计步器 -->
+    <div class="card">
+      <span class="tag">2×2</span>
+      <div class="w21 wx">
+        <div class="cap"><span>计步 PEDOMETER</span><span class="pill" id="stepPill">84%</span></div>
+        <div class="mid">
+          <div class="val"><span class="dm" id="stepNum" data-dm="8432" data-gap="5.6" data-r="2.4" data-color="#f5f5f7" data-dim="transparent"></span><span class="u">步</span></div>
+          <div class="pbar" id="stepBar"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        </div>
+        <div class="foot" id="stepFoot">6.1 km · 320 kcal</div>
+      </div>
+    </div>
+
+    <!-- W22 · 2×2 无网通信 -->
+    <div class="card">
+      <span class="tag">2×2</span>
+      <div class="w22 wx">
+        <div class="cap"><span>无网通信</span><span class="pill">MESH</span></div>
+        <div class="mid">
+          <span class="dm" data-icon="mesh" data-igap="2.6" data-ir="1" data-icolor="#f5f5f7"></span>
+          <div class="val"><span class="dm" id="meshNum" data-dm="1.2" data-gap="5.4" data-r="2.1" data-color="#f5f5f7" data-dim="transparent"></span><span class="u">km</span></div>
+        </div>
+        <div class="foot" id="meshFoot">3 台设备已连接</div>
+      </div>
+    </div>
+
+    <!-- W23 · 2×2 噪声测试 -->
+    <div class="card">
+      <span class="tag">2×2</span>
+      <div class="w23 wx">
+        <div class="cap"><span>噪声 NOISE</span><span class="pill" id="dbPill">正常</span></div>
+        <div class="mid">
+          <div class="dbbar" id="dbBar"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></div>
+          <div class="val"><span class="dm" id="dbNum" data-dm="68" data-gap="5.6" data-r="2.2" data-color="#f5f5f7" data-dim="transparent"></span><span class="u">dB</span></div>
+        </div>
+        <div class="foot">建议环境 &lt; 70 dB</div>
+      </div>
+    </div>
+
+    <!-- W24 · 2×2 后台录像 -->
+    <div class="card">
+      <span class="tag">2×2</span>
+      <div class="w24 wx">
+        <div class="cap"><span>后台录像</span><i class="dot rec-dot" id="vidDot"></i></div>
+        <div class="mid">
+          <span class="dm" data-icon="camera" data-igap="2.4" data-ir="0.95" data-icolor="#f5f5f7"></span>
+          <div class="val"><span class="dm" id="vidTime" data-dm="01:24" data-gap="5" data-r="2.1" data-color="#f5f5f7" data-dim="transparent"></span></div>
+        </div>
+        <div class="foot">720P 30fps · 省电模式</div>
+      </div>
+    </div>
+
+    <!-- W25 · 2×2 雨盾模式 -->
+    <div class="card">
+      <span class="tag">2×2</span>
+      <div class="w25 wx">
+        <div class="cap"><span>雨盾模式</span><span class="pill" id="rainPill">ON</span></div>
+        <div class="mid">
+          <span class="dm" id="rainIco" data-icon="umbrella" data-igap="2.7" data-ir="1.05" data-icolor="#f5f5f7"></span>
+          <div class="val"><span class="dm" id="rainTxt" data-dm="ON" data-gap="5.6" data-r="2.2" data-color="#f0813c" data-dim="transparent"></span></div>
+        </div>
+        <div class="foot">湿手触控 · 手套模式</div>
+      </div>
+    </div>
+
+    <!-- W26 · 2×2 氛围灯 -->
+    <div class="card">
+      <span class="tag">2×2</span>
+      <div class="w26 wx">
+        <div class="cap"><span>氛围灯 AMBIENT</span><span class="pill" id="lampPill">呼吸</span></div>
+        <div class="mid">
+          <span class="dm" data-icon="bulb" data-igap="2.7" data-ir="1.05" data-icolor="#f0813c"></span>
+          <div class="lamp-dots" id="lampDots"><i style="background:#f0813c"></i><i style="background:#f5c542"></i><i style="background:#4ad6a0"></i><i style="background:#3f8ef0"></i><i style="background:#a76cf0"></i></div>
+        </div>
+        <div class="foot" id="lampFoot">亮度 80% · 暖橙</div>
+      </div>
+    </div>
+
     <!-- 规范 -->
     <div class="legend" data-page-node-id="3MhBeuscYnD7QzyKAJt8fa">
       <h3 data-page-node-id="QJdEbjALRDDSLC14zEvAB1">设计规范 / Design Spec</h3>
@@ -847,6 +975,50 @@ const NOTE=[
 "0111111110",
 "0111111110",
 "0011111100"];
+const CAMERA=[
+"00000000001111",
+"00000000111111",
+"01111111111111",
+"01111111111111",
+"01111111111111",
+"01111111111111",
+"01111111111111",
+"00000000111111",
+"00000000001111"];
+const UMBRELLA=[
+"0000011100000",
+"0000111110000",
+"0001111111000",
+"0011111111100",
+"0111111111110",
+"1111111111111",
+"0000011100000",
+"0000011100000",
+"0001111100000"];
+const BULB=[
+"00001110000",
+"00011111000",
+"00111111100",
+"01111111110",
+"01111111110",
+"01111111110",
+"00111111100",
+"00011111000",
+"00001110000",
+"00000100000",
+"00001110000",
+"00001110000"];
+const MESH=[
+"0000000010000",
+"0000000111000",
+"0000001111100",
+"0000111111110",
+"0001111111111",
+"0111111111111",
+"0000111000000",
+"0000111000000",
+"0000111000000"];
+
 function drawIcon(el){
   const type=el.dataset.icon||"sun";
   const gap=parseFloat(el.dataset.igap||2);
@@ -875,6 +1047,17 @@ function drawIcon(el){
   }
   if(type==="mountain"){
     MOUNTAIN.forEach((row,ry)=>{[...row].forEach((ch,rx)=>{if(ch==="1")add(rx,ry);});});
+  }
+  if(type==="camera"){ CAMERA.forEach((row,ry)=>{[...row].forEach((ch,rx)=>{if(ch==="1")add(rx,ry);});}); }
+  if(type==="umbrella"){ UMBRELLA.forEach((row,ry)=>{[...row].forEach((ch,rx)=>{if(ch==="1")add(rx,ry);});}); }
+  if(type==="bulb"){ BULB.forEach((row,ry)=>{[...row].forEach((ch,rx)=>{if(ch==="1")add(rx,ry);});}); }
+  if(type==="mesh"){ MESH.forEach((row,ry)=>{[...row].forEach((ch,rx)=>{if(ch==="1")add(rx,ry);});}); }
+  if(type==="wave"){
+    const hs=[3,5,9,13,9,5,3];
+    hs.forEach((h,x)=>{const s=Math.round((13-h)/2);for(let y=0;y<h;y++){add(x*2,s+y);add(x*2+1,s+y);}});
+  }
+  if(type==="scale"){
+    for(let x=0;x<21;x++){ add(x,0); if(x%5===0){add(x,-1);add(x,-2);} }
   }
   if(type==="note"){
     NOTE.forEach((row,ry)=>{[...row].forEach((ch,rx)=>{if(ch==="1")add(rx,ry);});});

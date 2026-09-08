@@ -258,6 +258,30 @@ body{
 .alt .u{font-size:var(--fz-main);color:var(--ink-dim);}
 .sep2{height:1px;background:#3a3a42;}
 
+/* ============ W19-W26 功能卡通用骨架 ============ */
+.wx{display:flex;flex-direction:column;height:100%;}
+.wx .cap{display:flex;align-items:center;justify-content:space-between;font-size:var(--fz-sub);color:var(--ink-dim);letter-spacing:.5px;}
+.wx .mid{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;}
+.wx .foot{font-size:var(--fz-mini);color:var(--ink-dim);}
+.wx .val{display:flex;align-items:baseline;gap:7px;}
+.wx .u{font-size:var(--fz-main);color:var(--ink-dim);}
+.wx .dot{width:8px;height:8px;border-radius:50%;background:var(--orange);flex-shrink:0;}
+.wx .dot.off{background:#4a4a52;}
+.wx .pill{font-size:var(--fz-mini);color:var(--orange);background:rgba(240,129,60,.14);padding:3px 9px;border-radius:9px;line-height:1.3;}
+.rec-dot{animation:pulse 1.4s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.35;transform:scale(.78);}}
+.fm-scale{position:relative;line-height:0;}
+.fm-mark{position:absolute;bottom:-8px;width:7px;height:7px;border-radius:50%;background:var(--orange);transform:translateX(-50%);}
+.dbbar{display:flex;align-items:flex-end;gap:5px;height:34px;}
+.dbbar i{width:9px;border-radius:2px;background:#3a3a42;}
+.dbbar i.on{background:var(--orange);}
+.dbbar i:nth-child(1){height:10px}.dbbar i:nth-child(2){height:16px}
+.dbbar i:nth-child(3){height:21px}.dbbar i:nth-child(4){height:26px}
+.dbbar i:nth-child(5){height:31px}.dbbar i:nth-child(6){height:34px}
+.lamp-dots{display:flex;gap:10px;}
+.lamp-dots i{width:13px;height:13px;border-radius:50%;display:block;transition:.25s;}
+.w21 .pbar{width:100%;}
+
 /* ============ 规范 ============ */
 .legend{grid-column:span 3;background:var(--card);border-radius:var(--radius);padding:22px 26px;height:auto;}
 .legend h3{font-size:var(--fz-title);margin-bottom:14px;}
@@ -599,6 +623,110 @@ body{
     </div>
 
 
+    <!-- W19 · 2×2 录音机 -->
+    <div class="card">
+      <span class="tag">2×2</span>
+      <div class="w19 wx">
+        <div class="cap"><span>录音 RECORDER</span><i class="dot rec-dot" id="recDot"></i></div>
+        <div class="mid">
+          <span class="dm" data-icon="wave" data-igap="2.7" data-ir="1" data-icolor="#f0813c"></span>
+          <div class="val"><span class="dm" id="recTime" data-dm="12:34" data-gap="5" data-r="2.1" data-color="#f5f5f7" data-dim="transparent"></span></div>
+        </div>
+        <div class="foot" id="recFoot">48kHz · 立体声 · MP3</div>
+      </div>
+    </div>
+
+    <!-- W20 · 2×2 FM 收音机 -->
+    <div class="card">
+      <span class="tag">2×2</span>
+      <div class="w20 wx">
+        <div class="cap"><span>FM 收音机</span><span class="pill" id="fmPill">FM 98.6</span></div>
+        <div class="mid">
+          <div class="val"><span class="dm" id="fmNum" data-dm="98.6" data-gap="5.4" data-r="2.1" data-color="#f5f5f7" data-dim="transparent"></span><span class="u">MHz</span></div>
+          <div class="fm-scale"><span class="dm" data-icon="scale" data-igap="3" data-ir="0.9" data-icolor="#c8c8ce"></span><i class="fm-mark" id="fmMark" style="left:38%;"></i></div>
+        </div>
+        <div class="foot" id="fmName">频道 · 音乐之声</div>
+      </div>
+    </div>
+
+    <!-- W21 · 2×2 计步器 -->
+    <div class="card">
+      <span class="tag">2×2</span>
+      <div class="w21 wx">
+        <div class="cap"><span>计步 PEDOMETER</span><span class="pill" id="stepPill">84%</span></div>
+        <div class="mid">
+          <div class="val"><span class="dm" id="stepNum" data-dm="8432" data-gap="5.6" data-r="2.4" data-color="#f5f5f7" data-dim="transparent"></span><span class="u">步</span></div>
+          <div class="pbar" id="stepBar"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        </div>
+        <div class="foot" id="stepFoot">6.1 km · 320 kcal</div>
+      </div>
+    </div>
+
+    <!-- W22 · 2×2 无网通信 -->
+    <div class="card">
+      <span class="tag">2×2</span>
+      <div class="w22 wx">
+        <div class="cap"><span>无网通信</span><span class="pill">MESH</span></div>
+        <div class="mid">
+          <span class="dm" data-icon="mesh" data-igap="2.6" data-ir="1" data-icolor="#f5f5f7"></span>
+          <div class="val"><span class="dm" id="meshNum" data-dm="1.2" data-gap="5.4" data-r="2.1" data-color="#f5f5f7" data-dim="transparent"></span><span class="u">km</span></div>
+        </div>
+        <div class="foot" id="meshFoot">3 台设备已连接</div>
+      </div>
+    </div>
+
+    <!-- W23 · 2×2 噪声测试 -->
+    <div class="card">
+      <span class="tag">2×2</span>
+      <div class="w23 wx">
+        <div class="cap"><span>噪声 NOISE</span><span class="pill" id="dbPill">正常</span></div>
+        <div class="mid">
+          <div class="dbbar" id="dbBar"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></div>
+          <div class="val"><span class="dm" id="dbNum" data-dm="68" data-gap="5.6" data-r="2.2" data-color="#f5f5f7" data-dim="transparent"></span><span class="u">dB</span></div>
+        </div>
+        <div class="foot">建议环境 &lt; 70 dB</div>
+      </div>
+    </div>
+
+    <!-- W24 · 2×2 后台录像 -->
+    <div class="card">
+      <span class="tag">2×2</span>
+      <div class="w24 wx">
+        <div class="cap"><span>后台录像</span><i class="dot rec-dot" id="vidDot"></i></div>
+        <div class="mid">
+          <span class="dm" data-icon="camera" data-igap="2.4" data-ir="0.95" data-icolor="#f5f5f7"></span>
+          <div class="val"><span class="dm" id="vidTime" data-dm="01:24" data-gap="5" data-r="2.1" data-color="#f5f5f7" data-dim="transparent"></span></div>
+        </div>
+        <div class="foot">720P 30fps · 省电模式</div>
+      </div>
+    </div>
+
+    <!-- W25 · 2×2 雨盾模式 -->
+    <div class="card">
+      <span class="tag">2×2</span>
+      <div class="w25 wx">
+        <div class="cap"><span>雨盾模式</span><span class="pill" id="rainPill">ON</span></div>
+        <div class="mid">
+          <span class="dm" id="rainIco" data-icon="umbrella" data-igap="2.7" data-ir="1.05" data-icolor="#f5f5f7"></span>
+          <div class="val"><span class="dm" id="rainTxt" data-dm="ON" data-gap="5.6" data-r="2.2" data-color="#f0813c" data-dim="transparent"></span></div>
+        </div>
+        <div class="foot">湿手触控 · 手套模式</div>
+      </div>
+    </div>
+
+    <!-- W26 · 2×2 氛围灯 -->
+    <div class="card">
+      <span class="tag">2×2</span>
+      <div class="w26 wx">
+        <div class="cap"><span>氛围灯 AMBIENT</span><span class="pill" id="lampPill">呼吸</span></div>
+        <div class="mid">
+          <span class="dm" data-icon="bulb" data-igap="2.7" data-ir="1.05" data-icolor="#f0813c"></span>
+          <div class="lamp-dots" id="lampDots"><i style="background:#f0813c"></i><i style="background:#f5c542"></i><i style="background:#4ad6a0"></i><i style="background:#3f8ef0"></i><i style="background:#a76cf0"></i></div>
+        </div>
+        <div class="foot" id="lampFoot">亮度 80% · 暖橙</div>
+      </div>
+    </div>
+
     <!-- 规范 -->
     <div class="legend" data-page-node-id="3MhBeuscYnD7QzyKAJt8fa">
       <h3 data-page-node-id="QJdEbjALRDDSLC14zEvAB1">设计规范 / Design Spec</h3>
@@ -865,6 +993,50 @@ const NOTE=[
 "0111111110",
 "0111111110",
 "0011111100"];
+const CAMERA=[
+"00000000001111",
+"00000000111111",
+"01111111111111",
+"01111111111111",
+"01111111111111",
+"01111111111111",
+"01111111111111",
+"00000000111111",
+"00000000001111"];
+const UMBRELLA=[
+"0000011100000",
+"0000111110000",
+"0001111111000",
+"0011111111100",
+"0111111111110",
+"1111111111111",
+"0000011100000",
+"0000011100000",
+"0001111100000"];
+const BULB=[
+"00001110000",
+"00011111000",
+"00111111100",
+"01111111110",
+"01111111110",
+"01111111110",
+"00111111100",
+"00011111000",
+"00001110000",
+"00000100000",
+"00001110000",
+"00001110000"];
+const MESH=[
+"0000000010000",
+"0000000111000",
+"0000001111100",
+"0000111111110",
+"0001111111111",
+"0111111111111",
+"0000111000000",
+"0000111000000",
+"0000111000000"];
+
 function drawIcon(el){
   const type=el.dataset.icon||"sun";
   const gap=parseFloat(el.dataset.igap||2);
@@ -893,6 +1065,17 @@ function drawIcon(el){
   }
   if(type==="mountain"){
     MOUNTAIN.forEach((row,ry)=>{[...row].forEach((ch,rx)=>{if(ch==="1")add(rx,ry);});});
+  }
+  if(type==="camera"){ CAMERA.forEach((row,ry)=>{[...row].forEach((ch,rx)=>{if(ch==="1")add(rx,ry);});}); }
+  if(type==="umbrella"){ UMBRELLA.forEach((row,ry)=>{[...row].forEach((ch,rx)=>{if(ch==="1")add(rx,ry);});}); }
+  if(type==="bulb"){ BULB.forEach((row,ry)=>{[...row].forEach((ch,rx)=>{if(ch==="1")add(rx,ry);});}); }
+  if(type==="mesh"){ MESH.forEach((row,ry)=>{[...row].forEach((ch,rx)=>{if(ch==="1")add(rx,ry);});}); }
+  if(type==="wave"){
+    const hs=[3,5,9,13,9,5,3];
+    hs.forEach((h,x)=>{const s=Math.round((13-h)/2);for(let y=0;y<h;y++){add(x*2,s+y);add(x*2+1,s+y);}});
+  }
+  if(type==="scale"){
+    for(let x=0;x<21;x++){ add(x,0); if(x%5===0){add(x,-1);add(x,-2);} }
   }
   if(type==="note"){
     NOTE.forEach((row,ry)=>{[...row].forEach((ch,rx)=>{if(ch==="1")add(rx,ry);});});
@@ -927,7 +1110,7 @@ const MON=["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DE
 const WKS=["SUNDAY","MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY","SATURDAY"];
 const WKS3=["SUN","MON","TUE","WED","THU","FRI","SAT"];
 
-const S={battery:100,water:0,torch:1,music:0,city:0,alt:1243,press:1013,bearing:0,live:1};
+const S={battery:100,water:0,torch:1,music:0,city:0,alt:1243,press:1013,bearing:0,live:1,rec:754,recOn:1,fm:0,steps:8432,mesh:0,db:68,vid:84,vidOn:1,rain:1,lamp:0};
 const CITIES=[
  {name:"Toronto",cond:"Partly Cloudy",temp:30,hi:35,lo:16,ic:"sun",days:["cloud","sun","cloud","sun","sun","sun"],hi_:[-3,-1,-9,-4,-4,-4],lo_:[-6,-9,-10,-6,-6,-6]},
  {name:"Beijing",cond:"Sunny",temp:26,hi:32,lo:18,ic:"sun",days:["sun","sun","cloud","cloud","sun","sun"],hi_:[31,30,28,26,29,30],lo_:[18,19,17,16,18,19]},
@@ -939,7 +1122,7 @@ const lunar=()=>{try{return "农历"+new Intl.DateTimeFormat("zh-CN-u-ca-cha".re
 /* ---- 时钟 ---- */
 function updClock(){
   const d=new Date(), t=pad2(d.getHours())+":"+pad2(d.getMinutes());
-  $$('.dm[data-dm]').forEach(el=>{ if(/^\d\d:\d\d$/.test(el.dataset.dm)){ el.dataset.dm=t; drawDM(el);} });
+  $$('.dm[data-dm]').forEach(el=>{ if(el.id==='recTime'||el.id==='vidTime')return; if(/^\d\d:\d\d$/.test(el.dataset.dm)){ el.dataset.dm=t; drawDM(el);} });
   $$(".aclock").forEach(el=>{
     el.dataset.clock=pad2(d.getHours())+":"+pad2(d.getMinutes())+":"+pad2(d.getSeconds());
     el.innerHTML=""; drawDotClock(el);
@@ -1053,7 +1236,59 @@ function renderAlt(){
   if(ds[0]){ds[0].dataset.dm=String(S.alt);drawDM(ds[0]);}
   if(ds[1]){ds[1].dataset.dm=String(S.press);drawDM(ds[1]);}
 }
-function refreshAll(){updClock();updDate();renderCity();renderBattery();renderWater();renderTorch();renderMusic();renderAlt();}
+/* ---- W19 录音机 / W20 FM / W21 计步 / W22 无网通信 / W23 噪声 / W24 录像 / W25 雨盾 / W26 氛围灯 ---- */
+const FM_ST=[{f:"98.6",n:"频道 · 音乐之声",p:38},{f:"101.1",n:"频道 · 交通广播",p:52},{f:"92.5",n:"频道 · 新闻资讯",p:24},{f:"107.7",n:"频道 · 经典金曲",p:74}];
+const MESH_ST=[{d:"1.2",n:"3 台设备已连接"},{d:"2.4",n:"2 台设备已连接"},{d:"0.6",n:"5 台设备已连接"}];
+const LAMPS=[{p:"呼吸",f:"亮度 80% · 暖橙"},{p:"流光",f:"亮度 65% · 幻彩"},{p:"常亮",f:"亮度 100% · 冷白"},{p:"心跳",f:"亮度 45% · 玫红"}];
+const fmtT=s=>pad2(Math.floor(s/60))+":"+pad2(s%60);
+function renderRec(){
+  const t=$("#recTime"); if(t){t.dataset.dm=fmtT(S.rec);drawDM(t);}
+  const d=$("#recDot"); if(d)d.classList.toggle("off",!S.recOn);
+  const f=$("#recFoot"); if(f)f.textContent=S.recOn?"48kHz · 立体声 · MP3":"已暂停 · 点击继续录音";
+}
+function renderFM(){
+  const c=FM_ST[S.fm];
+  const n=$("#fmNum"); if(n){n.dataset.dm=c.f;drawDM(n);}
+  const m=$("#fmMark"); if(m)m.style.left=c.p+"%";
+  const nm=$("#fmName"); if(nm)nm.textContent=c.n;
+  const p=$("#fmPill"); if(p)p.textContent="FM "+c.f;
+}
+function renderSteps(){
+  const n=$("#stepNum"); if(n){n.dataset.dm=String(S.steps);drawDM(n);}
+  const pct=Math.min(100,Math.round(S.steps/10000*100));
+  const pl=$("#stepPill"); if(pl)pl.textContent=pct+"%";
+  const bar=$("#stepBar"); if(bar){const on=Math.round(pct/100*bar.children.length);[...bar.children].forEach((s,i)=>s.classList.toggle("off",i>=on));}
+  const f=$("#stepFoot"); if(f)f.textContent=(S.steps*0.00072).toFixed(1)+" km · "+Math.round(S.steps*0.038)+" kcal";
+}
+function renderMesh(){
+  const c=MESH_ST[S.mesh];
+  const n=$("#meshNum"); if(n){n.dataset.dm=c.d;drawDM(n);}
+  const f=$("#meshFoot"); if(f)f.textContent=c.n;
+}
+function renderDB(){
+  const n=$("#dbNum"); if(n){n.dataset.dm=String(S.db);drawDM(n);}
+  const bar=$("#dbBar"); if(bar){const on=Math.max(0,Math.min(6,Math.round((S.db-35)/10)));[...bar.children].forEach((s,i)=>s.classList.toggle("on",i<on));}
+  const p=$("#dbPill"); if(p)p.textContent=S.db<50?"安静":(S.db<70?"正常":"嘈杂");
+}
+function renderVid(){
+  const t=$("#vidTime"); if(t){t.dataset.dm=fmtT(S.vid);drawDM(t);}
+  const d=$("#vidDot"); if(d)d.classList.toggle("off",!S.vidOn);
+}
+function renderRain(){
+  const on=!!S.rain;
+  const t=$("#rainTxt"); if(t){t.dataset.dm=on?"ON":"OFF";t.dataset.color=on?"#f0813c":"#9a9aa2";drawDM(t);}
+  const i=$("#rainIco"); if(i){i.dataset.icolor=on?"#f5f5f7":"#55555e";i.innerHTML="";drawIcon(i);}
+  const p=$("#rainPill"); if(p){p.textContent=on?"ON":"OFF";p.style.color=on?"var(--orange)":"var(--ink-dim)";p.style.background=on?"rgba(240,129,60,.14)":"rgba(255,255,255,.06)";}
+}
+function renderLamp(){
+  const c=LAMPS[S.lamp];
+  const p=$("#lampPill"); if(p)p.textContent=c.p;
+  const f=$("#lampFoot"); if(f)f.textContent=c.f;
+  const d=$("#lampDots"); if(d){const k=Math.min(S.lamp,d.children.length-1);
+    [...d.children].forEach((e,i)=>{e.style.opacity=i===k?"1":".38";e.style.boxShadow=i===k?"0 0 0 3px rgba(255,255,255,.10)":"none";});}
+}
+function tickRec(){ if(S.recOn)S.rec++; if(S.vidOn)S.vid++; renderRec(); renderVid(); }
+function refreshAll(){updClock();updDate();renderCity();renderBattery();renderWater();renderTorch();renderMusic();renderAlt();renderRec();renderFM();renderSteps();renderMesh();renderDB();renderVid();renderRain();renderLamp();}
 
 /* ===== 事件绑定 ===== */
 // 电量：点击时钟电量卡循环
@@ -1085,14 +1320,38 @@ const cp=$(".compass");
 if(cp){const c=cp.closest(".card");if(c){c.classList.add("act");c.title="点击转动方位";
   c.addEventListener("click",()=>{S.bearing=(S.bearing+Math.round(30+Math.random()*90))%360;
     const g=cp.querySelector(".carrow"); if(g)g.style.transform="rotate("+S.bearing+"deg)";});}}
+// W19 录音机
+const c19=$(".w19")?$(".w19").closest(".card"):null;
+if(c19){c19.classList.add("act");c19.title="点击开始 / 暂停录音";c19.addEventListener("click",()=>{S.recOn=!S.recOn;renderRec();});}
+// W20 FM
+const c20=$(".w20")?$(".w20").closest(".card"):null;
+if(c20){c20.classList.add("act");c20.title="点击切换频道";c20.addEventListener("click",()=>{S.fm=(S.fm+1)%FM_ST.length;renderFM();});}
+// W21 计步器
+const c21=$(".w21")?$(".w21").closest(".card"):null;
+if(c21){c21.classList.add("act");c21.title="点击增加步数";c21.addEventListener("click",()=>{S.steps=S.steps>=12000?0:S.steps+Math.round(300+Math.random()*400);renderSteps();});}
+// W22 无网通信
+const c22=$(".w22")?$(".w22").closest(".card"):null;
+if(c22){c22.classList.add("act");c22.title="点击切换组网状态";c22.addEventListener("click",()=>{S.mesh=(S.mesh+1)%MESH_ST.length;renderMesh();});}
+// W23 噪声测试
+const c23=$(".w23")?$(".w23").closest(".card"):null;
+if(c23){c23.classList.add("act");c23.title="点击重新采样";c23.addEventListener("click",()=>{S.db=Math.round(42+Math.random()*48);renderDB();});}
+// W24 后台录像
+const c24=$(".w24")?$(".w24").closest(".card"):null;
+if(c24){c24.classList.add("act");c24.title="点击开始 / 暂停录像";c24.addEventListener("click",()=>{S.vidOn=!S.vidOn;renderVid();});}
+// W25 雨盾模式
+const c25=$(".w25")?$(".w25").closest(".card"):null;
+if(c25){c25.classList.add("act");c25.title="点击开关雨盾模式";c25.addEventListener("click",()=>{S.rain=!S.rain;renderRain();});}
+// W26 氛围灯
+const c26=$(".w26")?$(".w26").closest(".card"):null;
+if(c26){c26.classList.add("act");c26.title="点击切换灯效";c26.addEventListener("click",()=>{S.lamp=(S.lamp+1)%LAMPS.length;renderLamp();});}
 // 顶栏
 const bl=$("#btnLive"), br=$("#btnReset");
 let timer=null;
 function setLive(on){S.live=on?1:0;bl.classList.toggle("on",!!on);bl.textContent="实时数据："+(on?"开":"关");
   if(timer){clearInterval(timer);timer=null;}
-  if(on)timer=setInterval(()=>{updClock();updDate();},1000);}
+  if(on)timer=setInterval(()=>{updClock();updDate();tickRec();},1000);}
 if(bl)bl.addEventListener("click",()=>setLive(!S.live));
-if(br)br.addEventListener("click",()=>{S.battery=100;S.water=0;S.torch=1;S.music=0;S.city=0;S.alt=1243;S.press=1013;S.bearing=0;
+if(br)br.addEventListener("click",()=>{S.battery=100;S.water=0;S.torch=1;S.music=0;S.city=0;S.alt=1243;S.press=1013;S.bearing=0;S.rec=754;S.recOn=1;S.fm=0;S.steps=8432;S.mesh=0;S.db=68;S.vid=84;S.vidOn=1;S.rain=1;S.lamp=0;
   const g=document.querySelector(".compass .carrow"); if(g)g.style.transform="rotate(0deg)";refreshAll();});
 
 refreshAll(); setLive(true);
