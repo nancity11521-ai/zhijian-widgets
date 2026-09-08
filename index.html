@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-page-node-id="wPR9bbOoehDcSijWLs8Ufp">
+<head data-page-node-id="3RG6WPbHgK6mRG6WcS4LlR">
+<meta charset="UTF-8" data-page-node-id="01B7Qf8jxCf8Rfo1gR1qyK">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" data-page-node-id="nnktO2tGpCOkEHbyjilK4a">
+<title>至简 · 桌面小组件设计稿（固定尺寸）</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" data-page-node-id="yD6Btn8MDLD8hDZb8sylVp">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet" data-page-node-id="uqKcZ6vqKifRxj9xDeRkqK">
+<style>
+:root{
+  --bg:#0d0d10;
+  --card:#232329;
+  --card-2:#2c2c34;
+  --orange:#f0813c;
+  --blue:#2e6ee0;
+  --ink:#ececee;
+  --ink-dim:#9a9aa2;
+  --cell:200px;
+  --gap:22px;
+  --radius:26px;
+  --pad:18px;
+  /* 字号层级 */
+  --fz-title:13px;   /* 卡片主标题 */
+  --fz-main:12px;    /* 正文 */
+  --fz-sub:11px;     /* 次级信息 */
+  --fz-mini:10px;    /* 辅助说明 */
+  --fz-micro:9px;    /* 极小型（周条、日历） */
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  background:var(--bg);
+  font-family:"Noto Sans SC",-apple-system,sans-serif;
+  color:var(--ink);
+  line-height:1.4;
+  padding:48px 40px 80px;
+  display:flex;justify-content:center;
+  overflow-x:auto;
+}
+.stage{display:flex;gap:36px;width:max-content;}
+.side-title{
+  writing-mode:vertical-rl;text-orientation:upright;
+  font-size:28px;font-weight:500;letter-spacing:14px;padding-top:20px;flex-shrink:0;
+}
+.side-title .en{font-size:10px;letter-spacing:3px;color:var(--ink-dim);font-weight:400;margin-top:24px;writing-mode:vertical-rl;text-orientation:mixed;}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(3,var(--cell));
+  grid-auto-rows:var(--cell);
+  gap:var(--gap);
+  width:calc(var(--cell)*3 + var(--gap)*2);
+}
+.card{
+  background:var(--card);border-radius:var(--radius);padding:var(--pad);
+  position:relative;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.35);
+  width:var(--cell);height:var(--cell);
+  display:flex;flex-direction:column;
+}
+.card.w42{width:calc(var(--cell)*2 + var(--gap));grid-column:span 2;}
+.card.orange{background:var(--orange);}
+.card.blue{background:var(--blue);}
+.tag{position:absolute;top:9px;right:13px;font-size:var(--fz-micro);color:rgba(255,255,255,.2);letter-spacing:.5px;}
+.orange .tag,.blue .tag{color:rgba(255,255,255,.5);}
+/* LED 点阵 */
+.dm{display:inline-block;vertical-align:middle;line-height:0;}
+.dm svg{display:block;}
+.dm-screen{display:inline-block;padding:6px 8px;border-radius:10px;background:rgba(0,0,0,.24);line-height:0;}
+.mix{display:flex;align-items:center;gap:6px;}
+.mix .cn{font-size:var(--fz-main);color:var(--ink-dim);}
+/* 次级数字：常规字体 */
+.pct{font-size:var(--fz-sub);color:#8fb6ff;}
+.dt2{font-size:var(--fz-sub);color:var(--ink-dim);}
+.rm-t{font-size:var(--fz-sub);color:#8fb6ff;}
+.w2-num{font-size:20px;color:var(--orange);font-weight:500;line-height:1;}
+.fill{flex:1;display:flex;flex-direction:column;justify-content:center;}
+
+/* ============ W1 时钟+电量+日历+天气 · 4×2 ============ */
+.w1{display:flex;flex-direction:column;height:100%;}
+.w1-top{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;}
+.w1-l{width:211px;}                       /* 与时钟屏同宽，电量块与其左右对齐 */
+.w1-mid{margin-top:12px;padding:0 8px;}    /* 8px = 屏内边距，保证与点阵左边缘对齐 */
+.w1-cal{font-size:var(--fz-micro);color:var(--ink-dim);text-align:center;}
+.w1-cal .mh{color:var(--orange);margin-bottom:6px;font-size:var(--fz-mini);letter-spacing:1px;}
+.w1-cal table{border-collapse:collapse;margin:0 auto;}
+.w1-cal td{padding:0 3px;text-align:center;color:#c8c8cd;height:12px;min-width:14px;}
+.w1-cal td.hd{color:#6a6a72;}
+.w1-cal td.hl{color:var(--orange);}
+.w1-cal td.today{background:var(--orange);color:#fff;border-radius:50%;width:15px;height:15px;}
+.bat-label{display:flex;justify-content:space-between;align-items:center;font-size:var(--fz-mini);color:var(--ink-dim);margin-bottom:6px;}
+.bat-bar{height:7px;border-radius:4px;background:#3a3a42;display:flex;gap:2px;padding:2px;}
+.bat-seg{flex:1;border-radius:2px;background:var(--blue);}
+.bat-seg.off{background:transparent;}
+.w1-bot{margin-top:auto;}
+.w1-temp{display:flex;align-items:center;gap:10px;}
+.w1-temp .bar{width:4px;height:34px;background:var(--orange);border-radius:2px;}
+.w1-low{font-size:var(--fz-mini);color:var(--ink-dim);margin-top:7px;}
+
+/* ============ W2 时钟+电量 · 2×2 ============ */
+.w2{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:17px;height:100%;}
+.w2-row{display:flex;align-items:center;gap:12px;}
+.ring{position:relative;width:52px;height:52px;flex-shrink:0;}
+.ring svg{transform:rotate(-90deg);}
+.ring .val{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:14px;}
+.w2-txt{text-align:left;}
+.w2-cap{font-size:var(--fz-mini);color:var(--ink-dim);margin-top:6px;}
+
+/* ============ W3 模拟时钟 · 4×2 ============ */
+.w3{display:flex;align-items:center;gap:22px;height:100%;}
+.w3 .right{flex:1;display:flex;flex-direction:column;align-items:flex-end;}
+.lunar{font-size:var(--fz-sub);color:rgba(255,255,255,.9);margin-top:10px;}
+.prov{font-size:var(--fz-micro);color:rgba(255,255,255,.62);margin-top:4px;}
+.week{display:flex;gap:3px;margin-top:14px;}
+.week .d{font-size:var(--fz-micro);padding:4px 6px;border-radius:6px;color:rgba(255,255,255,.75);letter-spacing:1px;line-height:1;}
+.week .d.sel{background:#fff;color:var(--orange);font-weight:700;}
+/* 点阵表盘 */
+.aclock{
+  background:#16161a;border-radius:50%;position:relative;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;line-height:0;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.05);
+}
+
+/* ============ W4 待办 · 2×2 ============ */
+.w4 .hd{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px;}
+.w4 .hd .t{font-size:var(--fz-title);font-weight:500;}
+.todo{display:flex;flex-direction:column;gap:13px;}
+.todo .item{display:flex;align-items:center;gap:10px;font-size:var(--fz-main);}
+.todo .box{width:13px;height:13px;border-radius:4px;background:#3a3a42;flex-shrink:0;}
+.todo .box.done{background:var(--orange);}
+.todo .done-t{text-decoration:line-through;color:var(--ink-dim);}
+
+/* ============ W5 天气 · 4×2 ============ */
+.w5{display:flex;gap:18px;height:100%;}
+.w5-left{width:112px;display:flex;flex-direction:column;}   /* 与温度点阵屏同宽 */
+.w5-left .cap{font-size:var(--fz-mini);color:var(--ink-dim);margin-top:8px;}
+.w5-left .now{margin-top:auto;font-size:var(--fz-sub);color:var(--ink-dim);}
+.w5-right{flex:1;display:flex;flex-direction:column;gap:10px;}
+.forecast{display:flex;gap:9px;}
+.fcard{flex:1;background:var(--card-2);border-radius:14px;padding:11px 6px;text-align:center;}
+.fcard .fl{font-size:var(--fz-mini);color:var(--ink-dim);margin-bottom:7px;}
+.fcard .ico{font-size:20px;line-height:1.2;}
+.fcard .ft{font-size:var(--fz-mini);color:#c5c5cb;margin-top:7px;}
+.remain{background:var(--card-2);border-radius:14px;padding:11px 13px;margin-top:auto;}
+.remain .rl{display:flex;justify-content:space-between;align-items:center;font-size:var(--fz-mini);color:var(--ink-dim);margin-bottom:9px;}
+.pbar{height:7px;background:#3a3a42;border-radius:4px;display:flex;gap:2px;padding:2px;}
+.pbar i{flex:1;border-radius:2px;background:var(--blue);}
+.pbar i.off{background:transparent;}
+
+/* ============ W6 喝水 · 2×2 ============ */
+.w6{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;height:100%;}
+.w6 .cap{font-size:var(--fz-sub);color:rgba(255,255,255,.92);}
+.w6 .counter{display:flex;align-items:center;gap:14px;}
+.w6 .btn{width:28px;height:28px;border-radius:50%;border:2px solid rgba(255,255,255,.8);color:#fff;font-size:15px;display:flex;align-items:center;justify-content:center;}
+.w6 .slash{font-size:19px;color:rgba(255,255,255,.6);line-height:1;}
+
+/* ============ 倒计时 W7 / W12 · 2×2 ============ */
+.cd{display:flex;flex-direction:column;justify-content:center;height:100%;}
+.cd .cap{font-size:var(--fz-sub);color:rgba(255,255,255,.9);}
+.cd .num{margin-top:7px;}
+.cd .meta{display:flex;justify-content:space-between;align-items:center;font-size:var(--fz-mini);color:rgba(255,255,255,.8);margin-top:8px;}
+.cd .track{height:9px;background:rgba(255,255,255,.18);border-radius:5px;margin-top:12px;position:relative;}
+.cd .thumb{position:absolute;top:50%;transform:translate(-50%,-50%);width:16px;height:16px;background:#fff;border-radius:50%;left:82%;}
+.cd .thumb::after{content:"";position:absolute;inset:4px;border-radius:50%;background:var(--blue);}
+
+/* ============ W8 月历 · 2×2 ============ */
+.w8{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;height:100%;}
+.w8 .lunar{font-size:var(--fz-sub);color:rgba(255,255,255,.9);}
+.w8 .wk{background:#fff;color:var(--orange);font-size:var(--fz-mini);font-weight:700;padding:5px 16px;border-radius:9px;letter-spacing:1px;line-height:1.4;}
+
+/* ============ W9 音乐 · 2×2 ============ */
+.w9{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:11px;height:100%;}
+.w9 .t{font-size:var(--fz-main);text-align:center;line-height:1.5;}
+.w9 .vinyl{width:60px;height:60px;border-radius:50%;background:radial-gradient(circle at center,#3c3c44 0 18%,#26262c 19% 100%);display:flex;align-items:center;justify-content:center;}
+.w9 .vinyl .dm{line-height:0;}
+.w9 .play{background:var(--orange);color:#fff;font-size:var(--fz-sub);padding:7px 24px;border-radius:16px;letter-spacing:2px;line-height:1.4;}
+
+/* ============ W11 日期+进度环 · 2×2 ============ */
+.w11{display:flex;flex-direction:column;justify-content:center;gap:18px;height:100%;}
+.w11 .top{display:flex;align-items:center;gap:13px;}
+.w11 .sub{font-size:var(--fz-mini);color:var(--ink-dim);margin-top:6px;}
+.w11 .rings{display:flex;justify-content:space-between;}
+.miniring{display:flex;flex-direction:column;align-items:center;gap:8px;}
+.miniring .p{position:relative;width:54px;height:54px;}
+.miniring .p>svg{transform:rotate(-90deg);}
+.miniring .pv{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;}
+.miniring .lb{font-size:var(--fz-micro);color:var(--ink-dim);}
+
+/* ============ W13 小时钟 · 2×2 ============ */
+.w13{display:flex;flex-direction:column;justify-content:center;height:100%;}
+.w13 .dt{font-size:var(--fz-sub);color:var(--ink-dim);margin-top:11px;}
+.w13 .wd{display:flex;align-items:center;gap:8px;margin-top:12px;font-size:var(--fz-sub);}
+.w13 .wd .bar{width:4px;height:16px;background:var(--orange);border-radius:2px;}
+.w13 .rng{font-size:var(--fz-mini);color:var(--ink-dim);margin-top:8px;}
+
+/* ============ W14 小天气 · 2×2 ============ */
+.w14{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;height:100%;}
+.w14 .ico{font-size:22px;line-height:1.2;}
+.w14 .cond{font-size:var(--fz-sub);color:var(--ink-dim);}
+.w14 .rng{font-size:var(--fz-micro);color:var(--ink-dim);}
+
+/* ============ W15 收款码 · 2×2 ============ */
+.w15{display:flex;flex-direction:column;justify-content:center;gap:12px;height:100%;}
+.qrrow{display:flex;align-items:center;gap:12px;}
+.qrrow .lb{font-size:var(--fz-sub);writing-mode:vertical-rl;letter-spacing:3px;color:var(--ink-dim);}
+.qr{width:48px;height:48px;border-radius:7px;background:conic-gradient(#fff 25%,transparent 0 50%,#fff 0 75%,transparent 0);background-size:8px 8px;border:4px solid #fff;}
+.divider{height:1px;background:#3a3a42;}
+
+/* ===== 交互层样式 ===== */
+.appbar{width:max-content;margin-bottom:26px;display:flex;align-items:flex-end;gap:20px;}
+.appbar h1{font-size:22px;font-weight:500;letter-spacing:2px;}
+.appbar .hint{font-size:11px;color:var(--ink-dim);line-height:1.7;}
+.appbar .btns{display:flex;gap:8px;margin-left:auto;}
+.appbar button{background:#232329;color:var(--ink);border:1px solid #3a3a42;border-radius:10px;
+  padding:8px 14px;font-size:11px;font-family:inherit;cursor:pointer;transition:.15s;}
+.appbar button:hover{background:#2c2c34;border-color:#4a4a54;}
+.appbar button.on{background:var(--orange);border-color:var(--orange);color:#fff;}
+.card.act{cursor:pointer;}
+.card.act:hover{box-shadow:0 8px 24px rgba(0,0,0,.35), inset 0 0 0 2px rgba(255,255,255,.14);}
+.torch-btn{cursor:pointer;transition:.2s;}
+.torch-btn.off{background:#3a3a42;}
+.w9 .vinyl.spin{animation:spin 3.2s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.todo .item{cursor:pointer;}
+.w6 .btn{cursor:pointer;user-select:none;}
+.w6 .btn:hover{background:rgba(255,255,255,.18);}
+.w9 .play{cursor:pointer;}
+.compass{line-height:0;}
+.compass svg{display:block;}
+/* W16 一周预报 · 4×2 */
+.w16{display:flex;flex-direction:column;height:100%;}
+.w16-top{display:flex;align-items:center;gap:18px;}
+.w16-temp{font-size:46px;font-weight:200;line-height:1;color:#e8e8ec;letter-spacing:1px;}
+.w16-hl{font-size:12px;color:#e8e8ec;display:flex;flex-direction:column;gap:5px;line-height:1.2;}
+.w16-hl .l{color:var(--ink-dim);}
+.w16-city{margin-left:auto;text-align:right;}
+.w16-city .name{font-size:15px;}
+.w16-city .cond{font-size:12px;color:var(--ink-dim);margin-top:4px;}
+.w16-week{display:flex;justify-content:space-between;margin-top:auto;text-align:center;}
+.day{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;}
+.day .dw{font-size:10px;color:#b9b9c0;letter-spacing:1px;}
+.day .dm{line-height:0;}
+.day .hi{font-size:11px;line-height:1.2;}
+.day .lo{font-size:10px;color:var(--ink-dim);line-height:1.2;}
+/* W17 手电筒 · 2×2 */
+.w17{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:15px;height:100%;}
+.torch-btn{width:110px;height:110px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 7px rgba(255,255,255,.06);}
+.torch-btn .dm{line-height:0;}
+.w17 .lb2{font-size:var(--fz-sub);color:var(--ink-dim);letter-spacing:2px;}
+.w17 .st{font-size:var(--fz-sub);color:var(--orange);font-weight:500;letter-spacing:1px;}
+/* W18 海拔气压 · 2×2 */
+.w18{display:flex;flex-direction:column;justify-content:center;gap:15px;height:100%;}
+.alt{display:flex;flex-direction:column;gap:9px;}
+.alt .cap{display:flex;align-items:center;justify-content:space-between;font-size:var(--fz-sub);color:var(--ink-dim);}
+.alt .val{display:flex;align-items:baseline;gap:6px;}
+.alt .u{font-size:var(--fz-main);color:var(--ink-dim);}
+.sep2{height:1px;background:#3a3a42;}
+
+/* ============ 规范 ============ */
+.legend{grid-column:span 3;background:var(--card);border-radius:var(--radius);padding:22px 26px;height:auto;}
+.legend h3{font-size:var(--fz-title);margin-bottom:14px;}
+.legend .row{display:flex;gap:22px;flex-wrap:wrap;}
+.legend .item{display:flex;align-items:center;gap:7px;font-size:var(--fz-sub);color:var(--ink-dim);}
+.sw{width:13px;height:13px;border-radius:4px;}
+.legend .sec{margin-top:14px;padding-top:14px;border-top:1px solid #3a3a42;}
+</style>
+</head>
+<body data-page-node-id="OKLJZHEdpxSq4sL7mNii8K">
+<div class="appbar">
+    <div>
+      <h1>至简 · 桌面小组件</h1>
+      <div class="hint">可交互在线版：时钟实时走动 · 点击卡片或控件可交互 · 数据按当前日期实时计算</div>
+    </div>
+    <div class="btns">
+      <button id="btnLive" class="on">实时数据：开</button>
+      <button id="btnReset">恢复默认</button>
+    </div>
+  </div>
+<div class="stage" data-page-node-id="ABPHhaLQ9xXyaE9xxTP4kh">
+  <div class="side-title" data-page-node-id="IUe2VRr9k2TgfQ4fNyoQyf">至简<span class="en" data-page-node-id="f6RdudI1PqaDzjG3VwUSeK">/ DESKTOP WIDGETS</span></div>
+
+  <div class="grid" data-page-node-id="ybPD97QweshzmgA8qNm6jJ">
+
+    <!-- W1 · 4×2 时钟+电量+日历+天气 -->
+    <div class="card w42" data-page-node-id="ZA8DJ3xm3iwxtyWEyTKtSP">
+      <span class="tag" data-page-node-id="S3orEAh3QSRx0iuPj8VBxl">4×2</span>
+      <div class="w1" data-page-node-id="TlZqc4xBHFNmvvZP2kKLaZ">
+        <div class="w1-top" data-page-node-id="CMJFonlXKMiJFLndCoHZsj">
+          <div class="w1-l" data-page-node-id="4LQgcQ4ZtcGW73tfgrLdkO">
+            <div class="dm" data-dm="08:08" data-gap="6.5" data-r="2.5" data-color="#f5f5f7" data-dim="rgba(255,255,255,.09)" data-screen="1" data-page-node-id="G8GQB9vVg47hn6iSvwr8aO"></div>
+            <div class="w1-mid" data-page-node-id="HlVHVljDoXp4DcmUEAdI2e">
+              <div class="bat-label" data-page-node-id="9R3lqba0SeDEPqoAjqaWPy"><span data-page-node-id="fAeqpGFMplVssA9D7ZBZ5k">当前电量</span><span class="pct" data-page-node-id="FxPzGS1kwywaOpuktKLxy7">100%</span></div>
+              <div class="bat-bar" data-page-node-id="DaQ7De6VQPX4MhdRquFDnU"><i class="bat-seg" data-page-node-id="UeBsI96z9Uk8n5mOZeWQ19"></i><i class="bat-seg" data-page-node-id="6CMnPbcpVPmYd0HsHZaL80"></i><i class="bat-seg" data-page-node-id="kkCHkk3zeHJFzlHqiBcJN4"></i><i class="bat-seg" data-page-node-id="aM92IXAa3yLFyqHSj0JvQi"></i><i class="bat-seg" data-page-node-id="vFPg5rMZNXA81kbDXsIFTw"></i><i class="bat-seg" data-page-node-id="STGCLwb1WQ41NmVD6azalV"></i><i class="bat-seg" data-page-node-id="4hgrhdRnEXNLzwmTADmAB4"></i><i class="bat-seg" data-page-node-id="zTfiD6k1kYSGxH05dVz50A"></i><i class="bat-seg" data-page-node-id="PpOB8dWhiLV9Ip0ZVjIea4"></i><i class="bat-seg" data-page-node-id="f5QU868FVQgoRw23xQcplA"></i><i class="bat-seg" data-page-node-id="gWgThycvoRDGRClB7qA9GP"></i><i class="bat-seg" data-page-node-id="AC6hMnTBg6eyvH7lypCFjW"></i><i class="bat-seg" data-page-node-id="O55VHk5oQxslBlNPNXixR3"></i><i class="bat-seg" data-page-node-id="jXfTiFcHH6Dpgt4EIhiBCi"></i><i class="bat-seg" data-page-node-id="AZpw5ooaWOxWPXZj2GmGey"></i><i class="bat-seg off" data-page-node-id="UeuvVhHET1iLpLNfCVY7vt"></i></div>
+            </div>
+          </div>
+          <div class="w1-cal" id="calMini"></div>
+        </div>
+        <div class="w1-bot" data-page-node-id="u1I6XdcVeTcHC5FDoGJdNj">
+          <div class="w1-temp" data-page-node-id="rlJZq6dtN3ZXV5DBYV9pLk">
+            <div class="bar" data-page-node-id="LuZgoiO89jhM5Y172IFPCK"></div>
+            <div data-page-node-id="l8THTbEqj2F5mGKynDilrn">
+              <div class="mix" data-page-node-id="E3tm85uxV4CngnwMjnbvd5">
+                <span class="dm" data-dm="24" data-gap="6" data-r="2.2" data-color="#f5f5f7" data-dim="rgba(255,255,255,.09)" data-page-node-id="cYX5CXWgiPiIVTCPRHyCzC"></span>
+                <span class="cn" data-page-node-id="7fK77GHTzTRpxzpGA5cHME">℃　晴转多云</span>
+              </div>
+              <div class="w1-low" data-page-node-id="K1Oe38jqVGcs18ryXvMoph">最低：20℃　最高：32℃</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- W2 · 2×2 时钟+电量 -->
+    <div class="card" data-page-node-id="FzY622DCwmv4DPGXkOULZ8">
+      <span class="tag" data-page-node-id="lWTY0vXs6pbOUEEyW9Dmc8">2×2</span>
+      <div class="w2" data-page-node-id="aTFFz7DSJZWFg8SmCmjicT">
+        <div class="dm" data-dm="08:08" data-gap="4.6" data-r="1.75" data-color="#f5f5f7" data-dim="rgba(255,255,255,.09)" data-screen="1" data-page-node-id="6iGHEYsNblv37ychW9N4OG"></div>
+        <div class="w2-row" data-page-node-id="ZT31gX7uXvyhn9bG0MdwPv">
+          <div class="ring" data-page-node-id="hwgbbtVjlMw6nWiW7locjr">
+            <svg width="52" height="52" data-page-node-id="Qy0g9PJqiridwben0AODTW"><circle cx="26" cy="26" r="21" stroke="#3a3a42" stroke-width="6" fill="none" data-page-node-id="UcGzBYhV7brjKLlu4KLcf6"/><circle cx="26" cy="26" r="21" stroke="#f0813c" stroke-width="6" fill="none" stroke-linecap="round" stroke-dasharray="132" data-page-node-id="1sEyv0cjd8BYaJaYa1ypfn"/></svg>
+            <div class="val" data-page-node-id="dX6oYkUMcvcH6X0fkmyO9Q">⚡</div>
+          </div>
+          <div class="w2-txt" data-page-node-id="t5CrL6AGE2Oe6g5AVLdjdE">
+            <div class="w2-num" data-page-node-id="gy9vLeVvCeB02NMC4BFzcb">100%</div>
+            <div class="w2-cap" data-page-node-id="zFCEG6DG9RMRfIXLtSPxKt">当前电量</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- W3 · 4×2 模拟时钟 -->
+    <div class="card orange w42" data-page-node-id="qbi4HD2Hf7fTKuqFLvwvr5">
+      <span class="tag" data-page-node-id="cTa7X1MVbhdJwjBunAOogS">4×2</span>
+      <div class="w3" data-page-node-id="K9LmDtyKBzGD3GGpjavuwx">
+        <div class="aclock" data-clock="08:08:00" data-size="156"></div>
+        <div class="right" data-page-node-id="m8JWy1cAFwdqPUf4LIwA2f">
+          <div class="dm" data-dm="21" data-gap="11" data-r="4.2" data-color="#ffffff" data-dim="rgba(255,255,255,.2)" data-glow="1" data-page-node-id="SNzqxoGnynLyqD2FBpLbeR"></div>
+          <div class="lunar" data-page-node-id="w6H1Dv9ii8j4FIm3RQlhkm">农历二月廿八</div>
+          <div class="prov" data-page-node-id="R3x9WDT1CwSZOCF7X8obYy">新年人添新岁喜 毛衫也添一斤暖</div>
+          <div class="week" data-page-node-id="4bsHjh5FlNb4y7RQh7KMWk"><span class="d" data-page-node-id="IyENZafXLzizRFtECHVdeQ">15</span><span class="d" data-page-node-id="myE5KmFrCNYCQYENlCUwGE">16</span><span class="d" data-page-node-id="t2HUfLQdra9nPIYttcnj6r">17</span><span class="d" data-page-node-id="9YfTJ9QvLsBSu0ld6pDV5b">18</span><span class="d" data-page-node-id="qLx9LwlLTtcWbR9gI3m4NE">19</span><span class="d" data-page-node-id="qFUC6wV2xxmqubjdC1R5dJ">20</span><span class="d sel" data-page-node-id="JMAoHBWNN2mMUCn9SDCaAF">21</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- W4 · 2×2 待办 -->
+    <div class="card" data-page-node-id="4eBFCraVswPMtb2pVFcij3">
+      <span class="tag" data-page-node-id="ito9efJGoA9XKzczzATDyJ">2×2</span>
+      <div class="w4 fill" data-page-node-id="yaoOjCt8qlprbUsstA0DiL">
+        <div class="hd" data-page-node-id="KZ5N7QlHjLXDIPW1GTXneq"><span class="t" data-page-node-id="2zLGHXTOElCbuBx3gDq02J">待办事项</span><span class="dt2" data-page-node-id="wRo8IqRzrsTBj9Wjt2IO6E">03/21</span></div>
+        <div class="todo" data-page-node-id="TD7wDJg4Chjge1ZowzX3uT">
+          <div class="item" data-page-node-id="CmNaGrFHCJUCmeMxH7QVVb"><span class="box done" data-page-node-id="2a7Ns1W0slSdgvzFBhFxnZ"></span><span class="done-t" data-page-node-id="XO3GAQRrhc6wFoSM4sAOQA">保持开心</span></div>
+          <div class="item" data-page-node-id="CUpMDFD2WEoXTLkyOgyjkF"><span class="box" data-page-node-id="KQ012ZUmdM7doseXCrcOJN"></span><span data-page-node-id="ERu8cjFZ7Zt7bFhmW6Ezqx">午休睡三十分钟</span></div>
+          <div class="item" data-page-node-id="4k0YbG5UhPJddQyrLiG0Qr"><span class="box" data-page-node-id="FhnMMye6JORkDiRHEIIOeA"></span><span data-page-node-id="ujNcKGGlLCURCDZg41rMev">下午去健身</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- W5 · 4×2 天气 -->
+    <div class="card w42" data-page-node-id="6dSlsMzJ2UR6hjAiBrnpys">
+      <span class="tag" data-page-node-id="1a8phnxKcorLTPvQGOSMSp">4×2</span>
+      <div class="w5" data-page-node-id="8HEkWFzg5CYVV1IBvmp7CC">
+        <div class="w5-left" data-page-node-id="BGjSxBDbzBh3WaaT7Gcirq">
+          <div class="mix" data-page-node-id="j5SNza1Ogicc2JeecXfyuB"><span class="dm" data-dm="24" data-gap="8" data-r="3" data-color="#f5f5f7" data-dim="rgba(255,255,255,.09)" data-screen="1" data-page-node-id="1VXXGknwFo8qQfdxYyHEAX"></span></div>
+          <div class="cap" data-page-node-id="ANrZCpYnarzxDIRN5OMf5E">当前温度</div>
+          <div class="now" data-page-node-id="fYAWtzf8b0qEVS644YHcOX">☁️ 晴转多云</div>
+        </div>
+        <div class="w5-right" data-page-node-id="nq8c0qnhueqQvRZTn6C1vC">
+          <div class="forecast" data-page-node-id="E533v6E7CuM2znH8IFO2pn">
+            <div class="fcard" data-page-node-id="uGR3M1Yf3q0XdNRTseGosJ"><div class="fl" data-page-node-id="zWgW7nhy3BGjDRMJSEtOTy">今天</div><div class="ico" data-page-node-id="uxXigNDJ6GM4CbhkXzfbBw">⛅</div><div class="ft" data-page-node-id="Y5YIcwJgiDtjAWloWARkr8">20° / 32°</div></div>
+            <div class="fcard" data-page-node-id="AZeYFPHUtde2aKqMtDRnCi"><div class="fl" data-page-node-id="PY6pJ0xePhA7sh8weKy7jM">明天</div><div class="ico" data-page-node-id="bGW4IBKrmMz8IJAhqBvaUR">☁️</div><div class="ft" data-page-node-id="wt7WkHFXXnPECqQ0UGHCQT">20° / 28°</div></div>
+          </div>
+          <div class="remain" data-page-node-id="5yCzpCGkxFGZW1xBv4g72H">
+            <div class="rl" data-page-node-id="tFXSCzBTxUJlYQ95PuBKnl"><span data-page-node-id="wsSrwq7EhdF7qoVGcEkEj4">今日剩余</span><span class="rm-t" data-page-node-id="F9O6UqGCNvk7i6iko5FZ93">15:52</span></div>
+            <div class="pbar" data-page-node-id="gT4H57fRCVPUXCGchvzSke">
+              <i class="off" data-page-node-id="Sm23ordGQY4I9C5PobGNhm"></i><i class="off" data-page-node-id="WPDyk672ZMU78hKwI69v8E"></i><i class="off" data-page-node-id="GOSNc2DH9JAyuConvuEmHY"></i><i class="off" data-page-node-id="dZEtZrwFBdpZy7zrPIQC5J"></i><i class="off" data-page-node-id="qutoD9XAlVDF3IoKr3zV70"></i><i data-page-node-id="NDVPDEshcKZQGmPDbeQFX2"></i><i data-page-node-id="oYWJCkyY2B68VRaXmEd6Ko"></i><i data-page-node-id="FZOinEWdGA7wy7RFIvIIsn"></i><i data-page-node-id="6Wk3uo5H7Jnq1ZjEexl4gy"></i><i data-page-node-id="mCiCzdSZUFA2TfYDHzcNVf"></i><i data-page-node-id="ITQahIMOkCNgVHVDShg0w9"></i><i data-page-node-id="MFd80kI2Lr2ea8rQ4NfA9i"></i><i data-page-node-id="PjzzFI0MXKMmQPRqVJCL3L"></i><i data-page-node-id="8jjMFygYKHHXm451qwheu9"></i><i data-page-node-id="KxN76l8lbYPijia3bUtc3n"></i><i data-page-node-id="5yyUTVpVeHtzTRvxBmEz8a"></i><i data-page-node-id="fc5SW8mdHTi93qbRFMNsx2"></i><i data-page-node-id="AhN5LuR7ANhdi3H70Kg74y"></i><i data-page-node-id="oLU4JOHYqmhjYnoVACPyLk"></i><i data-page-node-id="oaMRXX43dYnb9n4RU5OWV6"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- W6 · 2×2 喝水打卡 -->
+    <div class="card blue" data-page-node-id="4BbVTHEmsC2CSqAqPJIAt8">
+      <span class="tag" data-page-node-id="W8lDSIorCEv1rMsTyA7Gdh">2×2</span>
+      <div class="w6" data-page-node-id="0Gx5mAgBvdXNSzxXSc1BKS">
+        <div class="cap" data-page-node-id="pbGII8FcGwifcAqDPWoCu7">今日喝水打卡</div>
+        <svg width="64" height="64" viewBox="0 0 80 80" fill="rgba(255,255,255,.95)" data-page-node-id="a3ZimlZ08HgNraDfeJkfsr">
+          <g data-page-node-id="8eLk8gem2qJ2W7RAdSpD9C">
+            <rect x="34" y="6" width="8" height="8" rx="1.5" data-page-node-id="Unr5ZWO8T1G5wqiBLXVmk0"/><rect x="42" y="6" width="8" height="8" rx="1.5" data-page-node-id="EwAS2LEIXxwwvZFM2JTeVQ"/>
+            <rect x="26" y="14" width="8" height="8" rx="1.5" data-page-node-id="7nXVmATNVSCNoaSnpAuEng"/><rect x="34" y="14" width="8" height="8" rx="1.5" data-page-node-id="ziIQxQaK6Ii5YNYzGkGKO3"/><rect x="42" y="14" width="8" height="8" rx="1.5" data-page-node-id="ZGPTDI2aM6ANs1OBAV5Uha"/><rect x="50" y="14" width="8" height="8" rx="1.5" data-page-node-id="SAK6j6HJBq3LYiokXjinSX"/>
+            <rect x="18" y="22" width="8" height="8" rx="1.5" data-page-node-id="mvaAz3alyC4UjWVW3Px7sv"/><rect x="26" y="22" width="8" height="8" rx="1.5" data-page-node-id="wpvxa4o7cWEOb0iPUBvSt7"/><rect x="34" y="22" width="8" height="8" rx="1.5" data-page-node-id="NDdDvy1RTqM2GcJTH7cR3F"/><rect x="42" y="22" width="8" height="8" rx="1.5" data-page-node-id="jwAYNA67MiK6xkpKhZJaZf"/><rect x="50" y="22" width="8" height="8" rx="1.5" data-page-node-id="nu3hJBRdcEzYTrQ3r89ZRh"/><rect x="58" y="22" width="8" height="8" rx="1.5" data-page-node-id="Fgcgvr0pyAeh5zye7itERF"/>
+            <rect x="18" y="30" width="8" height="8" rx="1.5" data-page-node-id="VtO5bZkdtXaGAM9xXR91DA"/><rect x="26" y="30" width="8" height="8" rx="1.5" data-page-node-id="tniUa9KlaPKEN1PIQx1SOc"/><rect x="34" y="30" width="8" height="8" rx="1.5" data-page-node-id="GEFcvZuwotwd0PRoCdksuE"/><rect x="42" y="30" width="8" height="8" rx="1.5" data-page-node-id="cQCTF1Or02AOFOMSBAIxB7"/><rect x="50" y="30" width="8" height="8" rx="1.5" data-page-node-id="U0Vg1EyGzebdcMNGTb8Xhi"/><rect x="58" y="30" width="8" height="8" rx="1.5" data-page-node-id="K9PC0Pb4xbkpCD41EUTnge"/>
+            <rect x="10" y="38" width="8" height="8" rx="1.5" data-page-node-id="kd8yNILaAefAX8HNoFpvZ5"/><rect x="18" y="38" width="8" height="8" rx="1.5" data-page-node-id="i0yLNlawZzRqwYjxoiLQ2d"/><rect x="26" y="38" width="8" height="8" rx="1.5" data-page-node-id="80sskSOJZr7ZuuYtqDc56B"/><rect x="34" y="38" width="8" height="8" rx="1.5" data-page-node-id="9tS4LLiPJseEApgF2v0eov"/><rect x="42" y="38" width="8" height="8" rx="1.5" data-page-node-id="ntOFaYmTqBP3UIHRdp9Vdi"/><rect x="50" y="38" width="8" height="8" rx="1.5" data-page-node-id="QFehvJn8Qnwjdy1Cb9npbf"/><rect x="58" y="38" width="8" height="8" rx="1.5" data-page-node-id="r7jyQ6r2kvtKAjC5Db0AvH"/><rect x="66" y="38" width="8" height="8" rx="1.5" data-page-node-id="f2EycFUFbXSlcRV3nWyGmv"/>
+            <rect x="10" y="46" width="8" height="8" rx="1.5" data-page-node-id="xfIsDSCzZhS4omleSFWNyv"/><rect x="18" y="46" width="8" height="8" rx="1.5" data-page-node-id="QEZknW5H2PQ1BnRKUA64e6"/><rect x="26" y="46" width="8" height="8" rx="1.5" data-page-node-id="pwuqBU7Yu3rBUfXQdW9icm"/><rect x="34" y="46" width="8" height="8" rx="1.5" data-page-node-id="NddCRxBo40RpqzLkfyUYQ8"/><rect x="42" y="46" width="8" height="8" rx="1.5" data-page-node-id="lGOFeXHAJofjxFbyK7DQYm"/><rect x="50" y="46" width="8" height="8" rx="1.5" data-page-node-id="jtyQGE8MyQHPeEae15JE7E"/><rect x="58" y="46" width="8" height="8" rx="1.5" data-page-node-id="oDXOyhMZACAFXNDQg9UHRI"/><rect x="66" y="46" width="8" height="8" rx="1.5" data-page-node-id="N5nYvZ2qbE1tz4GLF6VMak"/>
+            <rect x="18" y="54" width="8" height="8" rx="1.5" data-page-node-id="DHX38BIXaq3lVgxbqqbvCu"/><rect x="26" y="54" width="8" height="8" rx="1.5" data-page-node-id="5UHGGKLA2gcZkjCWOa4Z9J"/><rect x="34" y="54" width="8" height="8" rx="1.5" data-page-node-id="yN7G2bYQkfqzaT83Z5JlsC"/><rect x="42" y="54" width="8" height="8" rx="1.5" data-page-node-id="Xqf78LB2MVOwnc30enP8UW"/><rect x="50" y="54" width="8" height="8" rx="1.5" data-page-node-id="GLsGlVIEwpiYEulsmdooOI"/><rect x="58" y="54" width="8" height="8" rx="1.5" data-page-node-id="blpErjP5DjuFMaCDLfseMG"/>
+            <rect x="34" y="62" width="8" height="8" rx="1.5" data-page-node-id="HRwZHLLdC3I6h1y0Lza4yk"/><rect x="42" y="62" width="8" height="8" rx="1.5" data-page-node-id="3OHZ6tUGgh4z0WoGixhNTC"/>
+          </g>
+        </svg>
+        <div class="counter" data-page-node-id="pdUzZ7qfRcscyKL6DKi44U">
+          <div class="btn" data-page-node-id="SXSrWyjEnljXESPUcEI7EZ">−</div>
+          <div class="mix" style="gap:4px;" data-page-node-id="Cgk37mUpcJ839yfGHZDKVZ">
+            <span class="dm" data-dm="0" data-gap="5" data-r="1.9" data-color="#ffffff" data-dim="rgba(255,255,255,.18)" data-glow="1" data-page-node-id="FQKEtorA4DNBIfl5AKGcJI"></span>
+            <span class="slash" data-page-node-id="uw8cI9Mu03Y1urnPSSXgpg">/</span>
+            <span class="dm" data-dm="8" data-gap="5" data-r="1.9" data-color="#ffffff" data-dim="rgba(255,255,255,.18)" data-page-node-id="FmAZBpnjpDibjuCBtRBDb6"></span>
+          </div>
+          <div class="btn" data-page-node-id="8bvCIFXShz6IuC3DXNETLz">＋</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- W7 · 2×2 生日倒计时 -->
+    <div class="card blue" data-page-node-id="2cNwCawlYvwHKZSLhSiJ99">
+      <span class="tag" data-page-node-id="haA2qR305e1EhiLNRVhG2T">2×2</span>
+      <div class="cd" data-page-node-id="1m4GKl1v0T9lyug9AKlRAT">
+        <div class="cap" data-page-node-id="m3AGKncA0zo3GHWID6QU4X">距离生日还有</div>
+        <div class="mix num" data-page-node-id="gocVEy5U1H4wnkxwk0Z4ed">
+          <span class="dm" data-dm="336" data-gap="7" data-r="2.6" data-color="#ffffff" data-dim="rgba(255,255,255,.18)" data-glow="1" data-page-node-id="mJVBHsCn0yTDVpkuocldwX"></span>
+          <span class="cn" style="color:rgba(255,255,255,.9);" data-page-node-id="XeS0IMYpPbCVrCqW2khJsx">天</span>
+        </div>
+        <div class="meta" data-page-node-id="MFOSGJEI1UPfrxC51LrEFu"><span data-page-node-id="MUWrvac242U0yXi39rgmgy">出生日</span><span data-page-node-id="ZkvwVOHJDgQDYhzvBTo1Tf">2000/02/20</span></div>
+        <div class="track" data-page-node-id="1zTODAJSXXMAYiKdtS7HPf"><div class="thumb" data-page-node-id="w08EqBHjFVCiv7VulvtLLH"></div></div>
+      </div>
+    </div>
+
+    <!-- W8 · 2×2 月历 -->
+    <div class="card orange" data-page-node-id="cflPfIfKxza7tI0Gom7pvy">
+      <span class="tag" data-page-node-id="IZOsFuCsa04VLTNoAKFOBj">2×2</span>
+      <div class="w8" data-page-node-id="hGkcdfgVBXbxLL3X8BVPLv">
+        <div class="dm" data-dm="MARCH" data-gap="3.6" data-r="1.25" data-color="rgba(255,255,255,.9)" data-dim="rgba(255,255,255,.2)" data-page-node-id="oaeCXZkQEZk854aApcGuPy"></div>
+        <div class="dm" data-dm="21" data-gap="10" data-r="3.8" data-color="#ffffff" data-dim="rgba(255,255,255,.2)" data-glow="1" data-page-node-id="fPrpiHNxf9CAIFmYthSGIt"></div>
+        <div class="lunar" data-page-node-id="h7r4S8gE2l9IGz7LQoYpGV">农历二月廿八</div>
+        <div class="wk" data-page-node-id="moOu2IcoKBVolzbabVnl6a">SATURDAY</div>
+      </div>
+    </div>
+
+    <!-- W9 · 2×2 音乐 -->
+    <div class="card" data-page-node-id="7s32hHBRIhmBAjl0qjlZkD">
+      <span class="tag" data-page-node-id="JU0E2UvNRm4sDtBwz4QbZA">2×2</span>
+      <div class="w9" data-page-node-id="LZsAXKbfCsy36fPqtuf6SK">
+        <div class="t" data-page-node-id="7UqMs7q8BFBN3DnHFk0s78">NetEase<br data-page-node-id="PTd2xlvOfjHuIXu9Fcrnu9">Cloud Music</div>
+        <div class="vinyl" data-page-node-id="rjHJxNMkjcQFVdFvbrY6zF"><div class="dm" data-icon="note" data-igap="2.6" data-ir="1.05" data-icolor="#f0813c"></div></div>
+        <div class="play" data-page-node-id="s9CeReed1J7ay0lWY2W0lL">听歌识曲</div>
+      </div>
+    </div>
+
+    <!-- W10 · 2×2 橙色时钟 -->
+    <div class="card orange" style="align-items:center;justify-content:center;" data-page-node-id="KYPrsG9R1FWQlRmxeZjpAn">
+      <span class="tag" data-page-node-id="K8AEmGzQEbyvXebYbuydF0">2×2</span>
+      <div class="aclock" data-clock="08:08:00" data-size="156"></div>
+    </div>
+
+    <!-- W11 · 2×2 日期+进度环（按参考图还原） -->
+    <div class="card">
+      <span class="tag">2×2</span>
+      <div class="w11">
+        <div class="top">
+          <div class="dm" data-dm="21" data-gap="6.2" data-r="2.35" data-color="#f5f5f7" data-dim="transparent"></div>
+          <div>
+            <div class="dm" data-dm="MARCH" data-gap="2.5" data-r="0.92" data-color="#e6e6ea" data-dim="transparent"></div>
+            <div class="sub">农历二月廿八</div>
+          </div>
+        </div>
+        <div class="rings">
+          <div class="miniring">
+            <div class="p">
+              <svg width="54" height="54"><circle cx="27" cy="27" r="23" stroke="#3f3f47" stroke-width="5" fill="none"/><circle cx="27" cy="27" r="23" stroke="#f0813c" stroke-width="5" fill="none" stroke-linecap="round" stroke-dasharray="144.5" stroke-dashoffset="31.8"/></svg>
+              <div class="pv"><span class="dm" data-dm="78%" data-gap="2.4" data-r="0.85" data-color="#f5f5f7" data-dim="transparent"></span></div>
+            </div>
+            <div class="lb">年剩余</div>
+          </div>
+          <div class="miniring">
+            <div class="p">
+              <svg width="54" height="54"><circle cx="27" cy="27" r="23" stroke="#3f3f47" stroke-width="5" fill="none"/><circle cx="27" cy="27" r="23" stroke="#f0813c" stroke-width="5" fill="none" stroke-linecap="round" stroke-dasharray="144.5" stroke-dashoffset="98.3"/></svg>
+              <div class="pv"><span class="dm" data-dm="32%" data-gap="2.4" data-r="0.85" data-color="#f5f5f7" data-dim="transparent"></span></div>
+            </div>
+            <div class="lb">月剩余</div>
+          </div>
+          <div class="miniring">
+            <div class="p">
+              <svg width="54" height="54"><circle cx="27" cy="27" r="23" stroke="#3f3f47" stroke-width="5" fill="none"/><circle cx="27" cy="27" r="23" stroke="#f0813c" stroke-width="5" fill="none" stroke-linecap="round" stroke-dasharray="144.5" stroke-dashoffset="54.9"/></svg>
+              <div class="pv"><span class="dm" data-dm="62%" data-gap="2.4" data-r="0.85" data-color="#f5f5f7" data-dim="transparent"></span></div>
+            </div>
+            <div class="lb">日剩余</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- W12 · 2×2 周年倒计时 -->
+    <div class="card blue" data-page-node-id="oc6ihtg53a9b3wHNHekNl2">
+      <span class="tag" data-page-node-id="dS47Gk6qyxOSCdkMRYYkeq">2×2</span>
+      <div class="cd" data-page-node-id="Q8afKwoCRIDah2mJs7LZNo">
+        <div class="cap" data-page-node-id="CwqE0csWY48YMs9nf4AzUo">距离周年还有</div>
+        <div class="mix num" data-page-node-id="DqYTDBcWOQGKmYSNzejiDd">
+          <span class="dm" data-dm="286" data-gap="7" data-r="2.6" data-color="#ffffff" data-dim="rgba(255,255,255,.18)" data-glow="1" data-page-node-id="uciSB1LBsIie7TsbIOHfdR"></span>
+          <span class="cn" style="color:rgba(255,255,255,.9);" data-page-node-id="FLmuMVYdA8LCs5iAtYli4v">天</span>
+        </div>
+        <div class="meta" data-page-node-id="BvdJOsobU7YLC87jGIGbVL"><span data-page-node-id="i2MpLnc0qleC6SP1POHrBx">MAR 21</span><span data-page-node-id="W3nJIqQdfZ7Yrn0PiCsggb">SAT</span></div>
+        <div class="track" data-page-node-id="IkBxzNGjO8NFbJrAxyBrNU"><div class="thumb" data-page-node-id="wRobquYRlfbDiP84diEEIg"></div></div>
+      </div>
+    </div>
+
+    <!-- W13 · 2×2 小时钟 -->
+    <div class="card" data-page-node-id="5RGZuMfuUkCKjpgMc8NEoF">
+      <span class="tag" data-page-node-id="oTvTUu27u3aAhGkBTRSQjv">2×2</span>
+      <div class="w13" data-page-node-id="U8jSU4AvBG5bvklCLpvlGy">
+        <div class="dm" data-dm="08:08" data-gap="4.6" data-r="1.75" data-color="#f5f5f7" data-dim="rgba(255,255,255,.09)" data-screen="1" data-page-node-id="uuzF8F2G1OD145bfopkjqi"></div>
+        <div class="dt" data-page-node-id="85fGwRyNnelwgO8CzL6bQ1">2020年03月21日</div>
+        <div class="wd" data-page-node-id="XGHPuqSdcqEPp6Tfw7VVVG"><span class="bar" data-page-node-id="mVAttTwrpUEwV0iqa0uQhB"></span><span data-page-node-id="WtbpKEgqwUOfEcgrdf2N5S">星期六 · 晴转多云</span></div>
+        <div class="rng" data-page-node-id="cNPqmpY9GtHR6UnYsrnKdZ">20℃ / 32℃</div>
+      </div>
+    </div>
+
+    <!-- W14 · 2×2 小天气 -->
+    <div class="card" data-page-node-id="zuuLFOHFKC58pruclSUDZH">
+      <span class="tag" data-page-node-id="tYqGZE2M1NPOZQNC1CFSFy">2×2</span>
+      <div class="w14" data-page-node-id="YesGqXmKH6Z03JzdKeEJKZ">
+        <div class="mix" data-page-node-id="TLj0s2cWKEFVb9bhHGimpW"><span class="dm" data-dm="24" data-gap="7" data-r="2.6" data-color="#f5f5f7" data-dim="rgba(255,255,255,.09)" data-screen="1" data-page-node-id="exoajYhqWGfFQ30BVAWFfR"></span><span class="cn" style="font-size:var(--fz-title);" data-page-node-id="8oyXekB1eGHESlFWBZMq6u">℃</span></div>
+        <div class="ico" data-page-node-id="X7Zy5REY1nQRr9vvCX4jbU">⛅</div>
+        <div class="cond" data-page-node-id="UpaF0dEdhbdYhopAeLmqCC">晴转多云</div>
+        <div class="rng" data-page-node-id="dB4jwjhsH0NrWDxTkSpxcz">最低：20℃　最高：32℃</div>
+      </div>
+    </div>
+
+    <!-- W15 · 2×2 指南针 -->
+    <div class="card" style="align-items:center;justify-content:center;">
+      <span class="tag">2×2</span>
+      <div class="compass" data-size="164"></div>
+    </div>
+
+    <!-- W16 · 4×2 一周天气预报 -->
+    <div class="card w42">
+      <span class="tag">4×2</span>
+      <div class="w16">
+        <div class="w16-top">
+          <div class="dm" data-icon="partly" data-igap="3" data-ir="1.05" data-icolor="#f5f5f7"></div>
+          <div class="w16-temp">30°</div>
+          <div class="w16-hl"><div>H 35°</div><div class="l">L 16°</div></div>
+          <div class="w16-city"><div class="name">Toronto</div><div class="cond">Partly Cloudy</div></div>
+        </div>
+        <div class="w16-week" id="weekRow"></div>
+      </div>
+    </div>
+
+    <!-- W17 · 2×2 手电筒 -->
+    <div class="card">
+      <span class="tag">2×2</span>
+      <div class="w17">
+        <div class="torch-btn"><div class="dm" data-icon="torch" data-igap="2.6" data-ir="1" data-icolor="#ffffff"></div></div>
+        <div class="st">ON</div>
+        <div class="lb2">轻触关闭</div>
+      </div>
+    </div>
+
+    <!-- W18 · 2×2 海拔气压 -->
+    <div class="card">
+      <span class="tag">2×2</span>
+      <div class="w18">
+        <div class="alt">
+          <div class="cap"><span>海拔 ALTITUDE</span><span class="dm" data-icon="mountain" data-igap="1.7" data-ir="0.62" data-icolor="#f0813c"></span></div>
+          <div class="val"><span class="dm" data-dm="1243" data-gap="5" data-r="1.9" data-color="#f5f5f7" data-dim="transparent"></span><span class="u">m</span></div>
+        </div>
+        <div class="sep2"></div>
+        <div class="alt">
+          <div class="cap"><span>气压 PRESSURE</span></div>
+          <div class="val"><span class="dm" data-dm="1013" data-gap="5" data-r="1.9" data-color="#f5f5f7" data-dim="transparent"></span><span class="u">hPa</span></div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- 规范 -->
+    <div class="legend" data-page-node-id="3MhBeuscYnD7QzyKAJt8fa">
+      <h3 data-page-node-id="QJdEbjALRDDSLC14zEvAB1">设计规范 / Design Spec</h3>
+      <div class="row" data-page-node-id="vs9DsUXsBxYz6QqNwIdrWB">
+        <div class="item" data-page-node-id="P4boZTvE2alCAscG0cmD1h"><span class="sw" style="background:#232329;" data-page-node-id="DOWd8sEFNBMhgMEGJQcAYx"></span>卡片深灰 #232329</div>
+        <div class="item" data-page-node-id="JDNGTCmfvuIYZrHOxXSMUQ"><span class="sw" style="background:#f0813c;" data-page-node-id="Bx17Cy0aFTolFK2WEUpF9Z"></span>活力橙 #F0813C</div>
+        <div class="item" data-page-node-id="OS6JDJEgURmon31HpkrAmx"><span class="sw" style="background:#2e6ee0;" data-page-node-id="NrtJXJi3BKAWAlhfGPqYs8"></span>电光蓝 #2E6EE0</div>
+        <div class="item" data-page-node-id="fHlHGAA8otXUmXEavfXF7J"><span class="sw" style="background:#f5f5f7;" data-page-node-id="UUKcqMU4VyP7U8XErut50l"></span>点阵亮 #F5F5F7</div>
+        <div class="item" data-page-node-id="1qPTyCZPkz8W1KTCAvMLrZ"><span class="sw" style="background:#3a3a42;" data-page-node-id="OvQN8uBR2IuNwlfrlQR5w0"></span>点阵暗 rgba(255,255,255,.09)</div>
+      </div>
+      <div class="row sec" data-page-node-id="je7f0aXTHQ1VlULYSQv33g">
+        <div class="item" data-page-node-id="e7TVKqv7AInJ8N8nsAGEMN">尺寸：2×2 = 200×200　4×2 = 422×200</div>
+        <div class="item" data-page-node-id="RcTPMGBaajTDKcLBDVVMhj">格间距 22px　内边距 18px　圆角 26px</div>
+        <div class="item" data-page-node-id="wxvoBphi46CBvdVC6Eeemc">字号：标题 13 / 正文 12 / 次级 11 / 辅助 10 / 微型 9</div>
+        <div class="item" data-page-node-id="P2hUrUCkwbqYiyeVW9yxZt">对齐：数字类居中、信息类左对齐、标签两端对齐</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+/* ===== 5×7 LED 点阵字库 ===== */
+const F = {
+'0':["01110","10001","10011","10101","11001","10001","01110"],
+'1':["00100","01100","00100","00100","00100","00100","01110"],
+'2':["01110","10001","00001","00010","00100","01000","11111"],
+'3':["11111","00010","00100","00010","00001","10001","01110"],
+'4':["00010","00110","01010","10010","11111","00010","00010"],
+'5':["11111","10000","11110","00001","00001","10001","01110"],
+'6':["00110","01000","10000","11110","10001","10001","01110"],
+'7':["11111","00001","00010","00100","01000","01000","01000"],
+'8':["01110","10001","10001","01110","10001","10001","01110"],
+'9':["01110","10001","10001","01111","00001","00010","01100"],
+':':["00000","00100","00100","00000","00100","00100","00000"],
+'.':["00000","00000","00000","00000","00000","01100","01100"],
+'/':["00001","00010","00010","00100","01000","01000","10000"],
+'-':["00000","00000","00000","11111","00000","00000","00000"],
+'%':["11001","11010","00010","00100","01000","01011","10011"],
+'A':["01110","10001","10001","11111","10001","10001","10001"],
+'B':["11110","10001","10001","11110","10001","10001","11110"],
+'C':["01110","10001","10000","10000","10000","10001","01110"],
+'D':["11110","10001","10001","10001","10001","10001","11110"],
+'E':["11111","10000","10000","11110","10000","10000","11111"],
+'F':["11111","10000","10000","11110","10000","10000","10000"],
+'G':["01110","10001","10000","10111","10001","10001","01110"],
+'H':["10001","10001","10001","11111","10001","10001","10001"],
+'I':["01110","00100","00100","00100","00100","00100","01110"],
+'J':["00111","00010","00010","00010","00010","10010","01100"],
+'K':["10001","10010","10100","11000","10100","10010","10001"],
+'L':["10000","10000","10000","10000","10000","10000","11111"],
+'M':["10001","11011","10101","10101","10001","10001","10001"],
+'N':["10001","11001","10101","10011","10001","10001","10001"],
+'O':["01110","10001","10001","10001","10001","10001","01110"],
+'P':["11110","10001","10001","11110","10000","10000","10000"],
+'Q':["01110","10001","10001","10001","10101","10010","01101"],
+'R':["11110","10001","10001","11110","10100","10010","10001"],
+'S':["01111","10000","10000","01110","00001","00001","11110"],
+'T':["11111","00100","00100","00100","00100","00100","00100"],
+'U':["10001","10001","10001","10001","10001","10001","01110"],
+'V':["10001","10001","10001","10001","10001","01010","00100"],
+'W':["10001","10001","10001","10101","10101","11011","10001"],
+'X':["10001","10001","01010","00100","01010","10001","10001"],
+'Y':["10001","10001","01010","00100","00100","00100","00100"],
+'Z':["11111","00001","00010","00100","01000","10000","11111"],
+' ':["00000","00000","00000","00000","00000","00000","00000"]
+};
+const NS="http://www.w3.org/2000/svg";
+function drawDM(el){
+  if(!el.dataset.dm) return;   // 天气图标等非文字点阵元素跳过
+  const txt=(el.dataset.dm||"").toUpperCase();
+  const gap=parseFloat(el.dataset.gap||8);
+  const r=parseFloat(el.dataset.r||3);
+  const on=el.dataset.color||"#f5f5f7";
+  const off=el.dataset.dim||"rgba(255,255,255,.08)";
+  const glow=el.dataset.glow==="1";
+  const pad=gap/2;
+  const cols=txt.length*6-1;
+  const W=cols*gap+gap, H=7*gap;
+  const svg=document.createElementNS(NS,"svg");
+  svg.setAttribute("width",W.toFixed(1));
+  svg.setAttribute("height",H.toFixed(1));
+  svg.setAttribute("viewBox","0 0 "+W.toFixed(1)+" "+H.toFixed(1));
+  if(glow){svg.style.filter="drop-shadow(0 0 4px "+on+")";}
+  for(let i=0;i<txt.length;i++){
+    const gl=F[txt[i]]||F[" "];
+    for(let row=0;row<7;row++){
+      for(let col=0;col<5;col++){
+        const c=document.createElementNS(NS,"circle");
+        c.setAttribute("cx",(pad+(i*6+col)*gap).toFixed(2));
+        c.setAttribute("cy",(pad+row*gap).toFixed(2));
+        c.setAttribute("r",r);
+        c.setAttribute("fill",gl[row][col]==="1"?on:off);
+        svg.appendChild(c);
+      }
+    }
+  }
+  el.innerHTML="";
+  if(el.dataset.screen==="1"){
+    const box=document.createElement("span");
+    box.className="dm-screen";
+    box.appendChild(svg);
+    el.appendChild(box);
+  }else{
+    el.appendChild(svg);
+  }
+}
+document.querySelectorAll(".dm").forEach(drawDM);
+
+/* ===== 点阵模拟时钟（按参考图还原）：块段指针 + 点阵数字 + 橙点秒针 ===== */
+function drawDotClock(el){
+  const t=(el.dataset.clock||"08:08:00").split(":").map(Number);
+  const hh=t[0]||0, mm=t[1]||0, ss=t[2]||0;
+  const size=parseFloat(el.dataset.size||156);
+  const c=size/2, R=c-4;
+  const ink="#f2f2f4";
+  const acc="#f0813c";
+  const blue="#3f6fe8";
+
+  const svg=document.createElementNS(NS,"svg");
+  svg.setAttribute("width",size);
+  svg.setAttribute("height",size);
+  svg.setAttribute("viewBox","0 0 "+size+" "+size);
+  const el0=(x,y,w,f)=>{const r=document.createElementNS(NS,"rect");r.setAttribute("x",(x-w/2).toFixed(2));r.setAttribute("y",(y-w/2).toFixed(2));r.setAttribute("width",w);r.setAttribute("height",w);r.setAttribute("rx",(w*0.32).toFixed(2));r.setAttribute("fill",f);svg.appendChild(r);};
+  const elc=(x,y,r,f)=>{const ci=document.createElementNS(NS,"circle");ci.setAttribute("cx",x.toFixed(2));ci.setAttribute("cy",y.toFixed(2));ci.setAttribute("r",r);ci.setAttribute("fill",f);svg.appendChild(ci);};
+  const dir=a=>{const r=(a-90)*Math.PI/180;return{x:Math.cos(r),y:Math.sin(r)};};
+
+  // 1) 数字 12 / 3 / 6 / 9（缩小点阵数字）
+  const gs=3.2, rs=1.3, pos={ "12":[0,-R*0.74], "3":[R*0.78,0], "6":[0,R*0.74], "9":[-R*0.78,0] };
+  Object.keys(pos).forEach(key=>{
+    const [px,py]=pos[key];
+    const w=key.length*6*gs-gs;
+    for(let i=0;i<key.length;i++){
+      const rows=F[key[i]]||F[" "];
+      for(let row=0;row<7;row++){
+        for(let col=0;col<5;col++){
+          if(rows[row][col]!=="1") continue;
+          elc(c+px-w/2+(i*6+col)*gs, c+py-3.5*gs+row*gs, rs, ink);
+        }
+      }
+    }
+  });
+
+  // 2) 指针：白色圆角方块段串
+  const hand=(a,len,segW,segGap,f)=>{
+    const d=dir(a);
+    for(let s=9;s<len;s+=segGap) el0(c+d.x*s, c+d.y*s, segW, f);
+  };
+  hand(((hh%12)+mm/60)*30, R*0.44, 6.5, 7.6, ink);   // 时针
+  hand((mm+ss/60)*6,       R*0.66, 6.5, 7.6, ink);   // 分针
+
+  // 3) 秒针：橙色圆点串（指向 12）
+  const dS=dir(ss*6);
+  for(let s=7;s<R*0.9;s+=4.2) elc(c+dS.x*s, c+dS.y*s, 1.6, acc);
+
+  // 4) 中心：橙色圈 + 蓝芯
+  elc(c,c,6.5,acc);
+  elc(c,c,3.2,blue);
+  el.appendChild(svg);
+}
+document.querySelectorAll(".aclock").forEach(drawDotClock);
+
+/* ===== 指南针：点阵方位字母 + 圆点箭头（按参考图还原） ===== */
+function drawCompass(el){
+  const size=parseFloat(el.dataset.size||164);
+  const c=size/2, R=c-1;
+  const svg=document.createElementNS(NS,"svg");
+  svg.setAttribute("width",size);
+  svg.setAttribute("height",size);
+  svg.setAttribute("viewBox","0 0 "+size+" "+size);
+  const ci=document.createElementNS(NS,"circle");
+  ci.setAttribute("cx",c);ci.setAttribute("cy",c);ci.setAttribute("r",R);
+  ci.setAttribute("fill","#16161a");
+  ci.setAttribute("stroke","rgba(255,255,255,.05)");
+  svg.appendChild(ci);
+
+  // 方位字母（点阵字库渲染）：N 红，其余灰白
+  const gs=2.5, rs=0.85;
+  const dirs={ "N":[0,-R+12,"#e8443a"], "E":[R-12,0,"#d8d8dc"], "S":[0,R-12,"#d8d8dc"], "W":[-R+12,0,"#d8d8dc"] };
+  Object.keys(dirs).forEach(k=>{
+    const [px,py,col]=dirs[k], rows=F[k];
+    for(let row=0;row<7;row++){
+      for(let col2=0;col2<5;col2++){
+        if(rows[row][col2]!=="1") continue;
+        const d=document.createElementNS(NS,"circle");
+        d.setAttribute("cx",(c+px-2.5*gs+col2*gs).toFixed(2));
+        d.setAttribute("cy",(c+py-3.5*gs+row*gs).toFixed(2));
+        d.setAttribute("r",rs);
+        d.setAttribute("fill",col);
+        svg.appendChild(d);
+      }
+    }
+  });
+
+  // 中央圆点箭头（白色））：小而细长
+  const arr=[
+    [0,-32],                       // 箭尖
+    [-8,-22],[0,-22],[8,-22],      // 箭头横杠
+    [-16,-12],[16,-12],            // 两翼
+    [0,-12],[0,-2],[0,8],[0,18],[0,28],[0,38] // 箭杆（更长更密）
+  ];
+  const ag=document.createElementNS(NS,"g");ag.setAttribute("class","carrow");
+  ag.style.transformOrigin=(c)+"px "+(c)+"px";
+  ag.style.transition="transform .9s cubic-bezier(.2,.8,.2,1)";
+  arr.forEach(([x,y])=>{
+    const d=document.createElementNS(NS,"circle");
+    d.setAttribute("cx",(c+x).toFixed(2));
+    d.setAttribute("cy",(c+y).toFixed(2));
+    d.setAttribute("r",3.0);
+    d.setAttribute("fill","#f2f2f4");
+    ag.appendChild(d);
+  });
+  svg.appendChild(ag);
+  el.appendChild(svg);
+}
+document.querySelectorAll(".compass").forEach(drawCompass);
+
+/* ===== 点阵天气图标：sun / cloud / partly ===== */
+const CLOUD=[
+"00001111000000",
+"00011111100000",
+"00111111110000",
+"01111111111100",
+"11111111111111",
+"11111111111111",
+"01111111111110"];
+const TORCH=[
+"00111111100",
+"01111111110",
+"01111111110",
+"01111111110",
+"00111111100",
+"00011111000",
+"00001110000",
+"00001110000",
+"00001110000",
+"00001110000",
+"00001110000",
+"00001110000",
+"00001110000",
+"00001110000",
+"00001110000"];
+const MOUNTAIN=[
+"0000001000000",
+"0000001100000",
+"0000001100000",
+"0000011110000",
+"0000011111000",
+"0000111111100",
+"0001111111110",
+"0111111111111"];
+const NOTE=[
+"0000011110",
+"0000011111",
+"0000011011",
+"0000011001",
+"0000011000",
+"0000011000",
+"0000011000",
+"0000011000",
+"0000111000",
+"0001111100",
+"0111111110",
+"0111111110",
+"0111111110",
+"0011111100"];
+function drawIcon(el){
+  const type=el.dataset.icon||"sun";
+  const gap=parseFloat(el.dataset.igap||2);
+  const r=parseFloat(el.dataset.ir||0.75);
+  const color=el.dataset.icolor||"#f2f2f4";
+  const pts=new Set();
+  const add=(x,y)=>pts.add(x+","+y);
+  if(type==="sun"||type==="partly"){
+    const cx=type==="partly"?5:6, cy=type==="partly"?4:6;
+    const core=type==="partly"?2.0:2.3;
+    for(let x=0;x<14;x++)for(let y=0;y<14;y++){
+      if(Math.hypot(x-cx,y-cy)<=core) add(x,y);
+    }
+    for(let k=0;k<8;k++){
+      const a=k*Math.PI/4, ux=Math.cos(a), uy=Math.sin(a);
+      add(Math.round(cx+ux*3.3), Math.round(cy+uy*3.3));
+      add(Math.round(cx+ux*4.1), Math.round(cy+uy*4.1));
+    }
+  }
+  if(type==="cloud"||type==="partly"){
+    const oy=type==="cloud"?0:5;
+    CLOUD.forEach((row,ry)=>{[...row].forEach((ch,rx)=>{if(ch==="1")add(rx,ry+oy);});});
+  }
+  if(type==="torch"){
+    TORCH.forEach((row,ry)=>{[...row].forEach((ch,rx)=>{if(ch==="1")add(rx,ry);});});
+  }
+  if(type==="mountain"){
+    MOUNTAIN.forEach((row,ry)=>{[...row].forEach((ch,rx)=>{if(ch==="1")add(rx,ry);});});
+  }
+  if(type==="note"){
+    NOTE.forEach((row,ry)=>{[...row].forEach((ch,rx)=>{if(ch==="1")add(rx,ry);});});
+  }
+  // 包围盒 → SVG
+  let mx=1e9,my=1e9,Mx=-1e9,My=-1e9;
+  pts.forEach(k=>{const[x,y]=k.split(",").map(Number);mx=Math.min(mx,x);my=Math.min(my,y);Mx=Math.max(Mx,x);My=Math.max(My,y);});
+  const W=(Mx-mx+1)*gap, H=(My-my+1)*gap;
+  const svg=document.createElementNS(NS,"svg");
+  svg.setAttribute("width",W.toFixed(1));
+  svg.setAttribute("height",H.toFixed(1));
+  svg.setAttribute("viewBox","0 0 "+W.toFixed(1)+" "+H.toFixed(1));
+  pts.forEach(k=>{
+    const[x,y]=k.split(",").map(Number);
+    const d=document.createElementNS(NS,"circle");
+    d.setAttribute("cx",((x-mx)*gap+gap/2).toFixed(2));
+    d.setAttribute("cy",((y-my)*gap+gap/2).toFixed(2));
+    d.setAttribute("r",r);
+    d.setAttribute("fill",color);
+    svg.appendChild(d);
+  });
+  el.appendChild(svg);
+}
+document.querySelectorAll('[data-icon]').forEach(drawIcon);
+</script>
+<script>
+/* ================= 交互层 ================= */
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const pad2=n=>String(n).padStart(2,"0");
+const MON=["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
+const WKS=["SUNDAY","MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY","SATURDAY"];
+const WKS3=["SUN","MON","TUE","WED","THU","FRI","SAT"];
+
+const S={battery:100,water:0,torch:1,music:0,city:0,alt:1243,press:1013,bearing:0,live:1};
+const CITIES=[
+ {name:"Toronto",cond:"Partly Cloudy",temp:30,hi:35,lo:16,ic:"sun",days:["cloud","sun","cloud","sun","sun","sun"],hi_:[-3,-1,-9,-4,-4,-4],lo_:[-6,-9,-10,-6,-6,-6]},
+ {name:"Beijing",cond:"Sunny",temp:26,hi:32,lo:18,ic:"sun",days:["sun","sun","cloud","cloud","sun","sun"],hi_:[31,30,28,26,29,30],lo_:[18,19,17,16,18,19]},
+ {name:"Shanghai",cond:"Cloudy",temp:22,hi:26,lo:19,ic:"cloud",days:["cloud","cloud","cloud","sun","cloud","sun"],hi_:[24,23,25,27,26,27],lo_:[19,20,19,20,21,20]},
+ {name:"Shenzhen",cond:"Partly Cloudy",temp:31,hi:34,lo:27,ic:"cloud",days:["cloud","sun","sun","cloud","sun","sun"],hi_:[33,34,33,32,33,34],lo_:[27,28,27,27,26,27]}
+];
+const lunar=()=>{try{return "农历"+new Intl.DateTimeFormat("zh-CN-u-ca-cha".replace("cha","chinese"),{month:"long",day:"numeric"}).format(new Date());}catch(e){return "";}};
+
+/* ---- 时钟 ---- */
+function updClock(){
+  const d=new Date(), t=pad2(d.getHours())+":"+pad2(d.getMinutes());
+  $$('.dm[data-dm]').forEach(el=>{ if(/^\d\d:\d\d$/.test(el.dataset.dm)){ el.dataset.dm=t; drawDM(el);} });
+  $$(".aclock").forEach(el=>{
+    el.dataset.clock=pad2(d.getHours())+":"+pad2(d.getMinutes())+":"+pad2(d.getSeconds());
+    el.innerHTML=""; drawDotClock(el);
+  });
+}
+/* ---- 日期类 ---- */
+function updDate(){
+  const d=new Date(), dd=d.getDate(), mm=d.getMonth(), yy=d.getFullYear();
+  const dows=new Date(yy,mm,1).getDay(), dim=new Date(yy,mm+1,0).getDate();
+  // W1 迷你日历
+  let cells=[]; for(let i=0;i<dows;i++)cells.push("<td></td>");
+  for(let i=1;i<=dim;i++)cells.push('<td class="'+(i===dd?"today":"")+'">'+i+"</td>");
+  while(cells.length%7)cells.push("<td></td>");
+  let rows=[]; for(let i=0;i<cells.length;i+=7)rows.push("<tr>"+cells.slice(i,i+7).join("")+"</tr>");
+  $("#calMini").innerHTML='<div class="mh">'+MON[mm]+'</div><table><tr><td class="hd">S</td><td class="hd">M</td><td class="hd">T</td><td class="hd">W</td><td class="hd">T</td><td class="hd">F</td><td class="hd">S</td></tr>'+rows.join("")+"</table>";
+  // 大日期点阵（21 → 今天）
+  $$('.dm[data-dm="21"]').forEach(el=>{el.dataset.dm=String(dd);drawDM(el);});
+  // 月份（MARCH/MAR → 当月缩写）
+  $$('.dm[data-dm="MARCH"],.dm[data-dm="MAR"]').forEach(el=>{el.dataset.dm=MON[mm];drawDM(el);});
+  // 农历 / 星期
+  const ln=lunar();
+  $$(".lunar").forEach(e=>{if(ln)e.textContent=ln;});
+  if(ln){const s=$(".w11 .sub"); if(s)s.textContent=ln;}
+  const pill=$(".w8 .wk"); if(pill)pill.textContent=WKS[d.getDay()];
+  // W3 周条：本周 7 天
+  const wk=$(".w3 .week");
+  if(wk){let h="";for(let i=0;i<7;i++){const x=new Date(yy,mm,dd-d.getDay()+i);h+='<span class="d'+(x.getDate()===dd?" sel":"")+'">'+x.getDate()+"</span>";}wk.innerHTML=h;}
+  // W4 待办日期 / W13 日期行
+  const d2=$(".w4 .dt2"); if(d2)d2.textContent=pad2(mm+1)+"/"+pad2(dd);
+  const dt=$(".w13 .dt"); if(dt)dt.textContent=yy+"年"+pad2(mm+1)+"月"+pad2(dd)+"日";
+  const wd=$(".w13 .wd span:last-child"); if(wd)wd.textContent="星期"+"日一二三四五六"[d.getDay()]+" · 晴转多云";
+  // 进度环：年/月/日剩余
+  const sof=new Date(yy,0,1), eoy=new Date(yy+1,0,1);
+  const yP=1-(d-sof)/(eoy-sof), mP=1-(dd-1)/dim, dP=1-(d-new Date(yy,mm,dd))/(24*3600*1000);
+  const ps=[Math.round(yP*100),Math.round(mP*100),Math.round(dP*100)];
+  $$(".miniring").forEach((r,i)=>{
+    const arc=r.querySelectorAll("circle")[1], C=144.5;
+    arc.setAttribute("stroke-dashoffset",(C*(1-ps[i]/100)).toFixed(1));
+    const dm=r.querySelector(".dm"); if(dm){dm.dataset.dm=ps[i]+"%";drawDM(dm);}
+  });
+  // 倒计时
+  const next=(m,day)=>{let t=new Date(yy,m,day);if(t<d)t=new Date(yy+1,m,day);return Math.ceil((t-d)/864e5);};
+  const cd=$('.dm[data-dm="336"]'); if(cd){cd.dataset.dm=String(next(1,20));drawDM(cd);}
+  const cd2=$('.dm[data-dm="286"]'); if(cd2){
+    cd2.dataset.dm=String(next(2,21));drawDM(cd2);
+    const m=$(".card.blue .cd .meta");
+    if(m&&m.children.length===2){m.children[0].textContent=MON[2]+" 21";m.children[1].textContent=WKS3[new Date(yy,2,21).getDay()];}
+  }
+}
+/* ---- 天气 ---- */
+function renderCity(){
+  const c=CITIES[S.city];
+  const t=$(".w16-temp"); if(t)t.textContent=c.temp+"°";
+  const hl=$(".w16-hl"); if(hl)hl.innerHTML="<div>H "+c.hi+"°</div><div class=\"l\">L "+c.lo+"°</div>";
+  const nm=$(".w16-city .name"); if(nm)nm.textContent=c.name;
+  const cd=$(".w16-city .cond"); if(cd)cd.textContent=c.cond;
+  const main=$(".w16 .dm[data-icon]");
+  if(main){main.dataset.icon=c.ic;main.innerHTML="";drawIcon(main);}
+  const t24s=$$('.dm[data-dm="24"]'); t24s.forEach(el=>{el.dataset.dm=String(c.temp);drawDM(el);});
+  const w5now=$(".w5-left .now"); if(w5now)w5now.textContent=(c.ic==="sun"?"☀️":"☁️")+" "+c.cond;
+  const w1cn=$(".w1 .mix .cn"); if(w1cn)w1cn.textContent="℃　"+c.cond;
+  const w14c=$(".w14 .cond"); if(w14c)w14c.textContent=c.cond;
+  const ft=$$(".fcard .ft"); if(ft.length===2){ft[0].textContent=c.lo+"° / "+c.hi+"°";ft[1].textContent=(c.lo-2)+"° / "+(c.hi-4)+"°";}
+  const row=$("#weekRow");
+  if(row){
+    const d0=new Date(); let h="";
+    for(let i=0;i<6;i++){
+      const x=new Date(d0.getTime()+(i+1)*864e5);
+      h+='<div class="day"><div class="dw">'+WKS3[x.getDay()]+'</div><div class="dm" data-icon="'+c.days[i]+'" data-igap="2" data-ir="0.72" data-icolor="#e8e8ec"></div><div class="hi">'+c.hi_[i]+'°</div><div class="lo">'+c.lo_[i]+'°</div></div>';
+    }
+    row.innerHTML=h;
+    $$("#weekRow .dm").forEach(drawIcon);
+  }
+}
+/* ---- 电量 ---- */
+function renderBattery(){
+  const v=S.battery;
+  const p=$(".w1 .pct"); if(p)p.textContent=v+"%";
+  const n=$(".w2-num"); if(n)n.textContent=v+"%";
+  const segs=$$(".bat-bar .bat-seg"); const on=Math.round(v/100*segs.length);
+  segs.forEach((s,i)=>s.classList.toggle("off",i>=on));
+  const arc=$(".w2 .ring circle:nth-child(2)"); if(arc)arc.setAttribute("stroke-dashoffset",(132*(1-v/100)).toFixed(1));
+  const dm=$('.dm[data-dm="100%"]'); if(dm){dm.dataset.dm=v+"%";drawDM(dm);}
+}
+/* ---- 喝水 ---- */
+function renderWater(){
+  const ds=$$('.w6 .dm'); if(ds[0]){ds[0].dataset.dm=String(S.water);drawDM(ds[0]);}
+  const cup=$(".w6 svg[viewBox]"); if(cup)cup.style.opacity=(0.45+0.55*S.water/8).toFixed(2);
+}
+/* ---- 手电筒 ---- */
+function renderTorch(){
+  const b=$(".torch-btn"); if(!b)return;
+  b.classList.toggle("off",!S.torch);
+  const ic=b.querySelector(".dm");
+  if(ic){ic.dataset.icolor=S.torch?"#ffffff":"#9a9aa2";ic.innerHTML="";drawIcon(ic);}
+  const st=$(".w17 .st"); if(st){st.textContent=S.torch?"ON":"OFF";st.style.color=S.torch?"var(--orange)":"var(--ink-dim)";}
+  const lb=$(".w17 .lb2"); if(lb)lb.textContent=S.torch?"轻触关闭":"轻触开启";
+}
+/* ---- 音乐 ---- */
+function renderMusic(){
+  const v=$(".w9 .vinyl"), p=$(".w9 .play");
+  if(v)v.classList.toggle("spin",!!S.music);
+  if(p)p.textContent=S.music?"播放中":"听歌识曲";
+}
+/* ---- 海拔气压 ---- */
+function renderAlt(){
+  const ds=$$(".w18 .val .dm");
+  if(ds[0]){ds[0].dataset.dm=String(S.alt);drawDM(ds[0]);}
+  if(ds[1]){ds[1].dataset.dm=String(S.press);drawDM(ds[1]);}
+}
+function refreshAll(){updClock();updDate();renderCity();renderBattery();renderWater();renderTorch();renderMusic();renderAlt();}
+
+/* ===== 事件绑定 ===== */
+// 电量：点击时钟电量卡循环
+const w2card=$(".w2")?$(".w2").closest(".card"):null;
+if(w2card){w2card.classList.add("act");w2card.title="点击切换电量";
+  w2card.addEventListener("click",()=>{const l=[100,82,64,45,28,12];S.battery=l[(l.indexOf(S.battery)+1)%l.length];renderBattery();});}
+// 手电筒
+const tb=$(".torch-btn"); if(tb)tb.addEventListener("click",()=>{S.torch=!S.torch;renderTorch();});
+// 待办
+$$(".todo .item").forEach(it=>{it.addEventListener("click",()=>{
+  const box=it.querySelector(".box"), tx=it.querySelector("span:last-child");
+  const on=box.classList.toggle("done"); tx.classList.toggle("done-t",on);});});
+// 喝水
+const btns=$$(".w6 .btn");
+if(btns[0])btns[0].addEventListener("click",()=>{S.water=Math.max(0,S.water-1);renderWater();});
+if(btns[1])btns[1].addEventListener("click",()=>{S.water=Math.min(8,S.water+1);renderWater();});
+// 音乐
+const pb=$(".w9 .play"); if(pb)pb.addEventListener("click",()=>{S.music=!S.music;renderMusic();});
+// 城市切换（天气大卡 + 一周预报卡）
+[".w5",".w16"].forEach(sel=>{const c=$(sel)?$(sel).closest(".card"):null;
+  if(c){c.classList.add("act");c.title="点击切换城市";
+    c.addEventListener("click",()=>{S.city=(S.city+1)%CITIES.length;renderCity();});}});
+// 海拔气压：点击刷新
+const w18=$(".w18")?$(".w18").closest(".card"):null;
+if(w18){w18.classList.add("act");w18.title="点击刷新传感器数据";
+  w18.addEventListener("click",()=>{S.alt+=Math.round((Math.random()-0.5)*6);S.press+=Math.round((Math.random()-0.5)*4);renderAlt();});}
+// 指南针：点击转动方位
+const cp=$(".compass");
+if(cp){const c=cp.closest(".card");if(c){c.classList.add("act");c.title="点击转动方位";
+  c.addEventListener("click",()=>{S.bearing=(S.bearing+Math.round(30+Math.random()*90))%360;
+    const g=cp.querySelector(".carrow"); if(g)g.style.transform="rotate("+S.bearing+"deg)";});}}
+// 顶栏
+const bl=$("#btnLive"), br=$("#btnReset");
+let timer=null;
+function setLive(on){S.live=on?1:0;bl.classList.toggle("on",!!on);bl.textContent="实时数据："+(on?"开":"关");
+  if(timer){clearInterval(timer);timer=null;}
+  if(on)timer=setInterval(()=>{updClock();updDate();},1000);}
+if(bl)bl.addEventListener("click",()=>setLive(!S.live));
+if(br)br.addEventListener("click",()=>{S.battery=100;S.water=0;S.torch=1;S.music=0;S.city=0;S.alt=1243;S.press=1013;S.bearing=0;
+  const g=document.querySelector(".compass .carrow"); if(g)g.style.transform="rotate(0deg)";refreshAll();});
+
+refreshAll(); setLive(true);
+</script>
+</body>
+</html>
