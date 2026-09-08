@@ -539,14 +539,43 @@ body{
       </div>
     </div>
 
-    <!-- W17 · 2×2 手电筒 -->
-    <div class="card">
+    <!-- W17 · 2×2 手电筒（光束投影版） -->
+    <div class="card" style="padding:0;background:#08080b;">
       <span class="tag">2×2</span>
-      <div class="w17">
-        <div class="torch-btn"><div class="dm" data-icon="torch" data-igap="2.6" data-ir="1" data-icolor="#ffffff"></div></div>
-        <div class="st">ON</div>
-        <div class="lb2">轻触关闭</div>
-      </div>
+      <svg class="torch-scene" width="200" height="200" viewBox="0 0 200 200">
+        <defs>
+          <linearGradient id="beamG" x1="0" y1="1" x2="0" y2="0">
+            <stop offset="0" stop-color="#ffffff" stop-opacity="0.95"/>
+            <stop offset="0.5" stop-color="#cdd6ee" stop-opacity="0.38"/>
+            <stop offset="1" stop-color="#cdd6ee" stop-opacity="0"/>
+          </linearGradient>
+          <filter id="soft" x="-40%" y="-40%" width="180%" height="180%">
+            <feGaussianBlur stdDeviation="5.5"/>
+          </filter>
+        </defs>
+        <g class="beam-g">
+          <path d="M80,148 L30,28 Q100,-6 170,28 L120,148 Z" fill="url(#beamG)" filter="url(#soft)"/>
+          <path d="M77,146 L38,52" stroke="#8ea6ee" stroke-width="2" stroke-linecap="round" opacity="0.22" filter="url(#soft)"/>
+          <path d="M123,146 L162,52" stroke="#b493ec" stroke-width="2" stroke-linecap="round" opacity="0.2" filter="url(#soft)"/>
+          <path d="M40,84 A92,92 0 0 1 160,84" fill="none" stroke="#cdd3e8" stroke-width="2.4" stroke-linecap="round" opacity="0.85"/>
+          <path d="M22,64 A116,116 0 0 1 178,64" fill="none" stroke="#aeb6cf" stroke-width="2.3" stroke-linecap="round" stroke-dasharray="0.1,10.5" opacity="0.75"/>
+          <g class="sun-ico">
+            <circle cx="169" cy="103" r="6.5" fill="none" stroke="#c7cede" stroke-width="2"/>
+            <g fill="#c7cede">
+              <circle cx="169" cy="91" r="1.5"/><circle cx="169" cy="115" r="1.5"/>
+              <circle cx="157" cy="103" r="1.5"/><circle cx="181" cy="103" r="1.5"/>
+              <circle cx="160.4" cy="94.4" r="1.5"/><circle cx="177.6" cy="94.4" r="1.5"/>
+              <circle cx="160.4" cy="111.6" r="1.5"/><circle cx="177.6" cy="111.6" r="1.5"/>
+            </g>
+          </g>
+        </g>
+        <g class="torch-body">
+          <rect x="79" y="138" width="42" height="26" rx="9" fill="#e9ebf3"/>
+          <rect x="79" y="147" width="42" height="4.5" fill="#08080b"/>
+          <path d="M86,164 L114,164 L116.5,191 Q117,198 110,198 L90,198 Q83,198 83.5,191 Z" fill="#e9ebf3"/>
+        </g>
+      </svg>
+      <div class="w17-status"><b class="st">ON</b><span class="lb2"> · 轻触关闭</span></div>
     </div>
 
     <!-- W18 · 2×2 海拔气压 -->
@@ -998,12 +1027,12 @@ function renderWater(){
 }
 /* ---- 手电筒 ---- */
 function renderTorch(){
-  const b=$(".torch-btn"); if(!b)return;
-  b.classList.toggle("off",!S.torch);
-  const ic=b.querySelector(".dm");
-  if(ic){ic.dataset.icolor=S.torch?"#ffffff":"#9a9aa2";ic.innerHTML="";drawIcon(ic);}
-  const st=$(".w17 .st"); if(st){st.textContent=S.torch?"ON":"OFF";st.style.color=S.torch?"var(--orange)":"var(--ink-dim)";}
-  const lb=$(".w17 .lb2"); if(lb)lb.textContent=S.torch?"轻触关闭":"轻触开启";
+  const on=!!S.torch;
+  const bg=$(".torch-scene .beam-g"); if(bg)bg.style.opacity=on?1:0;
+  const body=$(".torch-scene .torch-body");
+  if(body)body.querySelectorAll("rect,path").forEach(e=>e.setAttribute("fill",on?"#e9ebf3":"#565660"));
+  const st=$(".w17-status .st"); if(st){st.textContent=on?"ON":"OFF";st.style.color=on?"var(--orange)":"var(--ink-dim)";}
+  const lb=$(".w17-status .lb2"); if(lb)lb.textContent=on?" · 轻触关闭":" · 轻触开启";
 }
 /* ---- 音乐 ---- */
 function renderMusic(){
@@ -1025,7 +1054,7 @@ const w2card=$(".w2")?$(".w2").closest(".card"):null;
 if(w2card){w2card.classList.add("act");w2card.title="点击切换电量";
   w2card.addEventListener("click",()=>{const l=[100,82,64,45,28,12];S.battery=l[(l.indexOf(S.battery)+1)%l.length];renderBattery();});}
 // 手电筒
-const tb=$(".torch-btn"); if(tb)tb.addEventListener("click",()=>{S.torch=!S.torch;renderTorch();});
+const tb=$(".torch-scene"); if(tb){const tc=tb.closest(".card");tc.classList.add("act");tc.title="点击开关手电筒";tc.addEventListener("click",()=>{S.torch=!S.torch;renderTorch();});}
 // 待办
 $$(".todo .item").forEach(it=>{it.addEventListener("click",()=>{
   const box=it.querySelector(".box"), tx=it.querySelector("span:last-child");
