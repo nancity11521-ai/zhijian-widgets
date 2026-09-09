@@ -287,7 +287,19 @@ body{
 .w20 .foot{font-size:var(--fz-mini);color:var(--ink-dim);}
 .wx .pill.pswitch,.w20 .pill.pswitch{cursor:pointer;transition:.2s;}
 
-.w24 .val.hide{visibility:hidden;}
+/* W24 后台录像 · 重设计 */
+.w24{display:flex;flex-direction:column;height:100%;}
+.w24 .hd{display:flex;align-items:center;justify-content:space-between;font-size:var(--fz-sub);color:var(--ink-dim);letter-spacing:.5px;}
+.w24 .body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;}
+.w24 .foot{font-size:var(--fz-mini);color:var(--ink-dim);}
+.w24 .dot{width:8px;height:8px;border-radius:50%;background:var(--orange);flex-shrink:0;}
+.w24 .dot.off{background:#4a4a52;}
+/* W25 雨盾模式 · 重设计 */
+.w25{display:flex;flex-direction:column;height:100%;}
+.w25 .hd{display:flex;align-items:center;justify-content:space-between;font-size:var(--fz-sub);color:var(--ink-dim);letter-spacing:.5px;}
+.w25 .body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;}
+.w25 .foot{font-size:var(--fz-mini);color:var(--ink-dim);}
+.w25 .pill.pswitch{cursor:pointer;transition:.2s;}
 .wx .pill.pswitch{cursor:pointer;transition:.2s;}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.35;transform:scale(.78);}}
 .fm-scale{position:relative;line-height:0;}
@@ -714,26 +726,26 @@ body{
     <!-- W24 · 2×2 后台录像 -->
     <div class="card">
       <span class="tag">2×2</span>
-      <div class="w24 wx">
-        <div class="cap"><span>后台录像</span><i class="dot off" id="vidDot"></i></div>
-        <div class="mid">
-          <span class="dm" id="vidIco" data-icon="camera" data-igap="2.4" data-ir="0.95" data-icolor="#55555e"></span>
-          <div class="val hide" id="vidTimeBox"><span class="dm" id="vidTime" data-dm="01:24" data-gap="5" data-r="2.1" data-color="#f5f5f7" data-dim="transparent"></span></div>
+      <div class="w24">
+        <div class="hd"><span class="lbl">后台录像</span><i class="dot off" id="vidDot"></i></div>
+        <div class="body">
+          <span class="dm" id="vidIco" data-icon="camera2" data-igap="3.1" data-ir="1.1" data-icolor="#55555e"></span>
+          <div class="val" id="vidTimeBox" style="display:none;"><span class="dm" id="vidTime" data-dm="00:00" data-gap="5" data-r="2.1" data-color="#f5f5f7" data-dim="transparent"></span></div>
+          <div class="foot" id="vidFoot">未开启录像 · 轻触开始</div>
         </div>
-        <div class="foot" id="vidFoot">未开启录像 · 轻触开始</div>
       </div>
     </div>
 
     <!-- W25 · 2×2 雨盾模式 -->
     <div class="card">
       <span class="tag">2×2</span>
-      <div class="w25 wx">
-        <div class="cap"><span>雨盾模式</span><span class="pill" id="rainPill">ON</span></div>
-        <div class="mid">
-          <span class="dm" id="rainIco" data-icon="umbrella" data-igap="2.7" data-ir="1.05" data-icolor="#f5f5f7"></span>
-          <div class="val"><span class="dm" id="rainTxt" data-dm="ON" data-gap="5.6" data-r="2.2" data-color="#f0813c" data-dim="transparent"></span></div>
+      <div class="w25">
+        <div class="hd"><span class="lbl">雨盾模式</span><span class="pill pswitch" id="rainPill" title="点击开关雨盾">OFF</span></div>
+        <div class="body">
+          <span class="dm" id="rainIco" data-icon="umbrella2" data-igap="3.1" data-ir="1.15" data-icolor="#55555e"></span>
+          <div class="val"><span class="dm" id="rainTxt" data-dm="OFF" data-gap="5.4" data-r="2.2" data-color="#9a9aa2" data-dim="transparent"></span></div>
+          <div class="foot" id="rainFoot">雨盾关闭 · 轻触开启</div>
         </div>
-        <div class="foot">湿手触控 · 手套模式</div>
       </div>
     </div>
 
@@ -1130,6 +1142,8 @@ function drawIcon(el){
     const iw=parseInt(el.dataset.iw||"21");
     for(let x=0;x<iw;x++){ add(x,0); if(x%5===0){add(x,-1);add(x,-2);} }
   }
+  if(type==="camera2"){ CAMERA.forEach((row,ry)=>{[...row].forEach((ch,rx)=>{if(ch==="1")add(rx,ry);});}); }
+  if(type==="umbrella2"){ UMBRELLA.forEach((row,ry)=>{[...row].forEach((ch,rx)=>{if(ch==="1")add(rx,ry);});}); }
   if(type==="note"){
     NOTE.forEach((row,ry)=>{[...row].forEach((ch,rx)=>{if(ch==="1")add(rx,ry);});});
   }
@@ -1163,7 +1177,7 @@ const MON=["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DE
 const WKS=["SUNDAY","MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY","SATURDAY"];
 const WKS3=["SUN","MON","TUE","WED","THU","FRI","SAT"];
 
-const S={battery:100,water:0,torch:1,music:0,city:0,alt:1243,press:1013,bearing:0,live:1,rec:0,recMode:"idle",fm:0,fmOn:0,steps:8432,mesh:0,db:68,vid:0,vidMode:"idle",rain:1,lamp:0};
+const S={battery:100,water:0,torch:1,music:0,city:0,alt:1243,press:1013,bearing:0,live:1,rec:0,recMode:"idle",fm:0,fmOn:0,steps:8432,mesh:0,db:68,vid:0,vidMode:"idle",rain:0,lamp:0};
 const CITIES=[
  {name:"Toronto",cond:"Partly Cloudy",temp:30,hi:35,lo:16,ic:"sun",days:["cloud","sun","cloud","sun","sun","sun"],hi_:[-3,-1,-9,-4,-4,-4],lo_:[-6,-9,-10,-6,-6,-6]},
  {name:"Beijing",cond:"Sunny",temp:26,hi:32,lo:18,ic:"sun",days:["sun","sun","cloud","cloud","sun","sun"],hi_:[31,30,28,26,29,30],lo_:[18,19,17,16,18,19]},
@@ -1335,18 +1349,20 @@ function renderDB(){
 }
 function renderVid(){
   const rec=S.vidMode==="rec", idle=S.vidMode==="idle";
-  const box=$("#vidTimeBox"); if(box)box.classList.toggle("hide",idle);
+  const box=$("#vidTimeBox"); if(box)box.style.display=idle?"none":"block";
   const t=$("#vidTime"); if(t&&!idle){t.dataset.dm=fmtT(S.vid);drawDM(t);}
   const d=$("#vidDot"); if(d){d.classList.toggle("off",!rec);d.classList.toggle("rec-dot",rec);}
   const i=$("#vidIco"); if(i){const c=rec?"#f5f5f7":"#55555e";if(i.dataset.icolor!==c){i.dataset.icolor=c;i.innerHTML="";drawIcon(i);}}
   const f=$("#vidFoot");
   if(f)f.textContent=rec?"720P 30fps · 省电模式":(idle?"未开启录像 · 轻触开始":"已暂停 · 点击继续录像");
+  const il=document.querySelector(".w24 .lbl");if(il)il.textContent=rec?"后台录像 REC":"后台录像";
 }
 function renderRain(){
   const on=!!S.rain;
   const t=$("#rainTxt"); if(t){t.dataset.dm=on?"ON":"OFF";t.dataset.color=on?"#f0813c":"#9a9aa2";drawDM(t);}
-  const i=$("#rainIco"); if(i){i.dataset.icolor=on?"#f5f5f7":"#55555e";i.innerHTML="";drawIcon(i);}
+  const i=$("#rainIco"); if(i){const c=on?"#f5f5f7":"#55555e";if(i.dataset.icolor!==c){i.dataset.icolor=c;i.innerHTML="";drawIcon(i);}}
   const p=$("#rainPill"); if(p){p.textContent=on?"ON":"OFF";p.style.color=on?"var(--orange)":"var(--ink-dim)";p.style.background=on?"rgba(240,129,60,.14)":"rgba(255,255,255,.06)";}
+  const f=$("#rainFoot"); if(f)f.textContent=on?"湿手触控 · 手套模式":"雨盾关闭 · 轻触开启";
 }
 function renderLamp(){
   const c=LAMPS[S.lamp];
@@ -1411,7 +1427,10 @@ const c24=$(".w24")?$(".w24").closest(".card"):null;
 if(c24){c24.classList.add("act");c24.title="点击开始 / 暂停录像";c24.addEventListener("click",()=>{S.vidMode=(S.vidMode==="rec")?"pause":"rec";renderVid();});}
 // W25 雨盾模式
 const c25=$(".w25")?$(".w25").closest(".card"):null;
-if(c25){c25.classList.add("act");c25.title="点击开关雨盾模式";c25.addEventListener("click",()=>{S.rain=!S.rain;renderRain();});}
+if(c25){c25.classList.add("act");c25.title="点击开关雨盾模式（右上角也可）";
+  c25.addEventListener("click",()=>{S.rain=!S.rain;renderRain();});}
+const rp=$("#rainPill");
+if(rp)rp.addEventListener("click",e=>{e.stopPropagation();S.rain=!S.rain;renderRain();});
 // W26 氛围灯
 const c26=$(".w26")?$(".w26").closest(".card"):null;
 if(c26){c26.classList.add("act");c26.title="点击切换灯效";c26.addEventListener("click",()=>{S.lamp=(S.lamp+1)%LAMPS.length;renderLamp();});}
@@ -1422,7 +1441,7 @@ function setLive(on){S.live=on?1:0;bl.classList.toggle("on",!!on);bl.textContent
   if(timer){clearInterval(timer);timer=null;}
   if(on)timer=setInterval(()=>{updClock();updDate();tickRec();},1000);}
 if(bl)bl.addEventListener("click",()=>setLive(!S.live));
-if(br)br.addEventListener("click",()=>{S.battery=100;S.water=0;S.torch=1;S.music=0;S.city=0;S.alt=1243;S.press=1013;S.bearing=0;S.rec=0;S.recMode="idle";S.fm=0;S.fmOn=0;S.steps=8432;S.mesh=0;S.db=68;S.vid=0;S.vidMode="idle";S.rain=1;S.lamp=0;
+if(br)br.addEventListener("click",()=>{S.battery=100;S.water=0;S.torch=1;S.music=0;S.city=0;S.alt=1243;S.press=1013;S.bearing=0;S.rec=0;S.recMode="idle";S.fm=0;S.fmOn=0;S.steps=8432;S.mesh=0;S.db=68;S.vid=0;S.vidMode="idle";S.rain=0;S.lamp=0;
   const g=document.querySelector(".compass .carrow"); if(g)g.style.transform="rotate(0deg)";refreshAll();});
 
 refreshAll(); setLive(true);

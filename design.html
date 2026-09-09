@@ -267,7 +267,19 @@ body{
 .w20 .foot{font-size:var(--fz-mini);color:var(--ink-dim);}
 .wx .pill.pswitch,.w20 .pill.pswitch{cursor:pointer;transition:.2s;}
 
-.w24 .val.hide{visibility:hidden;}
+/* W24 后台录像 · 重设计 */
+.w24{display:flex;flex-direction:column;height:100%;}
+.w24 .hd{display:flex;align-items:center;justify-content:space-between;font-size:var(--fz-sub);color:var(--ink-dim);letter-spacing:.5px;}
+.w24 .body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;}
+.w24 .foot{font-size:var(--fz-mini);color:var(--ink-dim);}
+.w24 .dot{width:8px;height:8px;border-radius:50%;background:var(--orange);flex-shrink:0;}
+.w24 .dot.off{background:#4a4a52;}
+/* W25 雨盾模式 · 重设计 */
+.w25{display:flex;flex-direction:column;height:100%;}
+.w25 .hd{display:flex;align-items:center;justify-content:space-between;font-size:var(--fz-sub);color:var(--ink-dim);letter-spacing:.5px;}
+.w25 .body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;}
+.w25 .foot{font-size:var(--fz-mini);color:var(--ink-dim);}
+.w25 .pill.pswitch{cursor:pointer;transition:.2s;}
 .wx .pill.pswitch{cursor:pointer;transition:.2s;}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.35;transform:scale(.78);}}
 .fm-scale{position:relative;line-height:0;}
@@ -700,26 +712,26 @@ body{
     <!-- W24 · 2×2 后台录像 -->
     <div class="card">
       <span class="tag">2×2</span>
-      <div class="w24 wx">
-        <div class="cap"><span>后台录像</span><i class="dot off" id="vidDot"></i></div>
-        <div class="mid">
-          <span class="dm" id="vidIco" data-icon="camera" data-igap="2.4" data-ir="0.95" data-icolor="#55555e"></span>
-          <div class="val hide" id="vidTimeBox"><span class="dm" id="vidTime" data-dm="01:24" data-gap="5" data-r="2.1" data-color="#f5f5f7" data-dim="transparent"></span></div>
+      <div class="w24">
+        <div class="hd"><span class="lbl">后台录像</span><i class="dot off" id="vidDot"></i></div>
+        <div class="body">
+          <span class="dm" id="vidIco" data-icon="camera2" data-igap="3.1" data-ir="1.1" data-icolor="#55555e"></span>
+          <div class="val" id="vidTimeBox" style="display:none;"><span class="dm" id="vidTime" data-dm="00:00" data-gap="5" data-r="2.1" data-color="#f5f5f7" data-dim="transparent"></span></div>
+          <div class="foot" id="vidFoot">未开启录像 · 轻触开始</div>
         </div>
-        <div class="foot" id="vidFoot">未开启录像 · 轻触开始</div>
       </div>
     </div>
 
     <!-- W25 · 2×2 雨盾模式 -->
     <div class="card">
       <span class="tag">2×2</span>
-      <div class="w25 wx">
-        <div class="cap"><span>雨盾模式</span><span class="pill" id="rainPill">ON</span></div>
-        <div class="mid">
-          <span class="dm" id="rainIco" data-icon="umbrella" data-igap="2.7" data-ir="1.05" data-icolor="#f5f5f7"></span>
-          <div class="val"><span class="dm" id="rainTxt" data-dm="ON" data-gap="5.6" data-r="2.2" data-color="#f0813c" data-dim="transparent"></span></div>
+      <div class="w25">
+        <div class="hd"><span class="lbl">雨盾模式</span><span class="pill pswitch" id="rainPill" title="点击开关雨盾">OFF</span></div>
+        <div class="body">
+          <span class="dm" id="rainIco" data-icon="umbrella2" data-igap="3.1" data-ir="1.15" data-icolor="#55555e"></span>
+          <div class="val"><span class="dm" id="rainTxt" data-dm="OFF" data-gap="5.4" data-r="2.2" data-color="#9a9aa2" data-dim="transparent"></span></div>
+          <div class="foot" id="rainFoot">雨盾关闭 · 轻触开启</div>
         </div>
-        <div class="foot">湿手触控 · 手套模式</div>
       </div>
     </div>
 
@@ -999,25 +1011,31 @@ const NOTE=[
 "0111111110",
 "0011111100"];
 const CAMERA=[
-"00000000001111",
-"00000000111111",
-"01111111111111",
-"01111111111111",
-"01111111111111",
-"01111111111111",
-"01111111111111",
-"00000000111111",
-"00000000001111"];
+"000000000000000",
+"000000011100000",
+"000001111111000",
+"000111111111100",
+"001111111111110",
+"011100000001110",
+"011000110001110",
+"010001111110010",
+"010001000010010",
+"011000000001110",
+"001111111111110",
+"000111111111100"];
 const UMBRELLA=[
+"0000000000000",
 "0000011100000",
 "0000111110000",
 "0001111111000",
 "0011111111100",
-"0111111111110",
+"0111001100110",
+"1101100110111",
 "1111111111111",
 "0000011100000",
 "0000011100000",
-"0001111100000"];
+"0000111100000",
+"0001100000000"];
 const BULB=[
 "00001110000",
 "00011111000",
