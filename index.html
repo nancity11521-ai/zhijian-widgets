@@ -314,6 +314,13 @@ body{
 .lamp-dots i{width:13px;height:13px;border-radius:50%;display:block;transition:.25s;}
 .w21 .pbar{width:100%;}
 
+/* W27 投影仪 */
+.w27{display:flex;flex-direction:column;height:100%;}
+.w27 .hd{display:flex;align-items:center;justify-content:space-between;font-size:var(--fz-sub);color:var(--ink-dim);letter-spacing:.5px;}
+.w27 .body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;}
+.w27 .foot{font-size:var(--fz-mini);color:var(--ink-dim);}
+.w27 .pill.pswitch{cursor:pointer;transition:.2s;}
+
 /* ============ 规范 ============ */
 .legend{grid-column:span 3;background:var(--card);border-radius:var(--radius);padding:22px 26px;height:auto;}
 .legend h3{font-size:var(--fz-title);margin-bottom:14px;}
@@ -764,6 +771,19 @@ body{
       </div>
     </div>
 
+    <!-- W27 · 2×2 投影仪 -->
+    <div class="card">
+      <span class="tag">2×2</span>
+      <div class="w27">
+        <div class="hd"><span class="lbl">投影仪 PROJECTOR</span><span class="pill pswitch" id="projPill" title="点击开关投影仪">OFF</span></div>
+        <div class="body">
+          <span class="dm" id="projIco" data-icon="projector" data-igap="2.8" data-ir="1.0" data-icolor="#55555e"></span>
+          <div class="val"><span class="dm" id="projTxt" data-dm="OFF" data-gap="5.4" data-r="2.2" data-color="#9a9aa2" data-dim="transparent"></span></div>
+          <div class="foot" id="projFoot">投影关闭 · 轻触开启</div>
+        </div>
+      </div>
+    </div>
+
     <!-- 规范 -->
     <div class="legend" data-page-node-id="3MhBeuscYnD7QzyKAJt8fa">
       <h3 data-page-node-id="QJdEbjALRDDSLC14zEvAB1">设计规范 / Design Spec</h3>
@@ -1090,6 +1110,19 @@ const MIC=[
 "0000011100000",
 "0001111111000"];
 
+const PROJECTOR=[
+"000000000000000",
+"000000111100000",
+"000111111111000",
+"001111111111100",
+"011110000001110",
+"011100110001110",
+"011100000001110",
+"011100110001110",
+"011110000001110",
+"001111111111100",
+"000111111111000",
+"000000000000000"];
 const MESH=[
 "0000000010000",
 "0000000111000",
@@ -1135,6 +1168,7 @@ function drawIcon(el){
   if(type==="bulb"){ BULB.forEach((row,ry)=>{[...row].forEach((ch,rx)=>{if(ch==="1")add(rx,ry);});}); }
   if(type==="radio"){ RADIO.forEach((row,ry)=>{[...row].forEach((ch,rx)=>{if(ch==="1")add(rx,ry);});}); }
   if(type==="mic"){ MIC.forEach((row,ry)=>{[...row].forEach((ch,rx)=>{if(ch==="1")add(rx,ry);});}); }
+  if(type==="projector"){ PROJECTOR.forEach((row,ry)=>{[...row].forEach((ch,rx)=>{if(ch==="1")add(rx,ry);});}); }
   if(type==="mesh"){ MESH.forEach((row,ry)=>{[...row].forEach((ch,rx)=>{if(ch==="1")add(rx,ry);});}); }
   if(type==="wave"){
     const hs=[3,5,9,13,9,5,3];
@@ -1179,7 +1213,7 @@ const MON=["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DE
 const WKS=["SUNDAY","MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY","SATURDAY"];
 const WKS3=["SUN","MON","TUE","WED","THU","FRI","SAT"];
 
-const S={battery:100,water:0,torch:1,music:0,city:0,alt:1243,press:1013,bearing:0,live:1,rec:0,recMode:"idle",fm:0,fmOn:0,steps:8432,mesh:0,db:68,vid:0,vidMode:"idle",rain:0,lamp:0};
+const S={battery:100,water:0,torch:1,music:0,city:0,alt:1243,press:1013,bearing:0,live:1,rec:0,recMode:"idle",projOn:0,projIn:0,fm:0,fmOn:0,steps:8432,mesh:0,db:68,vid:0,vidMode:"idle",rain:0,lamp:0};
 const CITIES=[
  {name:"Toronto",cond:"Partly Cloudy",temp:30,hi:35,lo:16,ic:"sun",days:["cloud","sun","cloud","sun","sun","sun"],hi_:[-3,-1,-9,-4,-4,-4],lo_:[-6,-9,-10,-6,-6,-6]},
  {name:"Beijing",cond:"Sunny",temp:26,hi:32,lo:18,ic:"sun",days:["sun","sun","cloud","cloud","sun","sun"],hi_:[31,30,28,26,29,30],lo_:[18,19,17,16,18,19]},
@@ -1305,6 +1339,17 @@ function renderAlt(){
   if(ds[0]){ds[0].dataset.dm=String(S.alt);drawDM(ds[0]);}
   if(ds[1]){ds[1].dataset.dm=String(S.press);drawDM(ds[1]);}
 }
+/* ---- W27 投影仪 ---- */
+function renderProj(){
+  const on=!!S.projOn;
+  const t=$("#projTxt"); if(t){t.dataset.dm=on?"ON":"OFF";t.dataset.color=on?"#f0813c":"#9a9aa2";drawDM(t);}
+  const i=$("#projIco"); if(i){const c=on?"#f5f5f7":"#55555e";if(i.dataset.icolor!==c){i.dataset.icolor=c;i.innerHTML="";drawIcon(i);}}
+  const p=$("#projPill"); if(p){p.textContent=on?"ON":"OFF";p.style.color=on?"var(--orange)":"var(--ink-dim)";p.style.background=on?"rgba(240,129,60,.14)":"rgba(255,255,255,.06)";}
+  const f=$("#projFoot");
+  if(f)f.textContent=on?("已连接 "+(S.projIn||"HDMI 1")+" · 1080P"):"投影关闭 · 轻触开启";
+}
+const PROJ_INPUTS=["HDMI 1","HDMI 2","DP","WIFI"];
+
 /* ---- W19 录音机 / W20 FM / W21 计步 / W22 无网通信 / W23 噪声 / W24 录像 / W25 雨盾 / W26 氛围灯 ---- */
 const FM_ST=[{f:"98.6",n:"频道 · 音乐之声",p:38},{f:"101.1",n:"频道 · 交通广播",p:52},{f:"92.5",n:"频道 · 新闻资讯",p:24},{f:"107.7",n:"频道 · 经典金曲",p:74}];
 const MESH_ST=[{d:"1.2",n:"3 台设备已连接"},{d:"2.4",n:"2 台设备已连接"},{d:"0.6",n:"5 台设备已连接"}];
@@ -1374,7 +1419,7 @@ function renderLamp(){
     [...d.children].forEach((e,i)=>{e.style.opacity=i===k?"1":".38";e.style.boxShadow=i===k?"0 0 0 3px rgba(255,255,255,.10)":"none";});}
 }
 function tickRec(){ if(S.recMode==="rec")S.rec++; if(S.vidMode==="rec")S.vid++; renderRec(); renderVid(); }
-function refreshAll(){updClock();updDate();renderCity();renderBattery();renderWater();renderTorch();renderMusic();renderAlt();renderRec();renderFM();renderSteps();renderMesh();renderDB();renderVid();renderRain();renderLamp();}
+function refreshAll(){updClock();updDate();renderCity();renderBattery();renderWater();renderTorch();renderMusic();renderAlt();renderRec();renderFM();renderSteps();renderMesh();renderDB();renderVid();renderRain();renderLamp();renderProj();}
 
 /* ===== 事件绑定 ===== */
 // 电量：点击时钟电量卡循环
@@ -1436,6 +1481,12 @@ if(rp)rp.addEventListener("click",e=>{e.stopPropagation();S.rain=!S.rain;renderR
 // W26 氛围灯
 const c26=$(".w26")?$(".w26").closest(".card"):null;
 if(c26){c26.classList.add("act");c26.title="点击切换灯效";c26.addEventListener("click",()=>{S.lamp=(S.lamp+1)%LAMPS.length;renderLamp();});}
+// W27 投影仪
+const c27=$(".w27")?$(".w27").closest(".card"):null;
+if(c27){c27.classList.add("act");c27.title="点击开关投影仪（右上角也可）";
+  c27.addEventListener("click",()=>{S.projOn=!S.projOn;if(S.projOn&&!S.projIn)S.projIn="HDMI 1";renderProj();});}
+const pp=$("#projPill");
+if(pp)pp.addEventListener("click",e=>{e.stopPropagation();S.projOn=!S.projOn;if(S.projOn&&!S.projIn)S.projIn="HDMI 1";renderProj();});
 // 顶栏
 const bl=$("#btnLive"), br=$("#btnReset");
 let timer=null;

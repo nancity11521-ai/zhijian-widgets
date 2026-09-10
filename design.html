@@ -294,6 +294,13 @@ body{
 .lamp-dots i{width:13px;height:13px;border-radius:50%;display:block;transition:.25s;}
 .w21 .pbar{width:100%;}
 
+/* W27 投影仪 */
+.w27{display:flex;flex-direction:column;height:100%;}
+.w27 .hd{display:flex;align-items:center;justify-content:space-between;font-size:var(--fz-sub);color:var(--ink-dim);letter-spacing:.5px;}
+.w27 .body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;}
+.w27 .foot{font-size:var(--fz-mini);color:var(--ink-dim);}
+.w27 .pill.pswitch{cursor:pointer;transition:.2s;}
+
 /* ============ 规范 ============ */
 .legend{grid-column:span 3;background:var(--card);border-radius:var(--radius);padding:22px 26px;height:auto;}
 .legend h3{font-size:var(--fz-title);margin-bottom:14px;}
@@ -748,6 +755,19 @@ body{
       </div>
     </div>
 
+    <!-- W27 · 2×2 投影仪 -->
+    <div class="card">
+      <span class="tag">2×2</span>
+      <div class="w27">
+        <div class="hd"><span class="lbl">投影仪 PROJECTOR</span><span class="pill pswitch" id="projPill" title="点击开关投影仪">OFF</span></div>
+        <div class="body">
+          <span class="dm" id="projIco" data-icon="projector" data-igap="2.8" data-ir="1.0" data-icolor="#55555e"></span>
+          <div class="val"><span class="dm" id="projTxt" data-dm="OFF" data-gap="5.4" data-r="2.2" data-color="#9a9aa2" data-dim="transparent"></span></div>
+          <div class="foot" id="projFoot">投影关闭 · 轻触开启</div>
+        </div>
+      </div>
+    </div>
+
     <!-- 规范 -->
     <div class="legend" data-page-node-id="3MhBeuscYnD7QzyKAJt8fa">
       <h3 data-page-node-id="QJdEbjALRDDSLC14zEvAB1">设计规范 / Design Spec</h3>
@@ -1076,6 +1096,19 @@ const MIC=[
 "0000011100000",
 "0001111111000"];
 
+const PROJECTOR=[
+"000000000000000",
+"000000111100000",
+"000111111111000",
+"001111111111100",
+"011110000001110",
+"011100110001110",
+"011100000001110",
+"011100110001110",
+"011110000001110",
+"001111111111100",
+"000111111111000",
+"000000000000000"];
 const MESH=[
 "0000000010000",
 "0000000111000",
@@ -1121,6 +1154,7 @@ function drawIcon(el){
   if(type==="bulb"){ BULB.forEach((row,ry)=>{[...row].forEach((ch,rx)=>{if(ch==="1")add(rx,ry);});}); }
   if(type==="radio"){ RADIO.forEach((row,ry)=>{[...row].forEach((ch,rx)=>{if(ch==="1")add(rx,ry);});}); }
   if(type==="mic"){ MIC.forEach((row,ry)=>{[...row].forEach((ch,rx)=>{if(ch==="1")add(rx,ry);});}); }
+  if(type==="projector"){ PROJECTOR.forEach((row,ry)=>{[...row].forEach((ch,rx)=>{if(ch==="1")add(rx,ry);});}); }
   if(type==="mesh"){ MESH.forEach((row,ry)=>{[...row].forEach((ch,rx)=>{if(ch==="1")add(rx,ry);});}); }
   if(type==="wave"){
     const hs=[3,5,9,13,9,5,3];
