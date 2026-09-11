@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>极简小部件 · Minimal Widgets</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  background:#e9e9eb;
+  font-family:"Noto Sans SC",-apple-system,"Helvetica Neue",Arial,sans-serif;
+  color:#111318;padding:44px;display:flex;justify-content:center;
+  -webkit-font-smoothing:antialiased;
+}
+.board{display:grid;grid-template-columns:repeat(4,250px);grid-auto-rows:250px;gap:18px}
+.cell{position:relative;overflow:hidden}
+.white{background:#fff}
+.red{background:#e04239;color:#fff}
+.navy{background:#1f2733;color:#fff}
+.blue{background:#4a5cc4;color:#fff}
+.circle{border-radius:50%}
+.r44{border-radius:44px}
+.rp{border-radius:999px}
+.ctr{display:flex;align-items:center;justify-content:center}
+.col{display:flex;flex-direction:column}
+.serif{font-family:"Noto Serif SC",Georgia,"Times New Roman",serif}
+.dm{display:block;line-height:0}
+.h1{font-size:56px;line-height:1;letter-spacing:-1px}
+.h2{font-size:38px;line-height:1.05}
+.lbl{font-size:14px;color:#9aa0aa}
+.lbl-w{font-size:14px;color:rgba(255,255,255,.72)}
+.sw{font-size:14px;color:#fff}
+.dark{color:#111318}.lit{color:#9aa0aa}.lit-w{color:rgba(255,255,255,.72)}
+/* spans */
+.c2{grid-column:span 2}.r2{grid-row:span 2}
+/* 内层小格 */
+.inner2{display:grid;grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(2,1fr);gap:16px;width:100%;height:100%}
+.inner2>.cell{border-radius:50%;display:flex;align-items:center;justify-content:center}
+.stack{display:flex;flex-direction:column;gap:18px;height:100%}
+.mid{flex:1;display:flex;align-items:center;justify-content:center}
+.fill{width:100%;height:100%}
+.pad{padding:22px 24px}
+.pad-sm{padding:16px}
+.tac{text-align:center}.tar{text-align:right}.tal{text-align:left}
+/* 排版 */
+.serif{font-family:"Noto Serif SC",Georgia,"Times New Roman",serif}
+.h0{font-size:96px;line-height:.9}
+.h1{font-size:58px;line-height:1}
+.h2{font-size:40px;line-height:1.05}
+.h3{font-size:26px;line-height:1.1}
+.h4{font-size:18px;line-height:1.2}
+.lg{font-size:15px}
+.sm{font-size:13px}
+.xs{font-size:11px}
+.fwb{font-weight:700}
+/* 时钟 */
+.face{position:relative;width:100%;height:100%;border-radius:50%}
+.hand{position:absolute;background:#111318;transform-origin:50% 100%;border-radius:999px}
+.hour{width:10px;height:68px;left:calc(50% - 5px);top:calc(50% - 68px)}
+.min{width:7px;height:92px;left:calc(50% - 3.5px);top:calc(50% - 92px)}
+.sec{width:2px;height:100px;left:calc(50% - 1px);top:calc(50% - 100px);background:#e04239}
+.pin{width:12px;height:12px;border-radius:50%;background:#e04239;position:absolute;left:calc(50% - 6px);top:calc(50% - 6px);z-index:5}
+.red-dot{width:8px;height:8px;border-radius:50%;background:#e04239;position:absolute;left:calc(50% - 4px);bottom:22px}
+.full-clock .tick-mark{position:absolute;background:#111318;width:2px;height:10px;left:calc(50% - 1px);top:6px;transform-origin:50% calc(250px/2 - 6px)}
+.full-clock .tick-major{width:3px;height:14px;left:calc(50% - 1.5px)}
+/* 点阵 */
+.dots5{display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(5,1fr);gap:10px;width:110px;height:110px}
+.dots5 i{display:block;border-radius:50%;background:#111318}
+.dots5 i.off{background:#d5d8e0}
+.dots-spiral{width:150px;height:150px;position:relative}
+.dots-spiral i{position:absolute;width:6px;height:6px;border-radius:50%;background:#fff}
+.dots-spiral i:nth-child(1){top:0;left:50%;transform:translateX(-50%)}
+.dots-spiral i:nth-child(2){top:6%;left:22%}
+.dots-spiral i:nth-child(3){top:22%;left:6%}
+.dots-spiral i:nth-child(4){top:50%;left:0;transform:translateY(-50%)}
+.dots-spiral i:nth-child(5){bottom:22%;left:6%}
+.dots-spiral i:nth-child(6){bottom:6%;left:22%}
+.dots-spiral i:nth-child(7){bottom:0;left:50%;transform:translateX(-50%)}
+.dots-spiral i:nth-child(8){bottom:6%;right:22%}
+.dots-spiral i:nth-child(9){bottom:22%;right:6%}
+.dots-spiral i:nth-child(10){top:50%;right:0;transform:translateY(-50%)}
+.dots-spiral i:nth-child(11){top:22%;right:6%}
+.dots-spiral i:nth-child(12){top:6%;right:22%}
+.dots-spiral i:nth-child(13){top:50%;left:50%;transform:translate(-50%,-50%);width:8px;height:8px}
+.dots-spiral i.off{background:rgba(255,255,255,.25)}
+.dots-grad{display:grid;grid-template-columns:repeat(6,1fr);grid-template-rows:repeat(6,1fr);gap:7px;width:120px;height:120px}
+.dots-grad i{display:block;border-radius:50%;background:#111318}
+.dots-grad i.o1{opacity:.12}
+.dots-grad i.o2{opacity:.25}
+.dots-grad i.o3{opacity:.45}
+.dots-grad i.o4{opacity:.65}
+.dots-grad i.o5{opacity:.85}
+.dots-grad i.o6{opacity:1}
+/* 进度环 */
+.ring{position:relative;width:56px;height:56px}
+.ring svg{transform:rotate(-90deg)}
+/* 图标尺寸 */
+.ico{display:block;width:44px;height:44px}
+.ico-sm{width:34px;height:34px}
+.ico-lg{width:64px;height:64px}
+/* 小日历点阵 */
+.cal-dots{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;width:100%}
+.cal-dots i{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.35)}
+.cal-dots i.on{background:#e04239}
+/* 步数曲线 */
+.step-line{position:absolute;left:24px;right:24px;bottom:54px;height:36px;display:flex;align-items:flex-end;justify-content:space-between}
+.step-line i{width:3px;background:#fff;border-radius:2px;opacity:.55}
+.step-line i:nth-child(5){opacity:1}
+</style>
+</head>
+<body>
+<div class="board">
+<!-- ROW 1 -->
+<div class="cell white circle ctr">
+  <div class="face" style="width:200px;height:200px">
+    <div class="hand hour" style="transform:rotate(312deg);width:8px;height:54px;left:calc(50% - 4px);top:calc(50% - 54px)"></div>
+    <div class="hand min" style="transform:rotate(54deg);width:6px;height:74px;left:calc(50% - 3px);top:calc(50% - 74px)"></div>
+    <div class="hand sec" style="transform:rotate(180deg);width:2px;height:82px;left:calc(50% - 1px);top:calc(50% - 82px)"></div>
+    <div class="pin" style="width:10px;height:10px;left:calc(50% - 5px);top:calc(50% - 5px)"></div>
+    <div class="red-dot"></div>
+  </div>
+</div>
+<div class="cell ctr">
+  <div class="inner2" style="width:250px;height:250px">
+    <div class="cell red ctr"><svg class="ico" viewBox="0 0 24 24" fill="currentColor"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/><path d="M4 4l16 16" stroke="currentColor" stroke-width="2.5" fill="none"/></svg></div>
+    <div class="cell white ctr"><svg class="ico" viewBox="0 0 24 24" fill="currentColor"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 1.56 7.08 1.56 1 9zm8 8l3 3 3-3c-1.65-1.66-4.35-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C13.36 8.44 6.64 8.44 5 13z"/></svg></div>
+    <div class="cell white ctr"><svg class="ico" viewBox="0 0 24 24" fill="currentColor"><rect x="17" y="4" width="3" height="16" rx="1"/><rect x="12" y="8" width="3" height="12" rx="1"/><rect x="7" y="12" width="3" height="8" rx="1"/><rect x="2" y="15" width="3" height="5" rx="1"/></svg></div>
+    <div class="cell navy ctr"><svg class="ico" viewBox="0 0 24 24" fill="currentColor"><path d="M21 14l-6-4v3H3v2h12v3l6-4z"/></svg></div>
+  </div>
+</div>
+<div class="cell white circle ctr">
+  <div class="dots5" style="width:90px;height:90px;gap:8px">
+    <i class="off"></i><i class="off"></i><i></i><i class="off"></i><i class="off"></i>
+    <i class="off"></i><i></i><i></i><i></i><i class="off"></i>
+    <i></i><i></i><i></i><i></i><i></i>
+    <i class="off"></i><i></i><i></i><i></i><i class="off"></i>
+    <i class="off"></i><i class="off"></i><i></i><i class="off"></i><i class="off"></i>
+  </div>
+</div>
+<div class="cell navy r44" style="padding:20px;display:flex;flex-direction:column;justify-content:space-between">
+  <div>
+    <div class="xs lit-w">Friday</div>
+    <div class="sm fwb">21 Feb</div>
+  </div>
+  <div>
+    <div class="sm fwb" style="margin-bottom:4px">Party cloudy</div>
+    <div class="row" style="gap:8px;align-items:center">
+      <svg class="ico-sm" viewBox="0 0 24 24" fill="currentColor"><path d="M18.5 12c.88 0 1.68.24 2.39.65L21 12c0-2.76-2.24-5-5-5-.73 0-1.42.16-2.05.44C13.32 5.07 11.74 4 10 4c-2.76 0-5 2.24-5 5 0 .11.01.22.02.33C2.31 10.08 0 12.77 0 16c0 2.21 1.79 4 4 4h14.5c1.93 0 3.5-1.57 3.5-3.5S20.43 12 18.5 12z"/></svg>
+      <span class="h3 serif">26°</span>
+    </div>
+  </div>
+  <div style="position:absolute;right:18px;bottom:18px">
+    <div style="width:30px;height:30px;border:2px solid rgba(255,255,255,.7);border-radius:50%;position:relative">
+      <div style="position:absolute;width:2px;height:8px;background:rgba(255,255,255,.9);left:calc(50% - 1px);top:calc(50% - 8px);transform-origin:50% 100%;transform:rotate(45deg);border-radius:1px"></div>
+      <div style="position:absolute;width:2px;height:11px;background:rgba(255,255,255,.9);left:calc(50% - 1px);top:calc(50% - 11px);transform-origin:50% 100%;transform:rotate(-30deg);border-radius:1px"></div>
+    </div>
+  </div>
+</div>
+<!-- ROW 3-4 -->
+<div class="cell white r44" style="grid-row:span 2;padding:24px;display:flex;flex-direction:column;justify-content:space-between">
+  <div class="row" style="gap:12px;align-items:center">
+    <svg class="ico" viewBox="0 0 24 24" fill="currentColor"><path d="M18.5 12c.88 0 1.68.24 2.39.65L21 12c0-2.76-2.24-5-5-5-.73 0-1.42.16-2.05.44C13.32 5.07 11.74 4 10 4c-2.76 0-5 2.24-5 5 0 .11.01.22.02.33C2.31 10.08 0 12.77 0 16c0 2.21 1.79 4 4 4h14.5c1.93 0 3.5-1.57 3.5-3.5S20.43 12 18.5 12z"/></svg>
+    <div>
+      <div class="h2 serif fwb">21-35°</div>
+      <div class="sm lit">CLOUDY</div>
+    </div>
+  </div>
+  <div class="red-dot"></div>
+</div>
+<div class="cell white r44 c2" style="grid-row:span 2;padding:28px;display:flex;flex-direction:column;justify-content:space-between">
+  <div>
+    <div class="h4 fwb" style="margin-bottom:8px">星期五</div>
+    <div class="h1 serif" style="margin-bottom:8px">3月8日</div>
+    <div class="h3 fwb">小雨</div>
+  </div>
+  <div class="row" style="gap:10px;align-items:center">
+    <svg class="ico-sm" viewBox="0 0 24 24" fill="currentColor"><path d="M18.5 12c.88 0 1.68.24 2.39.65L21 12c0-2.76-2.24-5-5-5-.73 0-1.42.16-2.05.44C13.32 5.07 11.74 4 10 4c-2.76 0-5 2.24-5 5 0 .11.01.22.02.33C2.31 10.08 0 12.77 0 16c0 2.21 1.79 4 4 4h14.5c1.93 0 3.5-1.57 3.5-3.5S20.43 12 18.5 12z"/></svg>
+    <span class="h2 serif">26°</span>
+  </div>
+  <div style="position:absolute;right:28px;bottom:28px">
+    <div style="width:40px;height:40px;border:2px solid #111318;border-radius:50%;position:relative">
+      <div style="position:absolute;width:2px;height:10px;background:#111318;left:calc(50% - 1px);top:calc(50% - 10px);transform-origin:50% 100%;transform:rotate(60deg);border-radius:1px"></div>
+      <div style="position:absolute;width:2px;height:14px;background:#111318;left:calc(50% - 1px);top:calc(50% - 14px);transform-origin:50% 100%;transform:rotate(-10deg);border-radius:1px"></div>
+    </div>
+  </div>
+</div>
+<div class="cell" style="grid-row:span 2;display:flex;flex-direction:column;gap:16px">
+  <div class="cell white r44 ctr" style="flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:4px">
+    <div class="h1 serif fwb">22</div>
+    <div class="h1 serif fwb">10</div>
+    <div class="red-dot" style="position:static;margin-top:6px"></div>
+  </div>
+  <div style="display:flex;align-items:center;justify-content:center;gap:16px;height:calc(50% - 8px)">
+    <div class="navy circle ctr" style="width:100px;height:100px"><svg class="ico-sm" viewBox="0 0 24 24" fill="currentColor"><path d="M18.5 12c.88 0 1.68.24 2.39.65L21 12c0-2.76-2.24-5-5-5-.73 0-1.42.16-2.05.44C13.32 5.07 11.74 4 10 4c-2.76 0-5 2.24-5 5 0 .11.01.22.02.33C2.31 10.08 0 12.77 0 16c0 2.21 1.79 4 4 4h14.5c1.93 0 3.5-1.57 3.5-3.5S20.43 12 18.5 12z"/></svg></div>
+    <div class="red circle ctr" style="width:100px;height:100px"><svg class="ico-sm" viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM9.8 8.9L7 23h2.1l1.8-8 2.1 2v6h2v-7.5l-2.1-2 .6-3C14.8 12 16.8 13 19 13v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L6 8.3V13h2V9.6l1.8-.7z"/></svg></div>
+  </div>
+</div>
+<!-- ROW 5 -->
+<div class="cell red r44 c2" style="padding:22px 26px;display:flex;align-items:center;justify-content:space-between">
+  <div class="ctr" style="flex-direction:column;gap:6px">
+    <svg class="ico" viewBox="0 0 24 24" fill="currentColor"><path d="M20 8.7c0 .5-.1 1-.2 1.5l1.4.8-.7 1.3-1.4-.8c-.7 1.2-1.7 2.1-3 2.7l.5 1.6-1.4.5-.5-1.5c-.6.1-1.2.2-1.8.2-3.3 0-6-2.7-6-6s2.7-6 6-6 6 2.7 6 6zM6 17h2v3H6v-3z"/></svg>
+  </div>
+  <div class="tac" style="flex:1">
+    <div class="h2 serif fwb">17:32</div>
+    <div class="sm" style="opacity:.8">SUNRISE</div>
+  </div>
+</div>
+<div class="cell white r44 c2" style="padding:22px 26px;display:flex;flex-direction:column;justify-content:space-between">
+  <div class="h2 serif fwb">22:10</div>
+  <div>
+    <div class="sm lit">Mon, 7 Oct</div>
+    <div class="row" style="gap:8px;align-items:center;margin-top:8px">
+      <svg class="ico-sm" viewBox="0 0 24 24" fill="currentColor"><path d="M18.5 12c.88 0 1.68.24 2.39.65L21 12c0-2.76-2.24-5-5-5-.73 0-1.42.16-2.05.44C13.32 5.07 11.74 4 10 4c-2.76 0-5 2.24-5 5 0 .11.01.22.02.33C2.31 10.08 0 12.77 0 16c0 2.21 1.79 4 4 4h14.5c1.93 0 3.5-1.57 3.5-3.5S20.43 12 18.5 12z"/></svg>
+      <span class="sm">21-35°</span>
+      <span class="sm lit">Party cloudy</span>
+    </div>
+  </div>
+</div>
+<!-- ROW 6-7 -->
+<div class="cell navy r44" style="grid-row:span 2;padding:26px;display:flex;flex-direction:column;justify-content:space-between">
+  <div>
+    <div class="row" style="justify-content:space-between;align-items:flex-start">
+      <div class="h1 serif">45%</div>
+      <div class="ring"><svg width="56" height="56" viewBox="0 0 56 56"><circle cx="28" cy="28" r="24" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="5"/><circle cx="28" cy="28" r="24" fill="none" stroke="#e04239" stroke-width="5" stroke-dasharray="94 151" stroke-linecap="round"/></svg></div>
+    </div>
+    <div class="sm lit-w" style="margin-top:4px">12 days left</div>
+  </div>
+  <div>
+    <div class="cal-dots" style="margin-bottom:20px">
+      <i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+      <i></i><i></i><i></i><i></i><i class="on"></i><i></i><i></i>
+      <i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+      <i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+    </div>
+    <div class="row" style="gap:8px;align-items:baseline">
+      <span class="h2" style="color:#e04239">13</span>
+      <span class="sm lit-w">March</span>
+    </div>
+  </div>
+</div>
+<div class="cell white circle ctr c2" style="grid-row:span 2">
+  <div class="h0 serif fwb" style="margin-top:-8px">12</div>
+</div>
+<div class="cell blue r44" style="grid-row:span 2;padding:26px;display:flex;flex-direction:column;justify-content:space-between">
+  <div class="dots-spiral">
+    <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i class="off"></i>
+  </div>
+  <div>
+    <div class="sm lit-w" style="margin-bottom:6px">距离下班</div>
+    <div class="h1 serif"><span class="h2">16</span>H <span class="h2">32</span>M</div>
+  </div>
+</div>
+<!-- ROW 8 -->
+<div class="cell white circle ctr">
+  <div class="dots-grad">
+    <i class="o1"></i><i class="o1"></i><i class="o1"></i><i class="o2"></i><i class="o2"></i><i class="o2"></i>
+    <i class="o1"></i><i class="o2"></i><i class="o2"></i><i class="o2"></i><i class="o3"></i><i class="o3"></i>
+    <i class="o2"></i><i class="o2"></i><i class="o3"></i><i class="o3"></i><i class="o3"></i><i class="o4"></i>
+    <i class="o2"></i><i class="o3"></i><i class="o3"></i><i class="o4"></i><i class="o4"></i><i class="o4"></i>
+    <i class="o3"></i><i class="o4"></i><i class="o4"></i><i class="o4"></i><i class="o5"></i><i class="o5"></i>
+    <i class="o3"></i><i class="o4"></i><i class="o5"></i><i class="o5"></i><i class="o5"></i><i class="o6"></i>
+  </div>
+</div>
+<div class="cell red r44 ctr" style="padding:18px;flex-direction:column;gap:4px">
+  <div class="h2 serif fwb">12</div>
+  <div class="sm" style="opacity:.85">MON</div>
+</div>
+<div class="cell blue r44 ctr" style="padding:18px;flex-direction:column;gap:6px">
+  <svg class="ico" viewBox="0 0 24 24" fill="currentColor"><path d="M18.5 12c.88 0 1.68.24 2.39.65L21 12c0-2.76-2.24-5-5-5-.73 0-1.42.16-2.05.44C13.32 5.07 11.74 4 10 4c-2.76 0-5 2.24-5 5 0 .11.01.22.02.33C2.31 10.08 0 12.77 0 16c0 2.21 1.79 4 4 4h14.5c1.93 0 3.5-1.57 3.5-3.5S20.43 12 18.5 12z"/></svg>
+  <div class="h4 serif fwb">12-31°</div>
+</div>
+<div class="cell navy r44" style="padding:22px;display:flex;align-items:center;gap:16px">
+  <div style="width:44px;height:44px;border:2px solid rgba(255,255,255,.7);border-radius:50%;position:relative;flex-shrink:0">
+    <div style="position:absolute;width:2px;height:12px;background:rgba(255,255,255,.9);left:calc(50% - 1px);top:calc(50% - 12px);transform-origin:50% 100%;transform:rotate(35deg);border-radius:1px"></div>
+    <div style="position:absolute;width:2px;height:16px;background:rgba(255,255,255,.9);left:calc(50% - 1px);top:calc(50% - 16px);transform-origin:50% 100%;transform:rotate(-70deg);border-radius:1px"></div>
+  </div>
+  <div>
+    <div class="h3 serif fwb">17:32:00</div>
+    <div class="sm lit-w">Party cloudy</div>
+  </div>
+</div>
+<!-- ROW 9-10 -->
+<div class="cell white circle full-clock ctr" style="grid-row:span 2;grid-column:span 2">
+  <div class="face" style="width:86%;height:86%">
+    <div style="position:absolute;inset:0">
+      <div style="position:absolute;width:2px;height:10px;background:#111318;left:calc(50% - 1px);top:10px;transform-origin:50% calc(224px - 10px);transform:rotate(0deg)"></div>
+      <div style="position:absolute;width:2px;height:10px;background:#111318;left:calc(50% - 1px);top:10px;transform-origin:50% calc(224px - 10px);transform:rotate(30deg)"></div>
+      <div style="position:absolute;width:2px;height:10px;background:#111318;left:calc(50% - 1px);top:10px;transform-origin:50% calc(224px - 10px);transform:rotate(60deg)"></div>
+      <div style="position:absolute;width:3px;height:14px;background:#111318;left:calc(50% - 1.5px);top:10px;transform-origin:50% calc(224px - 14px);transform:rotate(90deg)"></div>
+      <div style="position:absolute;width:2px;height:10px;background:#111318;left:calc(50% - 1px);top:10px;transform-origin:50% calc(224px - 10px);transform:rotate(120deg)"></div>
+      <div style="position:absolute;width:2px;height:10px;background:#111318;left:calc(50% - 1px);top:10px;transform-origin:50% calc(224px - 10px);transform:rotate(150deg)"></div>
+      <div style="position:absolute;width:3px;height:14px;background:#111318;left:calc(50% - 1.5px);top:10px;transform-origin:50% calc(224px - 14px);transform:rotate(180deg)"></div>
+      <div style="position:absolute;width:2px;height:10px;background:#111318;left:calc(50% - 1px);top:10px;transform-origin:50% calc(224px - 10px);transform:rotate(210deg)"></div>
+      <div style="position:absolute;width:2px;height:10px;background:#111318;left:calc(50% - 1px);top:10px;transform-origin:50% calc(224px - 10px);transform:rotate(240deg)"></div>
+      <div style="position:absolute;width:3px;height:14px;background:#111318;left:calc(50% - 1.5px);top:10px;transform-origin:50% calc(224px - 14px);transform:rotate(270deg)"></div>
+      <div style="position:absolute;width:2px;height:10px;background:#111318;left:calc(50% - 1px);top:10px;transform-origin:50% calc(224px - 10px);transform:rotate(300deg)"></div>
+      <div style="position:absolute;width:2px;height:10px;background:#111318;left:calc(50% - 1px);top:10px;transform-origin:50% calc(224px - 10px);transform:rotate(330deg)"></div>
+    </div>
+    <div class="hand hour" style="transform:rotate(45deg);background:#1f2733;width:8px;height:60px;left:calc(50% - 4px);top:calc(50% - 60px)"></div>
+    <div class="hand min" style="transform:rotate(-60deg);background:#1f2733;width:6px;height:86px;left:calc(50% - 3px);top:calc(50% - 86px)"></div>
+    <div class="hand sec" style="transform:rotate(160deg);width:2px;height:92px;left:calc(50% - 1px);top:calc(50% - 92px)"></div>
+    <div class="pin"></div>
+  </div>
+</div>
+<div class="cell red r44" style="grid-row:span 2;grid-column:span 2;padding:26px;display:flex;flex-direction:column;justify-content:space-between">
+  <div>
+    <div class="h0 serif fwb">3264</div>
+    <div class="sm lit-w" style="margin-top:6px">Goal: 5000</div>
+  </div>
+  <div class="step-line">
+    <i style="height:12px"></i><i style="height:20px"></i><i style="height:16px"></i><i style="height:28px"></i><i style="height:22px"></i><i style="height:34px"></i><i style="height:18px"></i><i style="height:30px"></i><i style="height:14px"></i><i style="height:24px"></i><i style="height:10px"></i>
+  </div>
+  <div style="position:absolute;right:26px;bottom:26px">
+    <svg class="ico" viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM9.8 8.9L7 23h2.1l1.8-8 2.1 2v6h2v-7.5l-2.1-2 .6-3C14.8 12 16.8 13 19 13v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L6 8.3V13h2V9.6l1.8-.7z"/></svg>
+  </div>
+</div>
+<!-- ROW 11 -->
+<div class="cell white r44" style="grid-column:span 4;padding:0 34px;display:flex;align-items:center;justify-content:space-between">
+  <svg class="ico" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c-1.1 0-2 .9-2 2v2.2c-1.4-.8-3-.8-3.7.4-.7 1.1-.2 2.6 1 3.6-1.4.6-2.3 2-1.8 3.2.5 1.2 2.1 1.7 3.6 1.3-.3 1.5.4 2.9 1.7 3.3 1.3.4 2.7-.4 3.2-1.9.5 1.5 1.9 2.3 3.2 1.9 1.3-.4 2-1.8 1.7-3.3 1.5.4 3.1-.1 3.6-1.3.5-1.2-.4-2.6-1.8-3.2 1.2-1 1.7-2.5 1-3.6-.7-1.2-2.3-1.2-3.7-.4V4c0-1.1-.9-2-2-2zM12 10c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2z"/></svg>
+  <svg class="ico" viewBox="0 0 24 24" fill="currentColor"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 1.56 7.08 1.56 1 9zm8 8l3 3 3-3c-1.65-1.66-4.35-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C13.36 8.44 6.64 8.44 5 13z"/></svg>
+  <svg class="ico" viewBox="0 0 24 24" fill="currentColor"><rect x="17" y="4" width="3" height="16" rx="1"/><rect x="12" y="8" width="3" height="12" rx="1"/><rect x="7" y="12" width="3" height="8" rx="1"/><rect x="2" y="15" width="3" height="5" rx="1"/></svg>
+  <svg class="ico" viewBox="0 0 24 24" fill="currentColor"><path d="M21 14l-6-4v3H3v2h12v3l6-4z"/></svg>
+  <svg class="ico" viewBox="0 0 24 24" fill="currentColor"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 1 0 21 12.79z"/></svg>
+  <svg class="ico" viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+</div>
+<!-- ROWS -->
+</div>
+</body>
+</html>
