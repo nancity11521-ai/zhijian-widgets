@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>圆盘小部件 · 交互版</title>
+<title>圆盘小部件 · 可交互</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600&family=Rajdhani:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet">
@@ -11,69 +11,90 @@
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
   --bg:#2c2c2c; --face:#0c0c0c; --tile:#232323;
-  --wl:#f5f5f5; --d1:#9a9a9a; --red:#ec3b2e;
+  --wl:#f5f5f5;
+  --ac:#ec3b2e; --acSoft:rgba(236,59,46,.85); --acPale:rgba(236,59,46,.55); --acGlow:rgba(236,59,46,.5);
 }
 body{
-  background:var(--bg);color:var(--wl);padding:40px;
+  background:var(--bg);color:var(--wl);padding:40px 40px 100px;
   font-family:"Rajdhani","Noto Sans SC",-apple-system,Arial,sans-serif;
   display:flex;justify-content:center;-webkit-font-smoothing:antialiased;user-select:none;
 }
 .board{display:grid;grid-template-columns:repeat(4,250px);grid-auto-rows:250px;gap:20px}
 
-/* ============ 圆盘基座 ============ */
+/* ═══════════ 圆盘基座 ═══════════ */
 .w{
   position:relative;width:250px;height:250px;border-radius:50%;background:var(--face);
   display:flex;align-items:center;justify-content:center;overflow:hidden;color:var(--wl);
   box-shadow:inset 0 0 0 1px rgba(255,255,255,.065), 0 14px 30px rgba(0,0,0,.45);
 }
+/* 悬停抬起；点击用伪元素闪边，不动 transform，避免和 hover 抢 */
+.w.tap{cursor:pointer;transition:transform .3s cubic-bezier(.2,.8,.3,1), box-shadow .3s ease}
+.w.tap:hover{transform:translateY(-5px);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.16), 0 22px 44px rgba(0,0,0,.58)}
+.w.tap:active{transform:translateY(-2px) scale(.975)}
+.w::after{content:"";position:absolute;inset:0;border-radius:50%;pointer-events:none;
+  box-shadow:inset 0 0 0 0 rgba(255,255,255,0);transition:box-shadow .3s ease}
+.w.flash::after{box-shadow:inset 0 0 0 2px rgba(255,255,255,.5)}
+
 .abs{position:absolute}
 .fill{position:absolute;inset:0}
 .lab{font-family:"Chakra Petch",sans-serif;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:#9d9d9d;font-size:11px}
 .cn{font-family:"Noto Sans SC",sans-serif;font-weight:400}
 .dm{display:block;line-height:0}
 .dm svg{display:block}
+.hide{display:none !important}
 
-/* ============ 刻度圈 / 点圈 / 数字 ============ */
+/* ═══════════ 刻度圈 / 点圈 / 数字 ═══════════ */
 .bezel,.dotring{position:absolute;inset:0}
 .bezel i{position:absolute;border-radius:1px;display:block}
 .dotring i{position:absolute;border-radius:50%;display:block}
 .num{position:absolute;font-family:"Rajdhani",sans-serif;font-weight:600;line-height:1;transform:translate(-50%,-50%)}
 
-/* ============ 指针钟 ============ */
+/* ═══════════ 指针 ═══════════ */
 .hands{position:absolute;inset:0}
-.hand{position:absolute;left:50%;bottom:50%;transform-origin:50% 100%;border-radius:99px}
+.hand{position:absolute;left:50%;bottom:50%;transform-origin:50% 100%;border-radius:99px;will-change:transform}
 .hand.h{width:7px;height:56px;margin-left:-3.5px;background:linear-gradient(0deg,#6b6b6b,#d2d2d2)}
 .hand.m{width:6px;height:78px;margin-left:-3px;background:linear-gradient(0deg,#8d8d8d,#ffffff)}
-.hand.s{width:2px;height:90px;margin-left:-1px;background:var(--red)}
+.hand.s{width:2px;height:90px;margin-left:-1px;background:var(--ac);transition:background .3s}
 .hub{position:absolute;left:50%;top:50%;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;
   background:#0c0c0c;box-shadow:0 0 0 1.5px rgba(255,255,255,.6);z-index:3}
-.hands.glow .hub{background:var(--red);box-shadow:0 0 9px 2.5px rgba(236,59,46,.85)}
+.hands.glow .hub{background:var(--ac);box-shadow:0 0 9px 2.5px var(--acGlow)}
 .dialline{position:absolute;left:50%;top:50%;width:186px;height:186px;margin:-93px 0 0 -93px;
   border-radius:50%;box-shadow:inset 0 0 0 1px rgba(255,255,255,.055)}
 
-/* ============ 浮动圆角方块 ============ */
+/* ═══════════ 浮动方块 / 胶片 ═══════════ */
 .tile{background:var(--tile);border-radius:18px;display:flex;align-items:center;justify-content:center;
   box-shadow:0 7px 16px rgba(0,0,0,.55), inset 0 0 0 1px rgba(255,255,255,.045)}
 .tile.lite{background:#e9e9e9;box-shadow:0 5px 12px rgba(0,0,0,.5)}
 .tile.pure{background:#fff;box-shadow:0 8px 18px rgba(0,0,0,.6)}
-
-/* ============ AM / PM ============ */
-.ampm{font-family:"Rajdhani",sans-serif;font-weight:700;font-size:14px;letter-spacing:.06em;
-  padding:1px 8px;border-radius:7px;color:rgba(236,59,46,.55)}
-.ampm.on{background:var(--red);color:#fff;box-shadow:0 0 12px rgba(236,59,46,.5)}
-
-/* ============ 胶片齿孔 ============ */
 .sprockets{display:flex;justify-content:space-between;padding:0 12px}
 .sprockets i{display:block;width:13px;height:6px;border-radius:1.5px;background:#fff}
 
-/* ============ 交互态 ============ */
-.tap{cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .16s ease}
-.tap:active{transform:scale(.94)}
-@keyframes pop{0%{transform:scale(1)}42%{transform:scale(1.045)}100%{transform:scale(1)}}
-.pop{animation:pop .34s ease}
-.hint{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:rgba(240,240,240,.95);color:#151515;
-  font-family:"Noto Sans SC",sans-serif;font-size:13px;letter-spacing:.02em;padding:11px 22px;border-radius:999px;
-  opacity:0;transition:opacity .45s ease;pointer-events:none;z-index:99;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+/* ═══════════ AM / PM ═══════════ */
+.ampm{font-family:"Rajdhani",sans-serif;font-weight:700;font-size:14px;letter-spacing:.06em;
+  padding:1px 8px;border-radius:7px;color:var(--acPale);transition:.3s}
+.ampm.on{background:var(--ac);color:#fff;box-shadow:0 0 12px var(--acGlow)}
+
+/* ═══════════ 底部控制条 ═══════════ */
+.ctl{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);display:flex;align-items:center;gap:10px;
+  background:rgba(22,22,22,.94);border:1px solid rgba(255,255,255,.09);border-radius:999px;padding:7px 13px;
+  box-shadow:0 12px 32px rgba(0,0,0,.55);z-index:90}
+.grp{display:flex;align-items:center;gap:2px}
+.cb{font-family:"Noto Sans SC",sans-serif;font-size:12px;line-height:1;color:#9a9a9a;background:transparent;
+  border:0;padding:6px 12px;border-radius:999px;cursor:pointer;transition:background .2s,color .2s;white-space:nowrap}
+.cb:hover{color:#f0f0f0;background:rgba(255,255,255,.08)}
+.cb.on{background:#f0f0f0;color:#151515;font-weight:500}
+.ctl .div{width:1px;height:16px;background:rgba(255,255,255,.13)}
+.cb.dot{width:24px;height:24px;padding:0;display:flex;align-items:center;justify-content:center;border-radius:50%}
+.cb.dot i{width:12px;height:12px;border-radius:50%;background:var(--c);display:block;
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.35)}
+.cb.dot.on{background:#f0f0f0}
+
+/* ═══════════ 提示 ═══════════ */
+.hint{position:fixed;left:50%;bottom:78px;transform:translateX(-50%);background:rgba(240,240,240,.96);color:#151515;
+  font-family:"Noto Sans SC",sans-serif;font-size:12.5px;letter-spacing:.02em;padding:9px 18px;border-radius:999px;
+  opacity:0;transition:opacity .4s ease;pointer-events:none;z-index:95;white-space:nowrap;
+  box-shadow:0 8px 24px rgba(0,0,0,.45)}
 .hint.on{opacity:1}
 </style>
 </head>
@@ -83,7 +104,7 @@ body{
 <!-- ═══ R1·1 电量：分段刻度圈 ═══ -->
 <div class="w tap" data-tap="battery" title="切换电量">
   <div class="bezel" id="bezBat" data-bezel='{"n":30,"r0":106,"r1":124,"w":5,"c":"#dcdcdc","a0":218,"a1":502,"fade":2.5,"seg":30}'></div>
-  <div style="transform:rotate(-7deg);display:flex;flex-direction:column;align-items:center">
+  <div style="display:flex;flex-direction:column;align-items:center">
     <svg width="31" height="37" viewBox="0 0 24 27" fill="none" stroke="currentColor" stroke-width="1.35" style="color:#d4d4d4">
       <rect x="6.6" y="5" width="10.8" height="19" rx="3"/>
       <rect x="10" y="1.8" width="4" height="3" rx="1.2" fill="currentColor" stroke="none"/>
@@ -94,19 +115,19 @@ body{
 </div>
 
 <!-- ═══ R1·2 指针钟（数字 1-12） ═══ -->
-<div class="w">
+<div class="w tap" data-tap="sec" title="秒针 显示 / 隐藏">
   <div class="dialline"></div>
   <div class="bezel" data-bezel='{"n":60,"r0":115,"r1":125,"w":1.5,"c":"#c8c8c8","major":5,"mr0":109,"mw":2.6,"mc":"#ffffff"}'></div>
   <div class="fill" data-nums='{"r":90,"s":15,"c":"#a9a9a9"}'></div>
   <div class="hands" data-hands='{"h":56,"m":78}'></div>
-  <div class="abs" style="left:0;right:0;bottom:58px;display:flex;justify-content:center;transform:rotate(-6deg)">
+  <div class="abs" data-opt="clk" style="left:0;right:0;bottom:58px;display:flex;justify-content:center">
     <span class="dm" data-dm="md" data-h="12" data-c="#6f6f6f"></span>
   </div>
 </div>
 
 <!-- ═══ R1·3 点阵时间 + 日期 ═══ -->
 <div class="w tap" data-tap="fmt" title="12 / 24 小时制">
-  <div style="transform:rotate(-6deg);display:flex;flex-direction:column;align-items:center">
+  <div style="display:flex;flex-direction:column;align-items:center">
     <span class="dm" data-dm="hm" data-h="46" data-c="#f8f8f8"></span>
     <div style="display:flex;align-items:center;gap:11px;margin-top:18px">
       <span class="dm" data-dm="md" data-h="12" data-c="#8c8c8c"></span>
@@ -115,51 +136,50 @@ body{
   </div>
 </div>
 
-<!-- ═══ R1·4 上下堆叠 8 / 日期 / 8 ═══ -->
-<div class="w">
-  <div class="fill" style="transform:rotate(-8deg)">
-    <span class="abs dm" data-dm="hh" data-h="50" data-c="#f8f8f8" style="left:46px;top:50px"></span>
-    <div class="abs" style="left:96px;top:104px;display:flex;align-items:center;gap:9px">
+<!-- ═══ R1·4 堆叠 时 / 日期 / 分 ═══ -->
+<div class="w tap" data-tap="day" title="切换日期">
+  <div class="fill">
+    <span class="abs dm" data-dm="hh" data-h="50" data-c="#f8f8f8" style="left:44px;top:44px"></span>
+    <div class="abs" style="left:92px;top:104px;display:flex;align-items:center;gap:9px">
       <span class="dm" data-dm="md" data-h="10" data-c="#7d7d7d"></span>
       <span class="cn" style="font-size:11px;color:#7d7d7d" data-live="dowcn">星期六</span>
     </div>
-    <span class="abs dm" data-dm="mm" data-h="50" data-c="#f8f8f8" style="left:118px;top:132px"></span>
+    <span class="abs dm" data-dm="mm" data-h="50" data-c="#f8f8f8" style="left:118px;top:130px"></span>
   </div>
 </div>
 
-<!-- ═══ R2·5 指针钟 TIME ═══ -->
-<div class="w">
+<!-- ═══ R2·5 指针钟 TIME（红针 + 光点） ═══ -->
+<div class="w tap" data-tap="sec" title="秒针 显示 / 隐藏">
   <div class="bezel" data-bezel='{"n":60,"r0":104,"r1":124,"w":1.9,"c":"#e2e2e2","major":5,"mr0":95,"mw":3.6,"mc":"#ffffff"}'></div>
   <div class="hands glow" data-hands='{"h":60,"m":82}'></div>
-  <div class="abs lab" style="right:48px;bottom:60px;font-size:12px;transform:rotate(-20deg)">Time</div>
+  <div class="abs lab" style="right:46px;bottom:56px;font-size:12px">Time</div>
 </div>
 
-<!-- ═══ R2·6 胶片日历 20·21·22 ═══ -->
+<!-- ═══ R2·6 胶片日历 ═══ -->
 <div class="w tap" data-tap="day" title="切换日期">
-  <div class="abs lab" style="left:44px;top:46px;font-size:13px;transform:rotate(-13deg);color:#d2d2d2">Mar.</div>
-  <div class="abs" style="left:-40px;top:88px;width:330px;transform:rotate(-13deg)">
-    <div style="background:#1b1b1b;padding:8px 0;box-shadow:0 8px 18px rgba(0,0,0,.5)">
-      <div class="sprockets" data-sprockets="15"></div>
-      <div style="display:flex;align-items:center;justify-content:center;gap:8px;padding:8px 0">
-        <div class="tile lite" style="width:50px;height:50px;border-radius:13px"><span class="dm" data-dm="d-1" data-h="23" data-c="#6a6a6a"></span></div>
-        <div class="tile pure" style="width:64px;height:64px;border-radius:17px;margin-top:-5px"><span class="dm" data-dm="d0" data-h="30" data-c="#111111"></span></div>
-        <div class="tile lite" style="width:50px;height:50px;border-radius:13px"><span class="dm" data-dm="d+1" data-h="23" data-c="#6a6a6a"></span></div>
-      </div>
-      <div class="sprockets" data-sprockets="15"></div>
+  <div class="abs lab" style="top:36px;left:0;right:0;text-align:center;font-size:12px;color:#d2d2d2">Mar.</div>
+  <div class="abs" style="left:14px;right:14px;top:74px;background:#1b1b1b;padding:7px 0;box-shadow:0 8px 18px rgba(0,0,0,.5)">
+    <div class="sprockets" data-sprockets="12"></div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:9px;padding:8px 0">
+      <div class="tile lite" style="width:50px;height:50px;border-radius:13px"><span class="dm" data-dm="d-1" data-h="23" data-c="#6a6a6a"></span></div>
+      <div class="tile pure" style="width:64px;height:64px;border-radius:17px"><span class="dm" data-dm="d0" data-h="30" data-c="#111111"></span></div>
+      <div class="tile lite" style="width:50px;height:50px;border-radius:13px"><span class="dm" data-dm="d+1" data-h="23" data-c="#6a6a6a"></span></div>
     </div>
+    <div class="sprockets" data-sprockets="12"></div>
   </div>
-  <div class="abs cn" style="left:122px;bottom:44px;font-size:12px;color:#ededed;transform:rotate(-13deg)" data-live="dowcn">星期六</div>
+  <div class="abs cn" style="bottom:42px;left:0;right:0;text-align:center;font-size:12px;color:#ededed" data-live="dowcn">星期六</div>
 </div>
 
-<!-- ═══ R2·7 生日计数（白色进度弧） ═══ -->
+<!-- ═══ R2·7 生日进度环 ═══ -->
 <div class="w tap" data-tap="bday" title="已过天数 / 距年末">
   <svg class="abs" width="250" height="250" viewBox="0 0 250 250" fill="none">
+    <circle cx="125" cy="125" r="104" stroke="#232323" stroke-width="7"/>
     <path data-arc="bday" d="" stroke="#ffffff" stroke-width="7" stroke-linecap="round"/>
   </svg>
-  <div style="transform:rotate(-10deg);display:flex;flex-direction:column;align-items:center">
+  <div style="display:flex;flex-direction:column;align-items:center">
     <div class="lab" style="font-size:11px">Birthday</div>
     <span class="dm" data-dm="bday" data-h="52" data-c="#f8f8f8" style="margin-top:5px"></span>
-    <div class="cn" style="font-size:10px;color:#8a8a8a;margin-top:9px" data-live="bdaycap">出生于</div>
+    <div class="cn" style="font-size:10px;color:#8a8a8a;margin-top:9px" data-live="bdaycap">已过天数</div>
     <span class="dm" data-dm="bdate" data-h="10" data-c="#8a8a8a" style="margin-top:4px"></span>
   </div>
 </div>
@@ -171,26 +191,26 @@ body{
   </svg>
   <div class="bezel" data-bezel='{"n":60,"r0":105,"r1":110,"w":1.1,"c":"#b4b4b4","major":5,"mr0":101,"mw":2,"mc":"#ffffff"}'></div>
   <div class="fill" data-nums='{"r":87,"s":14,"c":"#9e9e9e"}'></div>
-  <div class="tile abs" style="width:78px;height:78px;left:124px;top:46px;transform:rotate(7deg)">
+  <div class="tile abs" style="width:78px;height:78px;left:126px;top:42px">
     <span class="dm" data-dm="hh" data-h="38" data-c="#f0f0f0"></span>
   </div>
-  <div class="tile abs" style="width:78px;height:78px;left:48px;top:126px;transform:rotate(-7deg)">
+  <div class="tile abs" style="width:78px;height:78px;left:46px;top:130px">
     <span class="dm" data-dm="mm" data-h="38" data-c="#f0f0f0"></span>
   </div>
-  <div class="abs" style="left:56px;top:74px"><span class="ampm on" id="ampmAM">AM</span></div>
-  <div class="abs" style="left:152px;top:172px"><span class="ampm" id="ampmPM">PM</span></div>
+  <div class="abs" style="left:62px;top:90px"><span class="ampm on" id="ampmAM">AM</span></div>
+  <div class="abs" style="left:154px;top:176px"><span class="ampm" id="ampmPM">PM</span></div>
 </div>
 
-<!-- ═══ R3·9 三日斜带 20 21 22 ═══ -->
+<!-- ═══ R3·9 三日横带 ═══ -->
 <div class="w tap" data-tap="day" title="切换日期">
-  <div class="abs" style="left:-56px;top:74px;width:362px;height:106px;background:#2b2b2b;transform:rotate(-22deg);
-       display:flex;align-items:center;justify-content:center;gap:20px">
+  <div class="abs" style="left:-14px;right:-14px;top:78px;height:96px;background:#2b2b2b;
+       display:flex;align-items:center;justify-content:center;gap:22px">
     <span class="dm" data-dm="d-1" data-h="24" data-c="#7b7b7b"></span>
     <span class="dm" data-dm="d0" data-h="48" data-c="#ffffff"></span>
     <span class="dm" data-dm="d+1" data-h="24" data-c="#7b7b7b"></span>
   </div>
-  <div class="abs lab" style="left:44px;top:50px;font-size:14px;transform:rotate(-22deg);color:#cdcdcd">March</div>
-  <div class="abs cn" style="left:106px;bottom:58px;font-size:13px;color:#ededed;transform:rotate(-22deg)" data-live="dowcn">星期六</div>
+  <div class="abs lab" style="top:38px;left:0;right:0;text-align:center;font-size:13px;color:#cdcdcd">March</div>
+  <div class="abs cn" style="bottom:40px;left:0;right:0;text-align:center;font-size:13px;color:#ededed" data-live="dowcn">星期六</div>
 </div>
 
 <!-- ═══ R3·10 花瓣情景模式 ═══ -->
@@ -205,8 +225,8 @@ body{
 </div>
 
 <!-- ═══ R3·11 全信息卡 ═══ -->
-<div class="w">
-  <div style="transform:rotate(-9deg);display:flex;flex-direction:column;align-items:center">
+<div class="w tap" data-tap="fmt" title="12 / 24 小时制">
+  <div style="display:flex;flex-direction:column;align-items:center">
     <div class="cn" style="font-size:13px;color:#d4d4d4" data-live="dowcn">星期六</div>
     <span class="dm" data-dm="full" data-h="11" data-c="#8a8a8a" style="margin-top:7px"></span>
     <span class="dm" data-dm="hm" data-h="39" data-c="#f8f8f8" style="margin-top:11px"></span>
@@ -216,15 +236,15 @@ body{
   </div>
 </div>
 
-<!-- ═══ R3·12 今日剩余（白弧环） ═══ -->
+<!-- ═══ R3·12 今日剩余 ═══ -->
 <div class="w tap" data-tap="remain" title="剩余 / 已过">
   <svg class="abs" width="250" height="250" viewBox="0 0 250 250" fill="none">
     <circle cx="125" cy="125" r="107" stroke="#262626" stroke-width="5"/>
     <path data-arc="remain" d="" stroke="#ffffff" stroke-width="5" stroke-linecap="round"/>
   </svg>
-  <div style="transform:rotate(-8deg);display:flex;flex-direction:column;align-items:center">
+  <div style="display:flex;flex-direction:column;align-items:center">
     <div style="display:flex;align-items:center;gap:9px">
-      <span class="lab" style="font-size:11px;color:#c6c6c6">March</span>
+      <span class="lab" style="font-size:11px;color:#c6c6c6" data-live="monen">March</span>
       <span class="cn" style="font-size:11px;color:#8a8a8a" data-live="dowcn">星期六</span>
     </div>
     <span class="dm" data-dm="full" data-h="10" data-c="#7d7d7d" style="margin-top:5px"></span>
@@ -237,16 +257,18 @@ body{
   </div>
 </div>
 
-<!-- ═══ R4·13 指针钟 + 右下点阵时间 ═══ -->
-<div class="w tap" data-tap="fmt" title="12 / 24 小时制">
+<!-- ═══ R4·13 指针钟 + 点阵时间 ═══ -->
+<div class="w tap" data-tap="clkdm" title="点阵时间 显示 / 隐藏">
   <div class="bezel" data-bezel='{"n":60,"r0":110,"r1":124,"w":1.7,"c":"#dcdcdc","major":5,"mr0":103,"mw":3.2,"mc":"#ffffff"}'></div>
   <div class="hands" data-hands='{"h":54,"m":76}'></div>
-  <div class="abs" style="right:44px;bottom:54px"><span class="dm" data-dm="hm" data-h="16" data-c="#ffffff"></span></div>
+  <div class="abs" data-opt="clk" style="right:44px;bottom:54px">
+    <span class="dm" data-dm="hm" data-h="16" data-c="#ffffff"></span>
+  </div>
 </div>
 
-<!-- ═══ R4·14 超大字点阵时间 ═══ -->
+<!-- ═══ R4·14 超大点阵时间 ═══ -->
 <div class="w tap" data-tap="fmt" title="12 / 24 小时制">
-  <div style="transform:rotate(-5deg);display:flex;flex-direction:column;align-items:center">
+  <div style="display:flex;flex-direction:column;align-items:center">
     <span class="dm" data-dm="hm" data-h="52" data-c="#fbfbfb"></span>
     <div style="display:flex;align-items:center;gap:10px;margin-top:16px">
       <span class="dm" data-dm="md" data-h="11" data-c="#808080"></span>
@@ -257,7 +279,7 @@ body{
 
 <!-- ═══ R4·15 日期焦点卡 ═══ -->
 <div class="w tap" data-tap="day" title="切换日期">
-  <div style="transform:rotate(-7deg);display:flex;flex-direction:column;align-items:center">
+  <div style="display:flex;flex-direction:column;align-items:center">
     <div class="lab" style="font-size:13px;color:#c9c9c9" data-live="monen">March</div>
     <span class="dm" data-dm="d0" data-h="76" data-c="#fbfbfb" style="margin-top:3px"></span>
     <div class="cn" style="font-size:13px;color:#d4d4d4;margin-top:5px" data-live="dowcn">星期六</div>
@@ -265,27 +287,43 @@ body{
   </div>
 </div>
 
-<!-- ═══ R4·16 指针钟（点状圈） ═══ -->
-<div class="w">
+<!-- ═══ R4·16 点圈指针钟 ═══ -->
+<div class="w tap" data-tap="sec" title="秒针 显示 / 隐藏">
   <div class="dotring" data-dotring='{"n":60,"r":115,"d":3.6,"c":"#949494","major":5,"md":5,"mc":"#ffffff"}'></div>
   <div class="hands" data-hands='{"h":52,"m":74}'></div>
-  <div class="abs" style="left:0;right:0;bottom:50px;display:flex;justify-content:center;transform:rotate(-6deg)">
+  <div class="abs" data-opt="clk" style="left:0;right:0;bottom:50px;display:flex;justify-content:center">
     <span class="dm" data-dm="md" data-h="12" data-c="#6f6f6f"></span>
   </div>
 </div>
 
 </div>
-<div class="hint" id="hint">轻触圆盘可交互 · 时间 / 日期均为实时</div>
+
+<!-- ═══ 底部控制条 ═══ -->
+<div class="ctl">
+  <div class="grp">
+    <button class="cb on" data-set="sweep" data-v="1">扫秒</button>
+    <button class="cb"    data-set="sweep" data-v="0">跳秒</button>
+  </div>
+  <span class="div"></span>
+  <div class="grp">
+    <button class="cb on" data-set="fmt" data-v="24">24H</button>
+    <button class="cb"    data-set="fmt" data-v="12">12H</button>
+  </div>
+  <span class="div"></span>
+  <div class="grp">
+    <button class="cb dot on" data-set="accent" data-v="red"   style="--c:#ec3b2e" title="红"><i></i></button>
+    <button class="cb dot"    data-set="accent" data-v="white" style="--c:#eaeaea" title="白"><i></i></button>
+    <button class="cb dot"    data-set="accent" data-v="blue"  style="--c:#4a7fe0" title="蓝"><i></i></button>
+  </div>
+</div>
+<div class="hint" id="hint">轻触圆盘可交互 · 指针为实时走时</div>
 
 <script>
-/* ══════════════ 模式：'live' 实时交互 / 'fixed' 静态设计稿 ══════════════ */
-const MODE = 'live';
-
 const $$ = s => [...document.querySelectorAll(s)];
 const pad2 = n => String(n).padStart(2, '0');
 const setText = (k, v) => $$(`[data-live="${k}"]`).forEach(e => { v = String(v); if (e.textContent !== v) e.textContent = v; });
 
-/* ══════════════ 5×7 点阵字库 ══════════════ */
+/* ═══════════ 5×7 点阵字库 ═══════════ */
 const DM = {
   '0':'11111 10001 10001 10001 10001 10001 11111',
   '1':'00100 01100 00100 00100 00100 00100 11111',
@@ -307,7 +345,7 @@ const DM = {
 const ADV = { ':':2.6, '.':2.6, '/':5.4, ' ':3.4 };      // 单位 = 点距
 
 function dm(text, h, color){
-  const gap = .34, u = 1 + gap, defAdv = 6.4;          // 单位数（ADV 同样以「点距」为单位，勿再乘 u）
+  const gap = .34, u = 1 + gap, defAdv = 6.4;            // 纯单位数；消费处统一乘 u
   let x = 0, rects = '';
   for (const ch of String(text)){
     const bm = DM[ch];
@@ -329,7 +367,7 @@ function renderDM(key, val){
   });
 }
 
-/* ══════════════ 几何生成 ══════════════ */
+/* ═══════════ 几何生成 ═══════════ */
 const CX = 125, CY = 125;
 function bezel(el, o){
   const { n = 60, r0 = 110, r1 = 124, w = 1.6, c = '#d0d0d0', major = 5, mr0 = 104, mw = 3,
@@ -386,9 +424,9 @@ $$('[data-sprockets]').forEach(el => {
 });
 (function(){
   const g = document.getElementById('flowerSvg');
-  for (let i = 0; i < 6; i++){
+  for (let i = 0; i < 6; i++){                      // 花瓣：正坐标 + 绕圆心旋转
     const r = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-    r.setAttribute('x', 108.5); r.setAttribute('y', 31);   // 注意：必须落在 250×250 viewBox 内，否则被裁掉
+    r.setAttribute('x', 108.5); r.setAttribute('y', 31);
     r.setAttribute('width', 33); r.setAttribute('height', 68); r.setAttribute('rx', 16.5);
     r.setAttribute('fill', '#3a3a3a'); r.setAttribute('stroke', '#131313'); r.setAttribute('stroke-width', '1');
     r.setAttribute('transform', `rotate(${i * 60} 125 125)`);
@@ -396,130 +434,160 @@ $$('[data-sprockets]').forEach(el => {
   }
 })();
 
-/* ══════════════ 状态 ══════════════ */
+/* ═══════════ 状态 ═══════════ */
 const S = {
   batArr: [100, 85, 65, 45, 20], batIdx: 0,
   ampm: new Date().getHours() < 12 ? 'am' : 'pm',
   flower: true, bdayUsed: true, remainMode: true,
-  dayShift: 0, fmt24: true
+  dayShift: 0, fmt24: true,
+  sweep: true, secOn: true, clkdm: true, accent: 'red'
+};
+const ACCENTS = {
+  red:   { c:'#ec3b2e', soft:'rgba(236,59,46,.85)', pale:'rgba(236,59,46,.55)', glow:'rgba(236,59,46,.5)' },
+  white: { c:'#eaeaea', soft:'rgba(234,234,234,.8)', pale:'rgba(234,234,234,.42)', glow:'rgba(234,234,234,.38)' },
+  blue:  { c:'#4a7fe0', soft:'rgba(74,127,224,.85)', pale:'rgba(74,127,224,.55)', glow:'rgba(74,127,224,.5)' }
 };
 const MON_EN = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 const DOW_CN = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
 const BIRTH = { y: 2020, m: 2, d: 21 };
 
-/* ══════════════ 取时间 ══════════════ */
-const isFixed = () => MODE === 'fixed';
-function now(){
-  if (isFixed()) return new Date(2020, 2, 21, 8, 8, 0);
-  const d = new Date(); d.setDate(d.getDate() + S.dayShift); return d;
-}
-function clock(){
-  if (isFixed()) return { h: 8, m: 8, s: 0 };
-  const d = new Date(); return { h: d.getHours(), m: d.getMinutes(), s: d.getSeconds() };
-}
+const now   = () => { const d = new Date(); d.setDate(d.getDate() + S.dayShift); return d; };
 const dayAt = off => { const t = now(); t.setDate(t.getDate() + off); return t; };
 
-/* ══════════════ 渲染 ══════════════ */
+/* ═══════════ 渲染 ═══════════ */
 function renderBattery(){
-  const p = isFixed() ? 100 : S.batArr[S.batIdx];
+  const p = S.batArr[S.batIdx];
   renderDM('batpct', p + '%');
   const el = document.getElementById('bezBat'), lit = Math.round(p / 100 * 30);
   [...el.children].forEach((c, i) => { c.style.opacity = i < lit ? '1' : '.13'; });
 }
 function renderFlower(){
-  const on = isFixed() ? true : S.flower;
+  const on = S.flower;
   [...document.getElementById('flowerSvg').children]
     .forEach(r => r.setAttribute('fill', on ? '#3a3a3a' : '#1b1b1b'));
   document.getElementById('flowerIco').style.opacity = on ? '1' : '.28';
   document.getElementById('flowerW').style.background = on ? '#0a0a0a' : '#070707';
 }
 function renderAmpm(){
-  const am = isFixed() ? true : S.ampm === 'am';
+  const am = S.ampm === 'am';
   document.getElementById('ampmAM').classList.toggle('on', am);
   document.getElementById('ampmPM').classList.toggle('on', !am);
 }
+function renderOpts(){
+  const a = ACCENTS[S.accent], r = document.documentElement.style;
+  r.setProperty('--ac', a.c); r.setProperty('--acSoft', a.soft);
+  r.setProperty('--acPale', a.pale); r.setProperty('--acGlow', a.glow);
+  $$('[data-opt="clk"]').forEach(e => e.classList.toggle('hide', !S.clkdm));
+  $$('.hand.s').forEach(e => e.classList.toggle('hide', !S.secOn));
+}
 function renderTexts(){
-  const d = now(), c = clock();
-  const H12 = c.h % 12 === 0 ? 12 : c.h % 12, hh = S.fmt24 ? c.h : H12;
-  renderDM('hm', pad2(hh) + ':' + pad2(c.m));
-  renderDM('hh', pad2(hh));
-  renderDM('mm', pad2(c.m));
+  const t = new Date(), d = now();
+  const H12 = t.getHours() % 12 === 0 ? 12 : t.getHours() % 12;
+  const hh = S.fmt24 ? pad2(t.getHours()) : String(H12);   // 12 小时制去前导零，切换才看得出来
+  renderDM('hm',   hh + ':' + pad2(t.getMinutes()));
+  renderDM('hh',   hh);
+  renderDM('mm',   pad2(t.getMinutes()));
   renderDM('md',   `${pad2(d.getMonth() + 1)}/${pad2(d.getDate())}`);
   renderDM('full', `${d.getFullYear()}/${pad2(d.getMonth() + 1)}/${pad2(d.getDate())}`);
-  renderDM('d0', d.getDate());
-  renderDM('d-1', dayAt(-1).getDate());
-  renderDM('d+1', dayAt(1).getDate());
+  renderDM('d0',   d.getDate());
+  renderDM('d-1',  dayAt(-1).getDate());
+  renderDM('d+1',  dayAt(1).getDate());
   renderDM('year', d.getFullYear());
   setText('dowcn', DOW_CN[d.getDay()]);
   setText('monen', MON_EN[d.getMonth()]);
 }
 function renderBday(){
-  const d = now(), y0 = new Date(d.getFullYear(), 0, 1);
-  const doy = Math.floor((d - y0) / 864e5) + 1;
-  const y = d.getFullYear();
+  const d = now(), y = d.getFullYear();
+  const doy = Math.floor((d - new Date(y, 0, 1)) / 864e5) + 1;
   const total = (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0 ? 366 : 365;
-  const val = isFixed() ? 336 : (S.bdayUsed ? doy : total - doy);
+  const val = S.bdayUsed ? doy : total - doy;
   renderDM('bday', val);
   renderDM('bdate', `${BIRTH.y}/${pad2(BIRTH.m + 1)}/${pad2(BIRTH.d)}`);
-  setText('bdaycap', isFixed() ? '出生于' : (S.bdayUsed ? '已过天数' : '距年末'));
+  setText('bdaycap', S.bdayUsed ? '已过天数' : '距年末');
   document.querySelector('[data-arc="bday"]').setAttribute('d', arcD(104, 0, 360 * (val / total)));
 }
 function renderRemain(){
-  const d = new Date(); if (isFixed()) d.setHours(8, 8, 0, 0);
+  const d = new Date();
   const sec = d.getHours() * 3600 + d.getMinutes() * 60 + d.getSeconds();
-  const frac = Math.min(1, (86400 - sec) / 86400);
-  const use = S.remainMode ? frac : 1 - frac;
+  const frac = Math.min(1, (86400 - sec) / 86400), use = S.remainMode ? frac : 1 - frac;
   document.querySelector('[data-arc="remain"]').setAttribute('d', arcD(107, 0, -360 * use));
   setText('remcap', S.remainMode ? '今日剩余' : '今日已过');
   renderDM('remainh', Math.floor((S.remainMode ? 86400 - sec : sec) / 3600));
 }
+
+/* ═══════════ 走针：rAF 逐帧，支持扫秒 / 跳秒 ═══════════ */
+const handH = $$('.hand.h'), handM = $$('.hand.m'), handS = $$('.hand.s');
 let lastMin = -1;
-function tick(force){
-  const c = clock();
-  $$('.hand.h').forEach(e => e.style.transform = `rotate(${(c.h % 12) * 30 + c.m * .5}deg)`);
-  $$('.hand.m').forEach(e => e.style.transform = `rotate(${c.m * 6 + c.s * .1}deg)`);
-  $$('.hand.s').forEach(e => e.style.transform = `rotate(${c.s * 6}deg)`);
-  if (force || c.m !== lastMin){ lastMin = c.m; renderTexts(); renderRemain(); renderBday(); }
+function frame(){
+  const d = new Date();
+  const secF  = S.sweep ? d.getSeconds() + d.getMilliseconds() / 1000 : d.getSeconds();
+  const minF  = d.getMinutes() + secF / 60;
+  const hourF = (d.getHours() % 12) + minF / 60;
+  const sT = `rotate(${(secF * 6).toFixed(2)}deg)`;
+  const mT = `rotate(${(minF * 6).toFixed(2)}deg)`;
+  const hT = `rotate(${(hourF * 30).toFixed(2)}deg)`;
+  for (const e of handS) e.style.transform = sT;
+  for (const e of handM) e.style.transform = mT;
+  for (const e of handH) e.style.transform = hT;
+  const m = d.getMinutes();
+  if (m !== lastMin){ lastMin = m; renderTexts(); renderRemain(); renderBday(); }
+  requestAnimationFrame(frame);
 }
+function refresh(){ lastMin = -1; renderTexts(); renderRemain(); renderBday(); }
 
-/* ══════════════ 交互 ══════════════ */
+/* ═══════════ 交互 ═══════════ */
 const ACTIONS = {
-  battery(){ S.batIdx = (S.batIdx + 1) % S.batArr.length; renderBattery(); },
-  ampm(){ S.ampm = S.ampm === 'am' ? 'pm' : 'am'; renderAmpm(); },
-  flower(){ S.flower = !S.flower; renderFlower(); },
-  bday(){ S.bdayUsed = !S.bdayUsed; renderBday(); },
-  remain(){ S.remainMode = !S.remainMode; renderRemain(); },
-  day(){ S.dayShift = (S.dayShift + 1) % 14; tick(true); },
-  fmt(){ S.fmt24 = !S.fmt24; tick(true); }
+  battery(){ S.batIdx = (S.batIdx + 1) % S.batArr.length; renderBattery(); return '电量 ' + S.batArr[S.batIdx] + '%'; },
+  sec(){ S.secOn = !S.secOn; renderOpts(); return S.secOn ? '显示秒针' : '隐藏秒针'; },
+  clkdm(){ S.clkdm = !S.clkdm; renderOpts(); return S.clkdm ? '显示点阵时间' : '隐藏点阵时间'; },
+  fmt(){ S.fmt24 = !S.fmt24; renderTexts(); syncCtl(); return S.fmt24 ? '24 小时制' : '12 小时制'; },
+  day(){ S.dayShift = (S.dayShift + 1) % 14; refresh(); return '日期 +1 天'; },
+  ampm(){ S.ampm = S.ampm === 'am' ? 'pm' : 'am'; renderAmpm(); return S.ampm.toUpperCase(); },
+  flower(){ S.flower = !S.flower; renderFlower(); return S.flower ? '情景模式 开' : '情景模式 关'; },
+  bday(){ S.bdayUsed = !S.bdayUsed; renderBday(); return S.bdayUsed ? '已过天数' : '距年末'; },
+  remain(){ S.remainMode = !S.remainMode; renderRemain(); return S.remainMode ? '今日剩余' : '今日已过'; }
 };
-$$('[data-tap]').forEach(el => el.addEventListener('click', e => {
-  e.stopPropagation();
-  const fn = ACTIONS[el.dataset.tap];
-  if (fn) fn(el);
-  bump(el); flash();
+$$('[data-tap]').forEach(el => el.addEventListener('click', () => {
+  const msg = ACTIONS[el.dataset.tap]?.();
+  flash(el); if (msg) toast(msg);
 }));
-const hint = document.getElementById('hint');
-hint.classList.add('on');
-let hintTimer = setTimeout(() => hint.classList.remove('on'), 5200);
-function flash(){
-  clearTimeout(hintTimer); hint.classList.remove('on');
-  hintTimer = setTimeout(() => hint.classList.add('on'), 150);
-  clearTimeout(flash.t); flash.t = setTimeout(() => hint.classList.remove('on'), 2400);
-}
-function bump(el){
-  el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop');
+
+/* ═══════════ 控制条 ═══════════ */
+const ACCENT_CN = { red:'红', white:'白', blue:'蓝' };
+$$('.ctl .cb').forEach(btn => btn.addEventListener('click', () => {
+  const { set, v } = btn.dataset;
+  if (set === 'sweep'){ S.sweep = v === '1'; toast(S.sweep ? '扫秒 · 连续走针' : '跳秒 · 每秒一跳'); }
+  if (set === 'fmt'){ S.fmt24 = v === '24'; renderTexts(); toast(S.fmt24 ? '24 小时制' : '12 小时制'); }
+  if (set === 'accent'){ S.accent = v; renderOpts(); toast('强调色 · ' + ACCENT_CN[v]); }
+  syncCtl();
+}));
+function syncCtl(){
+  $$('.ctl .cb').forEach(b => {
+    const { set, v } = b.dataset;
+    const on = set === 'sweep' ? String(S.sweep ? 1 : 0) === v
+             : set === 'fmt'   ? (S.fmt24 ? '24' : '12') === v
+             : S.accent === v;
+    b.classList.toggle('on', on);
+  });
 }
 
-/* ══════════════ 启动 ══════════════ */
-renderBattery(); renderFlower(); renderAmpm();
-renderTexts(); renderRemain(); renderBday();
-tick(true);
-if (isFixed()){                                   // 静态设计稿：不可点、无提示
-  document.getElementById('hint').remove();
-  $$('[data-tap]').forEach(e => e.classList.remove('tap'));
-} else {
-  setInterval(tick, 1000);
+/* ═══════════ 反馈 ═══════════ */
+const hint = document.getElementById('hint');
+let ht;
+function toast(t){
+  hint.textContent = t; hint.classList.add('on');
+  clearTimeout(ht); ht = setTimeout(() => hint.classList.remove('on'), 1900);
 }
+function flash(el){
+  el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash');
+  setTimeout(() => el.classList.remove('flash'), 320);
+}
+
+/* ═══════════ 启动 ═══════════ */
+renderBattery(); renderFlower(); renderAmpm(); renderOpts(); syncCtl();
+refresh();
+requestAnimationFrame(frame);
+setTimeout(() => toast('轻触圆盘可交互 · 底部可切换扫秒 / 12-24H / 强调色'), 500);
 </script>
 </body>
 </html>
