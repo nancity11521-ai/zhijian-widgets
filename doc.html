@@ -1,0 +1,1370 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>至简 · 桌面小组件需求规格文档（可编辑）</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg: #0d0d10;
+  --surface: #18181d;
+  --card: #232329;
+  --card-hover: #2a2a32;
+  --border: #33333d;
+  --border-focus: #f0813c;
+  --orange: #f0813c;
+  --orange-glow: rgba(240, 129, 60, 0.25);
+  --blue: #2e6ee0;
+  --ink: #ececee;
+  --ink-dim: #9a9aa2;
+  --ink-muted: #64646e;
+  --radius: 12px;
+  --tag-bg: rgba(255,255,255,0.06);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Noto Sans SC', -apple-system, sans-serif;
+  line-height: 1.6;
+  padding: 0 0 100px;
+}
+
+/* 顶部导航与工具栏 */
+.topbar{
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(13, 13, 16, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.brand{
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.brand .back-btn{
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--ink);
+  text-decoration: none;
+  border-radius: 8px;
+  font-size: 12px;
+  transition: all .2s;
+}
+.brand .back-btn:hover{
+  background: #2f2f38;
+  border-color: var(--orange);
+  color: #fff;
+}
+.brand h1{
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+.brand .badge{
+  font-size: 11px;
+  padding: 3px 9px;
+  background: rgba(240, 129, 60, 0.15);
+  color: var(--orange);
+  border: 1px solid rgba(240, 129, 60, 0.35);
+  border-radius: 6px;
+  font-family: 'JetBrains Mono', monospace;
+}
+.status-tag{
+  font-size: 12px;
+  color: var(--ink-dim);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.status-tag .dot{
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10b981;
+}
+.status-tag .dot.unsaved{
+  background: #f59e0b;
+}
+
+.actions{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.btn{
+  background: var(--card);
+  color: var(--ink);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all .2s;
+  user-select: none;
+}
+.btn:hover{
+  background: var(--card-hover);
+  border-color: #555562;
+}
+.btn-primary{
+  background: var(--orange);
+  border-color: var(--orange);
+  color: #fff;
+  font-weight: 500;
+}
+.btn-primary:hover{
+  background: #e07330;
+  box-shadow: 0 0 16px var(--orange-glow);
+}
+.btn-edit.active{
+  background: var(--blue);
+  border-color: var(--blue);
+  color: #fff;
+}
+.btn-danger:hover{
+  border-color: #ef4444;
+  color: #f87171;
+}
+
+/* 主内容容器 */
+.container{
+  max-width: 1240px;
+  margin: 36px auto 0;
+  padding: 0 24px;
+}
+
+.doc-header{
+  margin-bottom: 36px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--border);
+}
+.doc-header h2{
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+}
+.doc-header .desc{
+  font-size: 13px;
+  color: var(--ink-dim);
+  line-height: 1.7;
+}
+
+/* 提示条 */
+.tip-banner{
+  background: rgba(46, 110, 224, 0.12);
+  border-left: 4px solid var(--blue);
+  border-radius: 8px;
+  padding: 12px 18px;
+  margin-bottom: 30px;
+  font-size: 13px;
+  color: #c0d4ff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.tip-banner code{
+  background: rgba(0,0,0,.3);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'JetBrains Mono', monospace;
+  color: #93c5fd;
+}
+
+/* 章节 */
+.section{
+  margin-bottom: 48px;
+}
+.sec-title{
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.sec-title .num{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  background: var(--orange);
+  color: #fff;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 700;
+}
+.sec-tools{
+  margin-left: auto;
+  display: flex;
+  gap: 8px;
+}
+.sec-tools .mini-btn{
+  font-size: 11px;
+  padding: 4px 10px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--ink-dim);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: .15s;
+}
+.sec-tools .mini-btn:hover{
+  color: var(--ink);
+  border-color: var(--orange);
+}
+
+/* 表格样式 */
+.table-wrap{
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow-x: auto;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+table{
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 13px;
+}
+th{
+  background: #1f1f26;
+  color: #f5f5f7;
+  font-weight: 500;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+  letter-spacing: 0.5px;
+}
+td{
+  padding: 12px 14px;
+  border-bottom: 1px solid #282832;
+  color: var(--ink);
+  vertical-align: top;
+  line-height: 1.6;
+}
+tr:last-child td{
+  border-bottom: none;
+}
+tr:hover td{
+  background: rgba(255,255,255,0.02);
+}
+
+/* 编辑模式专属样式 */
+body.mode-edit [contenteditable="true"]{
+  outline: 1px dashed rgba(240, 129, 60, 0.45);
+  border-radius: 4px;
+  padding: 2px 4px;
+  min-height: 20px;
+  transition: background .15s, outline .15s;
+}
+body.mode-edit [contenteditable="true"]:hover{
+  background: rgba(240, 129, 60, 0.08);
+  outline: 1px solid var(--orange);
+}
+body.mode-edit [contenteditable="true"]:focus{
+  outline: 2px solid var(--orange);
+  background: rgba(240, 129, 60, 0.12);
+}
+.del-row-btn{
+  display: none;
+  color: #f87171;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+body.mode-edit .del-row-btn{
+  display: inline-block;
+}
+.del-row-btn:hover{
+  background: rgba(239, 68, 68, 0.2);
+}
+
+/* 单元格特性标牌 */
+.badge-id{
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 600;
+  color: var(--orange);
+  background: rgba(240, 129, 60, 0.12);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+  display: inline-block;
+}
+.badge-size{
+  font-family: 'JetBrains Mono', monospace;
+  color: #60a5fa;
+  background: rgba(46, 110, 224, 0.12);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+}
+.badge-cat{
+  font-size: 11px;
+  padding: 2px 6px;
+  background: rgba(255,255,255,0.08);
+  color: var(--ink-dim);
+  border-radius: 4px;
+}
+
+/* Toast 提示浮窗 */
+.toast{
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background: #1f1f26;
+  border: 1px solid var(--orange);
+  color: #fff;
+  padding: 12px 22px;
+  border-radius: 10px;
+  font-size: 13px;
+  box-shadow: 0 8px 30px rgba(0,0,0,.5);
+  transform: translateY(80px);
+  opacity: 0;
+  transition: all .25s ease;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.toast.show{
+  transform: translateY(0);
+  opacity: 1;
+}
+
+@media (max-width: 768px){
+  .topbar{padding: 12px 16px;}
+  .container{padding: 0 14px;}
+  .brand h1{font-size: 14px;}
+}
+</style>
+</head>
+<body>
+
+<!-- 顶部吸顶控制条 -->
+<div class="topbar">
+  <div class="brand">
+    <a href="index.html" class="back-btn">← 返回小组件看板</a>
+    <h1>至简 · 桌面小组件需求规格文档</h1>
+    <span class="badge">PRD v1.0</span>
+    <span class="status-tag" id="saveStatus"><span class="dot"></span>已加载官方预设</span>
+  </div>
+  <div class="actions">
+    <button class="btn btn-edit" id="btnToggleEdit" onclick="toggleEditMode()">✏️ 开启编辑模式</button>
+    <button class="btn btn-primary" id="btnSave" onclick="saveContent()">💾 保存修改</button>
+    <button class="btn" onclick="exportMarkdown()">📥 导出 Markdown</button>
+    <button class="btn" onclick="copyAllText()">📋 复制全文</button>
+    <button class="btn btn-danger" onclick="resetDefault()">🔄 恢复默认</button>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- 头部信息 -->
+  <div class="doc-header">
+    <h2 contenteditable="false" class="editable">至简 · 桌面小组件产品需求文档 (PRD)</h2>
+    <div class="desc editable" contenteditable="false">
+      本文档全面梳理并规范化定义“至简”桌面小组件系统的视觉规范、点阵渲染引擎逻辑、全量 27 款小组件详细交互与全局响应式数据字典。支持页面在线修改、自动保存至浏览器、行增删及多格式导出。
+    </div>
+  </div>
+
+  <div class="tip-banner">
+    <span>💡 <b>实时编辑提示：</b>点击右上角 <code>✏️ 开启编辑模式</code> 后，可直接点击表格单元格进行文字修改，并支持 <code>➕ 增行</code> 和 <code>🗑️ 删行</code>。修改完成后点击 <code>💾 保存修改</code> 将持久化保存在当前浏览器。</span>
+    <span style="font-size:12px;opacity:0.8;">已启用 LocalStorage 本地存储</span>
+  </div>
+
+  <div id="docBody">
+    <!-- 章节 1: 文档元数据 -->
+    <div class="section">
+      <div class="sec-title">
+        <span class="num">1</span>
+        <span class="editable" contenteditable="false">文档基本信息与版本控制</span>
+        <div class="sec-tools">
+          <button class="mini-btn" onclick="addRow(this)">➕ 增行</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:220px;">属性项</th>
+              <th>规范值与定义说明</th>
+              <th style="width:50px;"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b class="editable" contenteditable="false">文档名称</b></td>
+              <td><span class="editable" contenteditable="false">至简 · 桌面小组件系统产品需求规格说明书 (PRD)</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+            <tr>
+              <td><b class="editable" contenteditable="false">文档版本</b></td>
+              <td><span class="editable" contenteditable="false">v1.0.0 (Release Candidate)</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+            <tr>
+              <td><b class="editable" contenteditable="false">项目在线演示</b></td>
+              <td><span class="editable" contenteditable="false">https://nancity11521-ai.github.io/zhijian-widgets/</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+            <tr>
+              <td><b class="editable" contenteditable="false">清单视图路由</b></td>
+              <td><span class="editable" contenteditable="false">widgets-table.html（25+ 张小部件设计稿全览）</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+            <tr>
+              <td><b class="editable" contenteditable="false">设计核心原则</b></td>
+              <td><span class="editable" contenteditable="false">固定网格栅格化、LED点阵硬核复古工业美学、低功耗拟物微交互</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 章节 2: 项目定位与场景 -->
+    <div class="section">
+      <div class="sec-title">
+        <span class="num">2</span>
+        <span class="editable" contenteditable="false">产品定位、核心理念与目标场景</span>
+        <div class="sec-tools">
+          <button class="mini-btn" onclick="addRow(this)">➕ 增行</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:180px;">维度</th>
+              <th>需求定义与业务目标</th>
+              <th style="width:50px;"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b class="editable" contenteditable="false">产品定位</b></td>
+              <td><span class="editable" contenteditable="false">融合 5×7 LED 点阵硬件美学与现代暗黑极简工业风的桌面小组件系统，适配桌面端/移动端 Web、PWA 及嵌入式桌面启动器。</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+            <tr>
+              <td><b class="editable" contenteditable="false">核心理念</b></td>
+              <td><span class="editable" contenteditable="false">“至简·硬核·直觉”：摒弃花哨装饰，以高对比度单色/撞色卡片、发光点阵数字、精准网格几何与直觉交互，呈现纯粹高效的信息聚合体验。</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+            <tr>
+              <td><b class="editable" contenteditable="false">目标用户画像</b></td>
+              <td><span class="editable" contenteditable="false">1. 追求个性化科技复古美学的极客与设计师；<br>2. 偏好一目了然获取时间、日程、天气、传感器数据的高效数字游民；<br>3. 户外探险、手持硬件、三防终端或工业控制台桌面 UI 需求用户。</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+            <tr>
+              <td><b class="editable" contenteditable="false">四大核心场景</b></td>
+              <td><span class="editable" contenteditable="false">1. 日常效率：时钟、公历/农历、待办事项、电量与重要纪念日；<br>2. 健康生活：步数实时统计、每日喝水打卡、音乐播放沉浸反馈；<br>3. 户外环境：海拔高度、气压监测、指南针定向、手电筒、噪音分贝测量与雨盾模式；<br>4. 极客与硬件：无网通信自组网（Mesh）、FM收音机、后台隐蔽录像、环境氛围灯与投影仪中控。</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 章节 3: UI/UX 视觉系统规范 -->
+    <div class="section">
+      <div class="sec-title">
+        <span class="num">3</span>
+        <span class="editable" contenteditable="false">UI/UX 视觉系统与 Design Tokens 规范</span>
+        <div class="sec-tools">
+          <button class="mini-btn" onclick="addRow(this)">➕ 增行</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:150px;">Token 分类</th>
+              <th style="width:150px;">变量名</th>
+              <th style="width:180px;">标准规范值</th>
+              <th>适用场景与设计定义</th>
+              <th style="width:50px;"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="editable" contenteditable="false">网格尺寸</span></td>
+              <td><code>--cell</code></td>
+              <td><span class="editable" contenteditable="false">200px</span></td>
+              <td><span class="editable" contenteditable="false">2×2 标准小组件基础单元（200px × 200px）</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+            <tr>
+              <td><span class="editable" contenteditable="false">网格跨度</span></td>
+              <td><code>--cell-w42</code></td>
+              <td><span class="editable" contenteditable="false">422px</span></td>
+              <td><span class="editable" contenteditable="false">4×2 宽版卡片横向跨度尺寸（calc(200px*2 + 22px)）</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+            <tr>
+              <td><span class="editable" contenteditable="false">栅格间距</span></td>
+              <td><code>--gap</code></td>
+              <td><span class="editable" contenteditable="false">22px</span></td>
+              <td><span class="editable" contenteditable="false">卡片与卡片之间的水平与垂直标准间距</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+            <tr>
+              <td><span class="editable" contenteditable="false">卡片圆角</span></td>
+              <td><code>--radius</code></td>
+              <td><span class="editable" contenteditable="false">26px</span></td>
+              <td><span class="editable" contenteditable="false">所有组件卡片统一外圆角半径，营造工业倒角质感</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+            <tr>
+              <td><span class="editable" contenteditable="false">卡片内边距</span></td>
+              <td><code>--pad</code></td>
+              <td><span class="editable" contenteditable="false">18px</span></td>
+              <td><span class="editable" contenteditable="false">卡片内容统一内缩安全边距</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+            <tr>
+              <td><span class="editable" contenteditable="false">底色规范</span></td>
+              <td><code>--bg / --card</code></td>
+              <td><span class="editable" contenteditable="false">#0d0d10 / #232329</span></td>
+              <td><span class="editable" contenteditable="false">主背景黑灰 / 默认卡片金属深灰色</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+            <tr>
+              <td><span class="editable" contenteditable="false">品牌撞色</span></td>
+              <td><code>--orange / --blue</code></td>
+              <td><span class="editable" contenteditable="false">#f0813c / #2e6ee0</span></td>
+              <td><span class="editable" contenteditable="false">活力暖橙（时钟/月历）与电光数码蓝（喝水/进度条）</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+            <tr>
+              <td><span class="editable" contenteditable="false">点阵像素色</span></td>
+              <td><code>Dot Active / Dim</code></td>
+              <td><span class="editable" contenteditable="false">#f5f5f7 / rgba(255,255,255,.09)</span></td>
+              <td><span class="editable" contenteditable="false">发光激活点亮色与暗槽硬件底色对比</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+            <tr>
+              <td><span class="editable" contenteditable="false">字号阶梯</span></td>
+              <td><code>--fz-*</code></td>
+              <td><span class="editable" contenteditable="false">标题13 / 正文12 / 次级11 / 辅助10 / 微型9</span></td>
+              <td><span class="editable" contenteditable="false">严格规范的 5 级信息字号层次体系</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 章节 4: 渲染引擎规范 -->
+    <div class="section">
+      <div class="sec-title">
+        <span class="num">4</span>
+        <span class="editable" contenteditable="false">5×7 LED 点阵与矢量几何渲染技术引擎</span>
+        <div class="sec-tools">
+          <button class="mini-btn" onclick="addRow(this)">➕ 增行</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:180px;">引擎模组</th>
+              <th style="width:220px;">技术实现原理</th>
+              <th>规范要求与输入输出</th>
+              <th style="width:50px;"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b class="editable" contenteditable="false">点阵字库 (F-Engine)</b></td>
+              <td><span class="editable" contenteditable="false">5×7 二值化像素字典 (0/1 字符串)</span></td>
+              <td><span class="editable" contenteditable="false">完整覆盖数字 0-9、符号 (: . / - %)、大写字母 A-Z，支持任意文本自定义映射。</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+            <tr>
+              <td><b class="editable" contenteditable="false">点阵生成器 (drawDM)</b></td>
+              <td><span class="editable" contenteditable="false">动态 SVG / DOM 像素矩阵绘制</span></td>
+              <td><span class="editable" contenteditable="false">解析 data-dm 属性，自适应拼接 5×7 单元。支持 data-color 自定义颜色与 data-glow 发光辉光。</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+            <tr>
+              <td><b class="editable" contenteditable="false">硬件底槽模组</b></td>
+              <td><span class="editable" contenteditable="false">物理常亮暗像素网格 (Dark Dots)</span></td>
+              <td><span class="editable" contenteditable="false">每个字符保留未激活的 0 位点阵（透明度 9%），高度模拟物理发光二极管底板。</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+            <tr>
+              <td><b class="editable" contenteditable="false">模拟表盘引擎</b></td>
+              <td><span class="editable" contenteditable="false">纯前端几何坐标变换时钟</span></td>
+              <td><span class="editable" contenteditable="false">点阵外圈刻度 + 矩形时针 + 细长分针 + 橙色独立跳秒点，支持系统时钟同步驱动。</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 章节 5: 全量 27 款小组件详细规格 -->
+    <div class="section">
+      <div class="sec-title">
+        <span class="num">5</span>
+        <span class="editable" contenteditable="false">全量 27 款桌面小组件详细规格清单 (W1 ~ W27)</span>
+        <div class="sec-tools">
+          <button class="mini-btn" onclick="addRow(this)">➕ 增行</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:60px;">ID</th>
+              <th style="width:160px;">组件名称</th>
+              <th style="width:80px;">尺寸</th>
+              <th style="width:100px;">分类</th>
+              <th>核心包含元素</th>
+              <th>交互行为与状态机定义</th>
+              <th style="width:50px;"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="badge-id editable" contenteditable="false">W1</span></td>
+              <td><b class="editable" contenteditable="false">时钟+电量+日历+天气</b></td>
+              <td><span class="badge-size">4×2</span></td>
+              <td><span class="badge-cat">时间综合</span></td>
+              <td><span class="editable" contenteditable="false">点阵时钟 + 电池电量多段条 + 当月迷你日历（高亮今天） + 天气条</span></td>
+              <td><span class="editable" contenteditable="false">点击卡片在 4 个预置城市间循环切换天气并同步刷新</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+            <tr>
+              <td><span class="badge-id editable" contenteditable="false">W2</span></td>
+              <td><b class="editable" contenteditable="false">时钟+电量环</b></td>
+              <td><span class="badge-size">2×2</span></td>
+              <td><span class="badge-cat">时间信息</span></td>
+              <td><span class="editable" contenteditable="false">大号点阵时钟 + SVG 环形电量进度圆环 + 百分比与当前电量</span></td>
+              <td><span class="editable" contenteditable="false">点击卡片模拟电量档位循环（100% -> 75% -> 50% -> 20% -> 10%）</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+            <tr>
+              <td><span class="badge-id editable" contenteditable="false">W3</span></td>
+              <td><b class="editable" contenteditable="false">模拟时钟 (橙底)</b></td>
+              <td><span class="badge-size">4×2</span></td>
+              <td><span class="badge-cat">时间信息</span></td>
+              <td><span class="editable" contenteditable="false">点阵机械表盘 + 农历日期 + 治愈诗句 + 7 天胶囊周条（高亮当天）</span></td>
+              <td><span class="editable" contenteditable="false">秒级走动，周条自动选中今日日期胶囊</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+            <tr>
+              <td><span class="badge-id editable" contenteditable="false">W4</span></td>
+              <td><b class="editable" contenteditable="false">待办事项 (Todo)</b></td>
+              <td><span class="badge-size">2×2</span></td>
+              <td><span class="badge-cat">健康生活</span></td>
+              <td><span class="editable" contenteditable="false">月日标头 + 3 条精选待办事项 + 方形复选框</span></td>
+              <td><span class="editable" contenteditable="false">点击单条任务切换完成状态（打勾高亮、文字划线淡化）</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+            <tr>
+              <td><span class="badge-id editable" contenteditable="false">W5</span></td>
+              <td><b class="editable" contenteditable="false">综合天气大卡</b></td>
+              <td><span class="badge-size">4×2</span></td>
+              <td><span class="badge-cat">天气环境</span></td>
+              <td><span class="editable" contenteditable="false">巨幅气温点阵 + 气象符号 + 今日/明日双预报卡 + 今日剩余时间</span></td>
+              <td><span class="editable" contenteditable="false">点击卡片轮换城市（多伦多、北京、上海、深圳）</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+            <tr>
+              <td><span class="badge-id editable" contenteditable="false">W6</span></td>
+              <td><b class="editable" contenteditable="false">喝水打卡 (蓝底)</b></td>
+              <td><span class="badge-size">2×2</span></td>
+              <td><span class="badge-cat">健康生活</span></td>
+              <td><span class="editable" contenteditable="false">已饮杯数大点阵数字 + 水杯容量矢量图 + 独立加减按钮</span></td>
+              <td><span class="editable" contenteditable="false">点击“+”增加水量（上限8杯），点击“-”减少，水杯透明度同步随量变化</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+            <tr>
+              <td><span class="badge-id editable" contenteditable="false">W7</span></td>
+              <td><b class="editable" contenteditable="false">倒计时 I (生日)</b></td>
+              <td><span class="badge-size">2×2</span></td>
+              <td><span class="badge-cat">效率生活</span></td>
+              <td><span class="editable" contenteditable="false">生日剩余天数点阵 + 出生日期设置 (2000/02/20) + 蓝色滑块条</span></td>
+              <td><span class="editable" contenteditable="false">按系统当前日期动态计算展示，过生日自动切下一年</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+            <tr>
+              <td><span class="badge-id editable" contenteditable="false">W8</span></td>
+              <td><b class="editable" contenteditable="false">月历单日 (橙底)</b></td>
+              <td><span class="badge-size">2×2</span></td>
+              <td><span class="badge-cat">时间信息</span></td>
+              <td><span class="editable" contenteditable="false">超大 5×7 点阵当前日期 + 农历月日 + 星期全称胶囊</span></td>
+              <td><span class="editable" contenteditable="false">每日零点自动翻页，纯粹大字展示</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+            <tr>
+              <td><span class="badge-id editable" contenteditable="false">W9</span></td>
+              <td><b class="editable" contenteditable="false">网易云音乐胶囊</b></td>
+              <td><span class="badge-size">2×2</span></td>
+              <td><span class="badge-cat">娱乐生活</span></td>
+              <td><span class="editable" contenteditable="false">黑胶唱片拟物图形 + 听歌识曲标签 + 播放/暂停控制按钮</span></td>
+              <td><span class="editable" contenteditable="false">点击播放按键：黑胶唱片平滑旋转动效启动/暂停</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+            <tr>
+              <td><span class="badge-id editable" contenteditable="false">W10</span></td>
+              <td><b class="editable" contenteditable="false">极简模拟时钟 (橙底)</b></td>
+              <td><span class="badge-size">2×2</span></td>
+              <td><span class="badge-cat">时间信息</span></td>
+              <td><span class="editable" contenteditable="false">156px 纯模拟点阵指针时钟表盘，极简工业风</span></td>
+              <td><span class="editable" contenteditable="false">秒级连续走动，桌面美学挂件</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+            <tr>
+              <td><span class="badge-id editable" contenteditable="false">W11</span></td>
+              <td><b class="editable" contenteditable="false">日期+多维剩余进度环</b></td>
+              <td><span class="badge-size">2×2</span></td>
+              <td><span class="badge-cat">时间信息</span></td>
+              <td><span class="editable" contenteditable="false">月日点阵 + 农历文本 + 3 个微型圆环（年剩余%、月剩余%、日剩余%）</span></td>
+              <td><span class="editable" contenteditable="false">每秒刷新圆环 Stroke 与内嵌微型点阵百分比</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+            <tr>
+              <td><span class="badge-id editable" contenteditable="false">W12</span></td>
+              <td><b class="editable" contenteditable="false">倒计时 II (纪念日)</b></td>
+              <td><span class="badge-size">2×2</span></td>
+              <td><span class="badge-cat">效率生活</span></td>
+              <td><span class="editable" contenteditable="false">纪念日倒数剩余天数大点阵 + 目标纪念月日胶囊 (MAR 21)</span></td>
+              <td><span class="editable" contenteditable="false">动态根据系统日期计算剩余天数</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+            <tr>
+              <td><span class="badge-id editable" contenteditable="false">W13</span></td>
+              <td><b class="editable" contenteditable="false">迷你时钟</b></td>
+              <td><span class="badge-size">2×2</span></td>
+              <td><span class="badge-cat">时间信息</span></td>
+              <td><span class="editable" contenteditable="false">点阵时钟 + 完整公历年月日行 + 星期/天气简报条</span></td>
+              <td><span class="editable" contenteditable="false">时间随秒走动，天气跟随全局城市联动更新</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+            <tr>
+              <td><span class="badge-id editable" contenteditable="false">W14</span></td>
+              <td><b class="editable" contenteditable="false">迷你天气</b></td>
+              <td><span class="badge-size">2×2</span></td>
+              <td><span class="badge-cat">天气环境</span></td>
+              <td><span class="editable" contenteditable="false">点阵温度 + 拟真天气图标 + 气温极值范围</span></td>
+              <td><span class="editable" contenteditable="false">与主天气卡状态同步联动，垂直紧凑布局</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+            <tr>
+              <td><span class="badge-id editable" contenteditable="false">W15</span></td>
+              <td><b class="editable" contenteditable="false">电子指南针 (Compass)</b></td>
+              <td><span class="badge-size">2×2</span></td>
+              <td><span class="badge-cat">户外工具</span></td>
+              <td><span class="editable" contenteditable="false">外圆方位刻度盘 (N/E/S/W) + 经典红白双色磁针</span></td>
+              <td><span class="editable" contenteditable="false">点击卡片触发随机转动阻尼动画，模拟真实寻北定位</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+            <tr>
+              <td><span class="badge-id editable" contenteditable="false">W16</span></td>
+              <td><b class="editable" contenteditable="false">一周天气预报趋势</b></td>
+              <td><span class="badge-size">4×2</span></td>
+              <td><span class="badge-cat">天气环境</span></td>
+              <td><span class="editable" contenteditable="false">左侧大温度点阵与城市英文名 + 右侧 6 天逐日预报柱状图</span></td>
+              <td><span class="editable" contenteditable="false">点击卡片切换城市并刷新未来 6 天逐日数据</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+            <tr>
+              <td><span class="badge-id editable" contenteditable="false">W17</span></td>
+              <td><b class="editable" contenteditable="false">手电筒快捷控制</b></td>
+              <td><span class="badge-size">2×2</span></td>
+              <td><span class="badge-cat">实用工具</span></td>
+              <td><span class="editable" contenteditable="false">拟物手电筒身 + 扇形发光光束 + ON/OFF 状态提示</span></td>
+              <td><span class="editable" contenteditable="false">点击卡片切换手电筒开关（光束显隐与状态文字变更）</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+            <tr>
+              <td><span class="badge-id editable" contenteditable="false">W18</span></td>
+              <td><b class="editable" contenteditable="false">海拔高度与气压计</b></td>
+              <td><span class="badge-size">2×2</span></td>
+              <td><span class="badge-cat">户外传感</span></td>
+              <td><span class="editable" contenteditable="false">海拔点阵数值 (m) + 气压点阵数值 (hPa) + 中轴硬件分隔虚线</span></td>
+              <td><span class="editable" contenteditable="false">点击卡片触发传感器微幅扰动重采样模拟 (海拔±3m, 气压±2hPa)</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+            <tr>
+              <td><span class="badge-id editable" contenteditable="false">W19</span></td>
+              <td><b class="editable" contenteditable="false">便携录音机 (Recorder)</b></td>
+              <td><span class="badge-size">2×2</span></td>
+              <td><span class="badge-cat">系统工具</span></td>
+              <td><span class="editable" contenteditable="false">麦克风/声波状态点阵 + 录制计时点阵 (mm:ss) + 红色闪烁录制灯</span></td>
+              <td><span class="editable" contenteditable="false">三态状态机：未录制(idle) -> 录制中(rec) -> 暂停(pause) 循环切换</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+            <tr>
+              <td><span class="badge-id editable" contenteditable="false">W20</span></td>
+              <td><b class="editable" contenteditable="false">调频 FM 收音机</b></td>
+              <td><span class="badge-size">2×2</span></td>
+              <td><span class="badge-cat">系统工具</span></td>
+              <td><span class="editable" contenteditable="false">收音机图标 + 频率大点阵 (MHz) + 调谐标尺指针 + 电台名</span></td>
+              <td><span class="editable" contenteditable="false">右上角开关机 (ON/OFF)；开机状态点击卡片循环切换 3 个广播频点</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+            <tr>
+              <td><span class="badge-id editable" contenteditable="false">W21</span></td>
+              <td><b class="editable" contenteditable="false">计步器 (Pedometer)</b></td>
+              <td><span class="badge-size">2×2</span></td>
+              <td><span class="badge-cat">健康生活</span></td>
+              <td><span class="editable" contenteditable="false">步数点阵 + 达成率百分比胶囊 + 分段进度条 + 里程(km)/热量(kcal)</span></td>
+              <td><span class="editable" contenteditable="false">点击卡片随机累加 300~700 步，动态刷新进度条，达到1.2万步循环</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+            <tr>
+              <td><span class="badge-id editable" contenteditable="false">W22</span></td>
+              <td><b class="editable" contenteditable="false">无网通信 (Mesh)</b></td>
+              <td><span class="badge-size">2×2</span></td>
+              <td><span class="badge-cat">应急通信</span></td>
+              <td><span class="editable" contenteditable="false">信号发射塔图标 + 通信半径 (km) 点阵 + 已连接设备数</span></td>
+              <td><span class="editable" contenteditable="false">点击卡片循环切换组网拓扑半径与在线节点数</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+            <tr>
+              <td><span class="badge-id editable" contenteditable="false">W23</span></td>
+              <td><b class="editable" contenteditable="false">噪声测试计 (dB)</b></td>
+              <td><span class="badge-size">2×2</span></td>
+              <td><span class="badge-cat">环境测量</span></td>
+              <td><span class="editable" contenteditable="false">分贝点阵数值 + 6 段双色电平柱 + 状态胶囊（安静/正常/嘈杂）</span></td>
+              <td><span class="editable" contenteditable="false">点击卡片重新采样分贝，重算电平点亮高度与安全阈值说明</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+            <tr>
+              <td><span class="badge-id editable" contenteditable="false">W24</span></td>
+              <td><b class="editable" contenteditable="false">后台隐蔽录像</b></td>
+              <td><span class="badge-size">2×2</span></td>
+              <td><span class="badge-cat">安全工具</span></td>
+              <td><span class="editable" contenteditable="false">摄像机点阵图标 + 录像时长点阵 (mm:ss) + 摄录红点呼吸灯</span></td>
+              <td><span class="editable" contenteditable="false">支持未录制、录制中、暂停录像三态切换</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+            <tr>
+              <td><span class="badge-id editable" contenteditable="false">W25</span></td>
+              <td><b class="editable" contenteditable="false">雨盾模式 (防误触)</b></td>
+              <td><span class="badge-size">2×2</span></td>
+              <td><span class="badge-cat">三防防护</span></td>
+              <td><span class="editable" contenteditable="false">雨伞硬件点阵图标 + ON/OFF 点阵大字 + 湿手触控说明</span></td>
+              <td><span class="editable" contenteditable="false">点击卡片或药丸开关切换 ON/OFF，适配水下与雨天手套触控</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+            <tr>
+              <td><span class="badge-id editable" contenteditable="false">W26</span></td>
+              <td><b class="editable" contenteditable="false">智能氛围灯控制器</b></td>
+              <td><span class="badge-size">2×2</span></td>
+              <td><span class="badge-cat">智能家居</span></td>
+              <td><span class="editable" contenteditable="false">灯泡点阵 + 5 色点阵排灯 + 模式胶囊（呼吸/流光/常亮/渐隐）</span></td>
+              <td><span class="editable" contenteditable="false">点击卡片循环切换 4 种预设灯光模式与亮度色彩配比</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+            <tr>
+              <td><span class="badge-id editable" contenteditable="false">W27</span></td>
+              <td><b class="editable" contenteditable="false">智能投影仪中控</b></td>
+              <td><span class="badge-size">2×2</span></td>
+              <td><span class="badge-cat">硬件外设</span></td>
+              <td><span class="editable" contenteditable="false">投影机点阵 + ON/OFF 状态点阵 + 输入信源 (HDMI 1/2/DP/WIFI)</span></td>
+              <td><span class="editable" contenteditable="false">点击卡片开关电源，并轮询切换输入信号源通道</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 章节 6: 全局控制器与状态管理 -->
+    <div class="section">
+      <div class="sec-title">
+        <span class="num">6</span>
+        <span class="editable" contenteditable="false">全局控制器与交互状态管理规范</span>
+        <div class="sec-tools">
+          <button class="mini-btn" onclick="addRow(this)">➕ 增行</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:180px;">控制器名称</th>
+              <th style="width:180px;">挂载 DOM 标识</th>
+              <th>控制逻辑与业务规则</th>
+              <th style="width:180px;">影响范围</th>
+              <th style="width:50px;"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b class="editable" contenteditable="false">实时数据走针开关</b></td>
+              <td><code>#btnLive</code></td>
+              <td><span class="editable" contenteditable="false">切换布尔变量 S.live。开启时启动 1s 定时器刷新时钟与录制计时；关闭时冻结画面用于静态设计审查。</span></td>
+              <td><span class="editable" contenteditable="false">时钟、录音时长、录像时长、公历与农历更新</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+            <tr>
+              <td><b class="editable" contenteditable="false">全局出厂默认恢复</b></td>
+              <td><code>#btnReset</code></td>
+              <td><span class="editable" contenteditable="false">重置全局状态对象 S 为初始值（电量100、步数8432、喝水0杯、手电筒开、城市0），触发 refreshAll()。</span></td>
+              <td><span class="editable" contenteditable="false">所有 27 款卡片重置到出厂基准状态</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+            <tr>
+              <td><b class="editable" contenteditable="false">需求文档入口按钮</b></td>
+              <td><code>#btnDoc / .docLink</code></td>
+              <td><span class="editable" contenteditable="false">顶栏醒目导航入口，点击可直接进入本可编辑需求规格文档页面。</span></td>
+              <td><span class="editable" contenteditable="false">新标签页打开 doc.html</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+            <tr>
+              <td><b class="editable" contenteditable="false">清单跳转入口</b></td>
+              <td><code>.tableLink</code></td>
+              <td><span class="editable" contenteditable="false">跳转至 widgets-table.html 清单视图，提供高清截图与对照表格。</span></td>
+              <td><span class="editable" contenteditable="false">设计稿验收核对</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 章节 7: 数据字典 -->
+    <div class="section">
+      <div class="sec-title">
+        <span class="num">7</span>
+        <span class="editable" contenteditable="false">全局响应式数据字典 (State Dictionary)</span>
+        <div class="sec-tools">
+          <button class="mini-btn" onclick="addRow(this)">➕ 增行</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:160px;">状态字段</th>
+              <th style="width:100px;">类型</th>
+              <th style="width:120px;">默认值</th>
+              <th style="width:180px;">取值范围 / 枚举</th>
+              <th>业务用途说明</th>
+              <th style="width:50px;"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>S.battery</code></td>
+              <td>number</td>
+              <td>100</td>
+              <td>0 ~ 100</td>
+              <td><span class="editable" contenteditable="false">模拟设备剩余电量百分比</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+            <tr>
+              <td><code>S.water</code></td>
+              <td>number</td>
+              <td>0</td>
+              <td>0 ~ 8</td>
+              <td><span class="editable" contenteditable="false">今日饮水打卡杯数</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+            <tr>
+              <td><code>S.torch</code></td>
+              <td>number</td>
+              <td>1</td>
+              <td>0 (关) / 1 (开)</td>
+              <td><span class="editable" contenteditable="false">手电筒发光开关</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+            <tr>
+              <td><code>S.music</code></td>
+              <td>number</td>
+              <td>0</td>
+              <td>0 (暂停) / 1 (播放)</td>
+              <td><span class="editable" contenteditable="false">音乐唱片旋转动效开关</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+            <tr>
+              <td><code>S.city</code></td>
+              <td>number</td>
+              <td>0</td>
+              <td>0 ~ 3</td>
+              <td><span class="editable" contenteditable="false">当前选中城市索引（多伦多/北京/上海/深圳）</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+            <tr>
+              <td><code>S.alt / S.press</code></td>
+              <td>number</td>
+              <td>1243 / 1013</td>
+              <td>海拔 (m) / 气压 (hPa)</td>
+              <td><span class="editable" contenteditable="false">模拟气压与高度计传感器数值</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+            <tr>
+              <td><code>S.recMode</code></td>
+              <td>string</td>
+              <td>"idle"</td>
+              <td>"idle" / "rec" / "pause"</td>
+              <td><span class="editable" contenteditable="false">录音机三态工作模式</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+            <tr>
+              <td><code>S.vidMode</code></td>
+              <td>string</td>
+              <td>"idle"</td>
+              <td>"idle" / "rec" / "pause"</td>
+              <td><span class="editable" contenteditable="false">后台录像三态工作模式</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+            <tr>
+              <td><code>S.fmOn / S.fm</code></td>
+              <td>number</td>
+              <td>0 / 0</td>
+              <td>开机态 / 电台索引(0-2)</td>
+              <td><span class="editable" contenteditable="false">FM 收音机电源与选中电台频率</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+            <tr>
+              <td><code>S.steps</code></td>
+              <td>number</td>
+              <td>8432</td>
+              <td>0 ~ 12000</td>
+              <td><span class="editable" contenteditable="false">计步器步数累加值</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+            <tr>
+              <td><code>S.mesh</code></td>
+              <td>number</td>
+              <td>0</td>
+              <td>0 ~ 2</td>
+              <td><span class="editable" contenteditable="false">无网通信组网拓扑节点状态</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+            <tr>
+              <td><code>S.db</code></td>
+              <td>number</td>
+              <td>68</td>
+              <td>40 ~ 120</td>
+              <td><span class="editable" contenteditable="false">噪音计采样环境分贝数值</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+            <tr>
+              <td><code>S.rain</code></td>
+              <td>number</td>
+              <td>0</td>
+              <td>0 (关) / 1 (开)</td>
+              <td><span class="editable" contenteditable="false">雨盾防误触手套模式</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+            <tr>
+              <td><code>S.lamp</code></td>
+              <td>number</td>
+              <td>0</td>
+              <td>0 ~ 3</td>
+              <td><span class="editable" contenteditable="false">氛围灯模式（呼吸/流光/常亮/渐隐）</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+            <tr>
+              <td><code>S.projOn / S.projIn</code></td>
+              <td>number / string</td>
+              <td>0 / "HDMI 1"</td>
+              <td>0/1 · HDMI/DP/WIFI</td>
+              <td><span class="editable" contenteditable="false">智能投影仪开关与输入信号源通道</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 章节 8: 非功能性需求 -->
+    <div class="section">
+      <div class="sec-title">
+        <span class="num">8</span>
+        <span class="editable" contenteditable="false">非功能性需求（NFR）与质量验收指标</span>
+        <div class="sec-tools">
+          <button class="mini-btn" onclick="addRow(this)">➕ 增行</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:180px;">质量维度</th>
+              <th style="width:200px;">指标项</th>
+              <th>详细技术规范与测试验收标准</th>
+              <th style="width:50px;"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b class="editable" contenteditable="false">性能体验</b></td>
+              <td><span class="editable" contenteditable="false">首次内容绘制 (FCP)</span></td>
+              <td><span class="editable" contenteditable="false">全屏小组件与点阵渲染首屏 FCP 时间 <= 500ms，原生 JS 零第三方重量级框架依赖。</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+            <tr>
+              <td><b class="editable" contenteditable="false">帧率稳定性</b></td>
+              <td><span class="editable" contenteditable="false">动画与定时器运行时帧率</span></td>
+              <td><span class="editable" contenteditable="false">时钟走针、唱片匀速旋转、指南针阻尼动画保持 >= 60 FPS，无丢帧及内存泄漏。</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+            <tr>
+              <td><b class="editable" contenteditable="false">设备环境兼容</b></td>
+              <td><span class="editable" contenteditable="false">现代浏览器与多端适配</span></td>
+              <td><span class="editable" contenteditable="false">兼容 Chrome 90+、Safari 14+、Edge 及移动端 WebView；提供横向滚动与视口自适应支持。</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+            <tr>
+              <td><b class="editable" contenteditable="false">视网膜高分屏</b></td>
+              <td><span class="editable" contenteditable="false">Retina 高清点阵清晰度</span></td>
+              <td><span class="editable" contenteditable="false">点阵使用矢量 SVG 与亚像素对齐算法，在高分屏（2x/3x）下点阵发光圆点锐利清晰。</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+            <tr>
+              <td><b class="editable" contenteditable="false">容错与降级</b></td>
+              <td><span class="editable" contenteditable="false">农历算法安全降级</span></td>
+              <td><span class="editable" contenteditable="false">若环境不支持 Intl.DateTimeFormat chinese 历法，平滑静默回退至标准公历，保证页面不白屏崩溃。</span></td>
+              <td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- 吐司通知 -->
+<div class="toast" id="toast">
+  <span id="toastIcon">✅</span>
+  <span id="toastMsg">修改已成功保存至本地！</span>
+</div>
+
+<script>
+const STORAGE_KEY = 'zhijian_prd_custom_content_v1';
+let isEditMode = false;
+let isDirty = false;
+
+// 页面初始化：尝试从 localStorage 加载用户保存的内容
+window.addEventListener('DOMContentLoaded', () => {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (saved) {
+    try {
+      const data = JSON.parse(saved);
+      if (data && data.html) {
+        document.getElementById('docBody').innerHTML = data.html;
+        updateStatusTag(true, '已加载上次保存的修改 (' + (data.time || '') + ')');
+      }
+    } catch(e) {
+      console.error('加载本地保存文档失败:', e);
+    }
+  }
+  bindChangeListeners();
+});
+
+// 监听内容改变
+function bindChangeListeners() {
+  document.querySelectorAll('.editable').forEach(el => {
+    el.addEventListener('input', () => {
+      markDirty();
+    });
+  });
+}
+
+function markDirty() {
+  isDirty = true;
+  const status = document.getElementById('saveStatus');
+  status.innerHTML = '<span class="dot unsaved"></span>有未保存的修改';
+}
+
+function updateStatusTag(saved, text) {
+  const status = document.getElementById('saveStatus');
+  if (saved) {
+    status.innerHTML = '<span class="dot"></span>' + (text || '修改已保存');
+  } else {
+    status.innerHTML = '<span class="dot unsaved"></span>' + (text || '有未保存的修改');
+  }
+}
+
+// 切换编辑模式
+function toggleEditMode() {
+  isEditMode = !isEditMode;
+  document.body.classList.toggle('mode-edit', isEditMode);
+  
+  const btn = document.getElementById('btnToggleEdit');
+  if (isEditMode) {
+    btn.innerHTML = '👁️ 退出编辑模式';
+    btn.classList.add('active');
+    document.querySelectorAll('.editable').forEach(el => el.setAttribute('contenteditable', 'true'));
+    showToast('✏️ 已开启编辑模式，点击任意文本即可直接修改！', '💡');
+  } else {
+    btn.innerHTML = '✏️ 开启编辑模式';
+    btn.classList.remove('active');
+    document.querySelectorAll('.editable').forEach(el => el.setAttribute('contenteditable', 'false'));
+    showToast('👁️ 已退出编辑模式，进入预览状态', 'ℹ️');
+  }
+}
+
+// 保存到本地 LocalStorage
+function saveContent() {
+  const docBody = document.getElementById('docBody');
+  const now = new Date();
+  const timeStr = String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0') + ' ' + String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+  
+  const payload = {
+    html: docBody.innerHTML,
+    time: timeStr
+  };
+  
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+    isDirty = false;
+    updateStatusTag(true, '已保存至本地 (' + timeStr + ')');
+    showToast('💾 需求文档已成功保存！刷新页面不会丢失', '✅');
+  } catch(e) {
+    alert('保存失败，可能由于存储空间不足: ' + e);
+  }
+}
+
+// 恢复默认预设
+function resetDefault() {
+  if (confirm('确定要恢复默认预设文档吗？您在本地修改的所有未导出内容将被清空。')) {
+    localStorage.removeItem(STORAGE_KEY);
+    showToast('🔄 已恢复为官方初始需求文档', '🔄');
+    setTimeout(() => {
+      window.location.reload();
+    }, 600);
+  }
+}
+
+// 动态增行
+function addRow(btn) {
+  const section = btn.closest('.section');
+  const table = section.querySelector('table tbody');
+  const colCount = section.querySelectorAll('table thead th').length;
+  
+  const tr = document.createElement('tr');
+  let rowHtml = '';
+  for(let i=0; i<colCount-1; i++){
+    rowHtml += '<td><span class="editable" contenteditable="' + (isEditMode ? 'true' : 'false') + '">新条目内容 (点击编辑)</span></td>';
+  }
+  rowHtml += '<td><button class="del-row-btn" onclick="delRow(this)" title="删除此行">×</button></td>';
+  
+  tr.innerHTML = rowHtml;
+  table.appendChild(tr);
+  bindChangeListeners();
+  markDirty();
+  showToast('➕ 已在表格底部新增一行', '✨');
+}
+
+// 动态删行
+function delRow(btn) {
+  const tr = btn.closest('tr');
+  if (confirm('确认删除此行记录吗？')) {
+    tr.remove();
+    markDirty();
+    showToast('🗑️ 已删除该行', '🗑️');
+  }
+}
+
+// 导出为 Markdown 文件
+function exportMarkdown() {
+  let md = '# 至简 · 桌面小组件产品需求文档 (PRD)
+
+';
+  md += '> 本文档导出自至简桌面小组件在线编辑平台，包含全量视觉规范、技术引擎与小组件交互规格。
+
+';
+  
+  document.querySelectorAll('.section').forEach((sec, idx) => {
+    const title = sec.querySelector('.sec-title span.editable').innerText.trim();
+    md += '## ' + (idx + 1) + '. ' + title + '
+
+';
+    
+    const table = sec.querySelector('table');
+    if (table) {
+      const ths = [...table.querySelectorAll('thead th')].map(th => th.innerText.trim()).filter(t => t !== '');
+      if (ths.length > 0) {
+        md += '| ' + ths.join(' | ') + ' |
+';
+        md += '| ' + ths.map(() => '---').join(' | ') + ' |
+';
+        
+        table.querySelectorAll('tbody tr').forEach(tr => {
+          const tds = [...tr.querySelectorAll('td')].slice(0, ths.length).map(td => {
+            return td.innerText.replace(/
+/g, '<br>').replace(/\|/g, '\|').trim();
+          });
+          md += '| ' + tds.join(' | ') + ' |
+';
+        });
+        md += '
+';
+      }
+    }
+  });
+
+  const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = '至简_桌面小组件需求文档.md';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('📥 Markdown 需求文档已开始下载！', '📥');
+}
+
+// 复制纯文本到剪贴板
+function copyAllText() {
+  const text = document.getElementById('docBody').innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    showToast('📋 文档全文纯文本已复制到剪贴板！', '📋');
+  }).catch(() => {
+    alert('复制失败，请手动选择复制');
+  });
+}
+
+// Toast 提示
+function showToast(msg, icon = '✅') {
+  const t = document.getElementById('toast');
+  document.getElementById('toastIcon').textContent = icon;
+  document.getElementById('toastMsg').textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => {
+    t.classList.remove('show');
+  }, 2400);
+}
+</script>
+</body>
+</html>

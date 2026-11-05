@@ -328,8 +328,10 @@ body{
 .legend .item{display:flex;align-items:center;gap:7px;font-size:var(--fz-sub);color:var(--ink-dim);}
 .sw{width:13px;height:13px;border-radius:4px;}
 .legend .sec{margin-top:14px;padding-top:14px;border-top:1px solid #3a3a42;}
-.tableLink{display:inline-block;padding:7px 14px;background:rgba(255,255,255,.06);color:var(--ink);text-decoration:none;border-radius:14px;font-size:var(--fz-mini);letter-spacing:.5px;margin-right:8px;}
+.tableLink{display:inline-block;padding:7px 14px;background:rgba(255,255,255,.06);color:var(--ink);text-decoration:none;border-radius:14px;font-size:var(--fz-mini);letter-spacing:.5px;margin-right:8px;transition:all .2s;}
 .tableLink:hover{background:rgba(255,255,255,.12);}
+.tableLink.docLink{background:rgba(240,129,60,.16);border:1px solid rgba(240,129,60,.45);color:#ff9e64;font-weight:500;}
+.tableLink.docLink:hover{background:var(--orange);color:#fff;border-color:var(--orange);box-shadow:0 0 14px rgba(240,129,60,.35);}
 </style>
 </head>
 <body data-page-node-id="OKLJZHEdpxSq4sL7mNii8K">
@@ -338,7 +340,8 @@ body{
       <h1>至简 · 桌面小组件</h1>
       <div class="hint">可交互在线版：时钟实时走动 · 点击卡片或控件可交互 · 数据按当前日期实时计算</div>
     </div>
-    <div class="btns"><a class="tableLink" href="widgets-table.html" target="_blank">📋 25 张清单（含截图）</a>
+    <div class="btns"><a class="tableLink docLink" href="doc.html" target="_blank" id="btnDoc">📝 需求文档（可在线编辑）</a>
+      <a class="tableLink" href="widgets-table.html" target="_blank">📋 25 张清单（含截图）</a>
       <button id="btnLive" class="on">实时数据：开</button>
       <button id="btnReset">恢复默认</button>
     </div>
