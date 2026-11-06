@@ -321,6 +321,13 @@ body{
 .w27 .foot{font-size:var(--fz-mini);color:var(--ink-dim);}
 .w27 .pill.pswitch{cursor:pointer;transition:.2s;}
 
+/* W28 点阵屏开关 */
+.w28{display:flex;flex-direction:column;height:100%;}
+.w28 .hd{display:flex;align-items:center;justify-content:space-between;font-size:var(--fz-sub);color:var(--ink-dim);letter-spacing:.5px;}
+.w28 .body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;}
+.w28 .foot{font-size:var(--fz-mini);color:var(--ink-dim);}
+.w28 .pill.pswitch{cursor:pointer;transition:.2s;}
+
 /* ============ 规范 ============ */
 .legend{grid-column:span 3;background:var(--card);border-radius:var(--radius);padding:22px 26px;height:auto;}
 .legend h3{font-size:var(--fz-title);margin-bottom:14px;}
@@ -434,7 +441,7 @@ body.widget-editing-active .card .dm:hover{
       <button id="btnSaveWidgets" class="btn-save-widgets" style="display:none;" title="保存当前修改至浏览器">💾 保存修改</button>
       <button id="btnResetWidgets" class="btn-reset-widgets" style="display:none;" title="清空修改并恢复默认预设">🔄 恢复默认</button>
       <a class="tableLink docLink" href="doc.html" target="_blank" id="btnDoc">📝 需求文档（可在线编辑）</a>
-      <a class="tableLink" href="widgets-table.html" target="_blank">📋 25 张清单（含截图）</a>
+      <a class="tableLink" href="widgets-table.html" target="_blank">📋 27 张清单（含截图）</a>
       <button id="btnLive" class="on">实时数据：开</button>
       <button id="btnReset">恢复默认</button>
     </div>
@@ -880,6 +887,19 @@ body.widget-editing-active .card .dm:hover{
       </div>
     </div>
 
+    <!-- W28 · 2×2 点阵屏开关 -->
+    <div class="card">
+      <span class="tag">2×2</span>
+      <div class="w28">
+        <div class="hd"><span class="lbl">点阵屏 MATRIX SCREEN</span><span class="pill pswitch" id="screenPill" title="点击开关点阵屏">ON</span></div>
+        <div class="body">
+          <span class="dm" id="screenIco" data-icon="screen" data-igap="2.8" data-ir="1.0" data-icolor="#f5f5f7"></span>
+          <div class="val"><span class="dm" id="screenTxt" data-dm="ON" data-gap="5.4" data-r="2.2" data-color="#f0813c" data-dim="transparent"></span></div>
+          <div class="foot" id="screenFoot">点阵屏开启 · 亮度 100%</div>
+        </div>
+      </div>
+    </div>
+
     <!-- 规范 -->
     <div class="legend" data-page-node-id="3MhBeuscYnD7QzyKAJt8fa">
       <h3 data-page-node-id="QJdEbjALRDDSLC14zEvAB1">设计规范 / Design Spec</h3>
@@ -1219,6 +1239,20 @@ const PROJECTOR=[
 "001111111111100",
 "000111111111000",
 "000000000000000"];
+
+const SCREEN=[
+"000000000000000",
+"011111111111110",
+"110000000000011",
+"110101010101011",
+"110010101010011",
+"110101010101011",
+"110010101010011",
+"110000000000011",
+"011111111111110",
+"000000111000000",
+"000011111110000",
+"000000000000000"];
 const MESH=[
 "0000000010000",
 "0000000111000",
@@ -1265,6 +1299,7 @@ function drawIcon(el){
   if(type==="radio"){ RADIO.forEach((row,ry)=>{[...row].forEach((ch,rx)=>{if(ch==="1")add(rx,ry);});}); }
   if(type==="mic"){ MIC.forEach((row,ry)=>{[...row].forEach((ch,rx)=>{if(ch==="1")add(rx,ry);});}); }
   if(type==="projector"){ PROJECTOR.forEach((row,ry)=>{[...row].forEach((ch,rx)=>{if(ch==="1")add(rx,ry);});}); }
+  if(type==="screen"){ SCREEN.forEach((row,ry)=>{[...row].forEach((ch,rx)=>{if(ch==="1")add(rx,ry);});}); }
   if(type==="mesh"){ MESH.forEach((row,ry)=>{[...row].forEach((ch,rx)=>{if(ch==="1")add(rx,ry);});}); }
   if(type==="wave"){
     const hs=[3,5,9,13,9,5,3];
@@ -1309,7 +1344,7 @@ const MON=["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DE
 const WKS=["SUNDAY","MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY","SATURDAY"];
 const WKS3=["SUN","MON","TUE","WED","THU","FRI","SAT"];
 
-const S={battery:100,water:0,torch:1,music:0,city:0,alt:1243,press:1013,bearing:0,live:1,rec:0,recMode:"idle",projOn:0,projIn:0,fm:0,fmOn:0,steps:8432,mesh:0,db:68,vid:0,vidMode:"idle",rain:0,lamp:0};
+const S={battery:100,water:0,torch:1,music:0,city:0,alt:1243,press:1013,bearing:0,live:1,rec:0,recMode:"idle",projOn:0,projIn:0,screenOn:1,fm:0,fmOn:0,steps:8432,mesh:0,db:68,vid:0,vidMode:"idle",rain:0,lamp:0};
 const CITIES=[
  {name:"Toronto",cond:"Partly Cloudy",temp:30,hi:35,lo:16,ic:"sun",days:["cloud","sun","cloud","sun","sun","sun"],hi_:[-3,-1,-9,-4,-4,-4],lo_:[-6,-9,-10,-6,-6,-6]},
  {name:"Beijing",cond:"Sunny",temp:26,hi:32,lo:18,ic:"sun",days:["sun","sun","cloud","cloud","sun","sun"],hi_:[31,30,28,26,29,30],lo_:[18,19,17,16,18,19]},
@@ -1446,6 +1481,16 @@ function renderProj(){
 }
 const PROJ_INPUTS=["HDMI 1","HDMI 2","DP","WIFI"];
 
+/* ---- W28 点阵屏开关 ---- */
+function renderScreen(){
+  const on=!!S.screenOn;
+  const t=$("#screenTxt"); if(t){t.dataset.dm=on?"ON":"OFF";t.dataset.color=on?"#f0813c":"#9a9aa2";drawDM(t);}
+  const i=$("#screenIco"); if(i){const c=on?"#f5f5f7":"#55555e";if(i.dataset.icolor!==c){i.dataset.icolor=c;i.innerHTML="";drawIcon(i);}}
+  const p=$("#screenPill"); if(p){p.textContent=on?"ON":"OFF";p.style.color=on?"var(--orange)":"var(--ink-dim)";p.style.background=on?"rgba(240,129,60,.14)":"rgba(255,255,255,.06)";}
+  const f=$("#screenFoot");
+  if(f)f.textContent=on?"点阵屏开启 · 亮度 100%":"点阵屏关闭 · 息屏休眠中";
+}
+
 /* ---- W19 录音机 / W20 FM / W21 计步 / W22 无网通信 / W23 噪声 / W24 录像 / W25 雨盾 / W26 氛围灯 ---- */
 const FM_ST=[{f:"98.6",n:"频道 · 音乐之声",p:38},{f:"101.1",n:"频道 · 交通广播",p:52},{f:"92.5",n:"频道 · 新闻资讯",p:24},{f:"107.7",n:"频道 · 经典金曲",p:74}];
 const MESH_ST=[{d:"1.2",n:"3 台设备已连接"},{d:"2.4",n:"2 台设备已连接"},{d:"0.6",n:"5 台设备已连接"}];
@@ -1515,7 +1560,7 @@ function renderLamp(){
     [...d.children].forEach((e,i)=>{e.style.opacity=i===k?"1":".38";e.style.boxShadow=i===k?"0 0 0 3px rgba(255,255,255,.10)":"none";});}
 }
 function tickRec(){ if(S.recMode==="rec")S.rec++; if(S.vidMode==="rec")S.vid++; renderRec(); renderVid(); }
-function refreshAll(){updClock();updDate();renderCity();renderBattery();renderWater();renderTorch();renderMusic();renderAlt();renderRec();renderFM();renderSteps();renderMesh();renderDB();renderVid();renderRain();renderLamp();renderProj();}
+function refreshAll(){updClock();updDate();renderCity();renderBattery();renderWater();renderTorch();renderMusic();renderAlt();renderRec();renderFM();renderSteps();renderMesh();renderDB();renderVid();renderRain();renderLamp();renderProj();renderScreen();}
 
 /* ===== 事件绑定 ===== */
 // 电量：点击时钟电量卡循环
@@ -1583,6 +1628,12 @@ if(c27){c27.classList.add("act");c27.title="点击开关投影仪（右上角也
   c27.addEventListener("click",()=>{S.projOn=!S.projOn;if(S.projOn&&!S.projIn)S.projIn="HDMI 1";renderProj();});}
 const pp=$("#projPill");
 if(pp)pp.addEventListener("click",e=>{e.stopPropagation();S.projOn=!S.projOn;if(S.projOn&&!S.projIn)S.projIn="HDMI 1";renderProj();});
+// W28 点阵屏开关
+const c28=$(".w28")?$(".w28").closest(".card"):null;
+if(c28){c28.classList.add("act");c28.title="点击开关点阵屏（右上角也可）";
+  c28.addEventListener("click",()=>{S.screenOn=!S.screenOn;renderScreen();});}
+const sp=$("#screenPill");
+if(sp)sp.addEventListener("click",e=>{e.stopPropagation();S.screenOn=!S.screenOn;renderScreen();});
 // 顶栏
 const bl=$("#btnLive"), br=$("#btnReset");
 let timer=null;
@@ -1590,7 +1641,7 @@ function setLive(on){S.live=on?1:0;bl.classList.toggle("on",!!on);bl.textContent
   if(timer){clearInterval(timer);timer=null;}
   if(on)timer=setInterval(()=>{updClock();updDate();tickRec();},1000);}
 if(bl)bl.addEventListener("click",()=>setLive(!S.live));
-if(br)br.addEventListener("click",()=>{S.battery=100;S.water=0;S.torch=1;S.music=0;S.city=0;S.alt=1243;S.press=1013;S.bearing=0;S.rec=0;S.recMode="idle";S.fm=0;S.fmOn=0;S.steps=8432;S.mesh=0;S.db=68;S.vid=0;S.vidMode="idle";S.rain=0;S.lamp=0;
+if(br)br.addEventListener("click",()=>{S.battery=100;S.water=0;S.torch=1;S.music=0;S.city=0;S.alt=1243;S.press=1013;S.bearing=0;S.rec=0;S.recMode="idle";S.fm=0;S.fmOn=0;S.steps=8432;S.mesh=0;S.db=68;S.vid=0;S.vidMode="idle";S.rain=0;S.lamp=0;S.projOn=0;S.screenOn=1;
   const g=document.querySelector(".compass .carrow"); if(g)g.style.transform="rotate(0deg)";refreshAll();});
 
 refreshAll(); setLive(true);
