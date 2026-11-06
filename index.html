@@ -332,6 +332,95 @@ body{
 .tableLink:hover{background:rgba(255,255,255,.12);}
 .tableLink.docLink{background:rgba(240,129,60,.16);border:1px solid rgba(240,129,60,.45);color:#ff9e64;font-weight:500;}
 .tableLink.docLink:hover{background:var(--orange);color:#fff;border-color:var(--orange);box-shadow:0 0 14px rgba(240,129,60,.35);}
+
+/* ===== 小组件在线编辑模式与点阵修改弹窗 ===== */
+.btn-edit-widgets{
+  background: var(--card);color: var(--ink);border: 1px solid #3a3a42;border-radius: 10px;
+  padding: 8px 14px;font-size: 11px;font-family: inherit;cursor: pointer;transition: all .2s;
+}
+.btn-edit-widgets:hover{background: #2c2c34;border-color: var(--orange);}
+.btn-edit-widgets.active{
+  background: var(--blue) !important;border-color: var(--blue) !important;color: #fff !important;
+  box-shadow: 0 0 14px rgba(46, 110, 224, 0.4);
+}
+.btn-save-widgets{
+  background: var(--orange) !important;border: 1px solid var(--orange) !important;color: #fff !important;
+  border-radius: 10px;padding: 8px 14px;font-size: 11px;font-family: inherit;cursor: pointer;
+  box-shadow: 0 0 12px rgba(240, 129, 60, 0.35);transition: all .2s;
+}
+.btn-save-widgets:hover{background: #e07330 !important;}
+.btn-reset-widgets{
+  background: #2c2c34;border: 1px solid #4a4a54;color: #f87171;border-radius: 10px;
+  padding: 8px 14px;font-size: 11px;font-family: inherit;cursor: pointer;transition: all .2s;
+}
+.btn-reset-widgets:hover{background: rgba(239, 68, 68, 0.2);border-color: #ef4444;}
+
+/* 编辑模式下卡片与文字高亮 */
+body.widget-editing-active .card [contenteditable="true"]{
+  outline: 1px dashed rgba(240, 129, 60, 0.5) !important;
+  border-radius: 3px;cursor: text;transition: background .15s, outline .15s;
+}
+body.widget-editing-active .card [contenteditable="true"]:hover{
+  outline: 1px solid var(--orange) !important;
+  background: rgba(240, 129, 60, 0.12) !important;
+}
+body.widget-editing-active .card [contenteditable="true"]:focus{
+  outline: 2px solid var(--orange) !important;
+  background: rgba(240, 129, 60, 0.2) !important;
+}
+body.widget-editing-active .card .dm{
+  cursor: pointer;transition: all .15s;
+}
+body.widget-editing-active .card .dm:hover{
+  outline: 1px dashed #60a5fa;border-radius: 8px;
+  box-shadow: 0 0 10px rgba(46, 110, 224, 0.35);
+}
+
+/* 吐司通知 */
+.widget-toast{
+  position: fixed;bottom: 30px;left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: #1e1e24;border: 1px solid var(--orange);
+  color: #fff;padding: 11px 24px;border-radius: 12px;font-size: 13px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.6);opacity: 0;
+  transition: all .25s ease;z-index: 1000;display: flex;align-items: center;gap: 10px;pointer-events: none;
+}
+.widget-toast.show{transform: translateX(-50%) translateY(0);opacity: 1;}
+
+/* 点阵弹窗编辑面板 */
+.dm-modal-mask{
+  position: fixed;inset: 0;background: rgba(0,0,0,0.65);
+  backdrop-filter: blur(6px);-webkit-backdrop-filter: blur(6px);
+  z-index: 2000;display: flex;align-items: center;justify-content: center;
+  opacity: 0;pointer-events: none;transition: opacity .2s;
+}
+.dm-modal-mask.open{opacity: 1;pointer-events: auto;}
+.dm-modal{
+  background: #232329;border: 1px solid #3a3a42;border-radius: 18px;
+  padding: 24px;width: 90%;max-width: 380px;box-shadow: 0 12px 40px rgba(0,0,0,0.7);
+}
+.dm-modal h3{
+  font-size: 15px;font-weight: 500;color: #ececee;margin-bottom: 8px;
+  display: flex;align-items: center;gap: 8px;
+}
+.dm-modal .tip{
+  font-size: 12px;color: #9a9aa2;margin-bottom: 16px;line-height: 1.5;
+}
+.dm-modal input{
+  width: 100%;background: #16161a;border: 1px solid #3a3a42;
+  border-radius: 10px;padding: 10px 14px;color: #fff;font-size: 18px;
+  font-family: inherit;outline: none;margin-bottom: 18px;letter-spacing: 1px;
+}
+.dm-modal input:focus{border-color: var(--orange);box-shadow: 0 0 10px rgba(240, 129, 60, 0.25);}
+.dm-modal-btns{display: flex;justify-content: flex-end;gap: 10px;}
+.dm-modal-btns button{
+  padding: 8px 16px;border-radius: 8px;font-size: 12px;cursor: pointer;
+  font-family: inherit;border: 1px solid #3a3a42;background: #2c2c34;color: #ececee;transition: .15s;
+}
+.dm-modal-btns button:hover{background: #363640;}
+.dm-modal-btns button.primary{background: var(--orange);border-color: var(--orange);color: #fff;}
+.dm-modal-btns button.primary:hover{background: #e07330;}
+
 </style>
 </head>
 <body data-page-node-id="OKLJZHEdpxSq4sL7mNii8K">
@@ -340,7 +429,11 @@ body{
       <h1>至简 · 桌面小组件</h1>
       <div class="hint">可交互在线版：时钟实时走动 · 点击卡片或控件可交互 · 数据按当前日期实时计算</div>
     </div>
-    <div class="btns"><a class="tableLink docLink" href="doc.html" target="_blank" id="btnDoc">📝 需求文档（可在线编辑）</a>
+    <div class="btns">
+      <button id="btnEditWidgets" class="btn-edit-widgets" title="点击开启编辑模式，可直接在卡片上修改文字和点阵内容">✏️ 编辑小组件</button>
+      <button id="btnSaveWidgets" class="btn-save-widgets" style="display:none;" title="保存当前修改至浏览器">💾 保存修改</button>
+      <button id="btnResetWidgets" class="btn-reset-widgets" style="display:none;" title="清空修改并恢复默认预设">🔄 恢复默认</button>
+      <a class="tableLink docLink" href="doc.html" target="_blank" id="btnDoc">📝 需求文档（可在线编辑）</a>
       <a class="tableLink" href="widgets-table.html" target="_blank">📋 25 张清单（含截图）</a>
       <button id="btnLive" class="on">实时数据：开</button>
       <button id="btnReset">恢复默认</button>
@@ -1501,6 +1594,259 @@ if(br)br.addEventListener("click",()=>{S.battery=100;S.water=0;S.torch=1;S.music
   const g=document.querySelector(".compass .carrow"); if(g)g.style.transform="rotate(0deg)";refreshAll();});
 
 refreshAll(); setLive(true);
+
+/* ================= 小组件在线编辑与持久化系统 ================= */
+let isWidgetEditMode = false;
+let activeDMTarget = null;
+
+function getTextLeaves(container) {
+  const leaves = [];
+  const walk = (node) => {
+    if (!node) return;
+    if (node.nodeType === Node.ELEMENT_NODE) {
+      if (node.closest('.dm') || node.tagName === 'SVG' || node.tagName === 'svg' || node.tagName === 'BUTTON' || node.tagName === 'button' || node.tagName === 'INPUT') return;
+      if (node.classList.contains('ring') || node.classList.contains('bat-bar') || node.classList.contains('carrow') || node.classList.contains('box')) return;
+      if (node.children.length === 0 && node.textContent.trim().length > 0) {
+        leaves.push(node);
+        return;
+      }
+      for (let child of node.children) {
+        walk(child);
+      }
+    }
+  };
+  walk(container);
+  return leaves;
+}
+
+function enableWidgetEditing() {
+  isWidgetEditMode = true;
+  document.body.classList.add('widget-editing-active');
+  const btn = document.getElementById('btnEditWidgets');
+  if (btn) {
+    btn.innerHTML = '👁️ 退出编辑';
+    btn.classList.add('active');
+  }
+  const saveBtn = document.getElementById('btnSaveWidgets');
+  const resetBtn = document.getElementById('btnResetWidgets');
+  if (saveBtn) saveBtn.style.display = 'inline-block';
+  if (resetBtn) resetBtn.style.display = 'inline-block';
+  
+  document.querySelectorAll('.card').forEach(card => {
+    const leaves = getTextLeaves(card);
+    leaves.forEach(el => {
+      el.setAttribute('contenteditable', 'true');
+    });
+  });
+  
+  showWidgetToast('✏️ 已开启编辑模式：点击文字直接打字，点击点阵修改数值！', '💡');
+}
+
+function disableWidgetEditing() {
+  isWidgetEditMode = false;
+  document.body.classList.remove('widget-editing-active');
+  const btn = document.getElementById('btnEditWidgets');
+  if (btn) {
+    btn.innerHTML = '✏️ 编辑小组件';
+    btn.classList.remove('active');
+  }
+  const saveBtn = document.getElementById('btnSaveWidgets');
+  const resetBtn = document.getElementById('btnResetWidgets');
+  if (saveBtn) saveBtn.style.display = 'none';
+  if (resetBtn) resetBtn.style.display = 'none';
+  
+  document.querySelectorAll('.card [contenteditable="true"]').forEach(el => {
+    el.removeAttribute('contenteditable');
+  });
+  
+  showWidgetToast('👁️ 已退出编辑模式，恢复正常交互', 'ℹ️');
+}
+
+function toggleWidgetEditing() {
+  if (isWidgetEditMode) {
+    disableWidgetEditing();
+  } else {
+    enableWidgetEditing();
+  }
+}
+
+// 捕获阶段拦截卡片点击
+const gridContainer = document.querySelector('.grid');
+if (gridContainer) {
+  gridContainer.addEventListener('click', function(e) {
+    if (!isWidgetEditMode) return;
+    
+    // 如果点击的是点阵组件
+    const dm = e.target.closest('.dm[data-dm]');
+    if (dm) {
+      e.stopPropagation();
+      e.preventDefault();
+      openDMModal(dm);
+      return;
+    }
+    
+    // 如果点击的是可编辑文本
+    if (e.target.isContentEditable) {
+      e.stopPropagation();
+      return;
+    }
+    
+    // 点击卡片背景阻止触发正常组件切城市/开关等交互
+    e.stopPropagation();
+  }, true);
+}
+
+// 点阵编辑模态框
+function openDMModal(dm) {
+  activeDMTarget = dm;
+  const modal = document.getElementById('dmModal');
+  const input = document.getElementById('dmInput');
+  if (modal && input) {
+    input.value = dm.dataset.dm || '';
+    modal.classList.add('open');
+    setTimeout(() => { input.focus(); input.select(); }, 100);
+  }
+}
+
+function closeDMModal() {
+  const modal = document.getElementById('dmModal');
+  if (modal) modal.classList.remove('open');
+  activeDMTarget = null;
+}
+
+function confirmDMModal() {
+  const input = document.getElementById('dmInput');
+  if (activeDMTarget && input) {
+    const val = input.value.trim().toUpperCase();
+    if (val) {
+      activeDMTarget.dataset.dm = val;
+      drawDM(activeDMTarget);
+      showWidgetToast('✨ 点阵内容已修改为: ' + val, '✨');
+    }
+  }
+  closeDMModal();
+}
+
+const dmInput = document.getElementById('dmInput');
+if (dmInput) {
+  dmInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      confirmDMModal();
+    } else if (e.key === 'Escape') {
+      closeDMModal();
+    }
+  });
+}
+
+// 保存与加载本地自定义小组件
+function saveWidgetEdits() {
+  const data = {
+    texts: [],
+    dms: [],
+    time: new Date().toLocaleString()
+  };
+  document.querySelectorAll('.card').forEach((card, cIdx) => {
+    const leaves = getTextLeaves(card);
+    leaves.forEach((el, tIdx) => {
+      data.texts.push({ cIdx, tIdx, text: el.textContent });
+    });
+    const dms = card.querySelectorAll('.dm[data-dm]');
+    dms.forEach((dm, dIdx) => {
+      data.dms.push({ cIdx, dIdx, dm: dm.dataset.dm });
+    });
+  });
+  
+  try {
+    localStorage.setItem('zhijian_desktop_custom_v1', JSON.stringify(data));
+    showWidgetToast('💾 所有小组件自定义修改已保存！刷新后依然保留', '✅');
+  } catch(e) {
+    alert('保存失败: ' + e);
+  }
+}
+
+function loadWidgetEdits() {
+  const raw = localStorage.getItem('zhijian_desktop_custom_v1');
+  if (!raw) return;
+  try {
+    const data = JSON.parse(raw);
+    const cards = document.querySelectorAll('.card');
+    if (data.texts) {
+      data.texts.forEach(item => {
+        if (cards[item.cIdx]) {
+          const leaves = getTextLeaves(cards[item.cIdx]);
+          if (leaves[item.tIdx]) {
+            leaves[item.tIdx].textContent = item.text;
+          }
+        }
+      });
+    }
+    if (data.dms) {
+      data.dms.forEach(item => {
+        if (cards[item.cIdx]) {
+          const dms = cards[item.cIdx].querySelectorAll('.dm[data-dm]');
+          if (dms[item.dIdx]) {
+            dms[item.dIdx].dataset.dm = item.dm;
+            drawDM(dms[item.dIdx]);
+          }
+        }
+      });
+    }
+  } catch(e) {
+    console.error('加载小组件自定义配置失败:', e);
+  }
+}
+
+function resetWidgetEdits() {
+  if (confirm('确认清除所有小组件自定义修改并恢复初始默认预设吗？')) {
+    localStorage.removeItem('zhijian_desktop_custom_v1');
+    showWidgetToast('🔄 已恢复为初始预设', '🔄');
+    setTimeout(() => {
+      window.location.reload();
+    }, 500);
+  }
+}
+
+function showWidgetToast(msg, icon = '💡') {
+  const t = document.getElementById('widgetToast');
+  if (!t) return;
+  document.getElementById('wToastIcon').textContent = icon;
+  document.getElementById('wToastMsg').textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+// 绑定按钮事件
+const btnEdit = document.getElementById('btnEditWidgets');
+if (btnEdit) btnEdit.addEventListener('click', toggleWidgetEditing);
+
+const btnSaveW = document.getElementById('btnSaveWidgets');
+if (btnSaveW) btnSaveW.addEventListener('click', saveWidgetEdits);
+
+const btnResetW = document.getElementById('btnResetWidgets');
+if (btnResetW) btnResetW.addEventListener('click', resetWidgetEdits);
+
+loadWidgetEdits();
+
 </script>
+
+<!-- 点阵修改弹窗 -->
+<div class="dm-modal-mask" id="dmModal">
+  <div class="dm-modal">
+    <h3><span style="color:var(--orange);">●</span> 修改点阵显示内容</h3>
+    <div class="tip">支持输入数字 <code>0-9</code>、英文字母 <code>A-Z</code>、符号 <code>: . / - %</code> 与空格。</div>
+    <input type="text" id="dmInput" placeholder="输入点阵内容..." autocomplete="off">
+    <div class="dm-modal-btns">
+      <button onclick="closeDMModal()">取消</button>
+      <button class="primary" onclick="confirmDMModal()">确定修改</button>
+    </div>
+  </div>
+</div>
+
+<!-- 吐司通知 -->
+<div class="widget-toast" id="widgetToast">
+  <span id="wToastIcon">✏️</span>
+  <span id="wToastMsg">已开启编辑模式</span>
+</div>
+
 </body>
 </html>
