@@ -1,0 +1,373 @@
+{
+  "version": "1.0",
+  "updatedAt": "2026-11-06T18:25:00.000Z",
+  "time": "2026-11-06 18:25:00",
+  "total": 30,
+  "counts": {
+    "need": 30,
+    "pending": 0,
+    "notNeed": 0
+  },
+  "data": [
+    {
+      "id": "W1",
+      "status": "need",
+      "editables": [
+        "时钟+电量+日历+天气",
+        "Clock+Battery+Calendar+Weather",
+        "时间信息",
+        "点阵时钟 + 电池条 + 迷你日历 + 天气条",
+        "点击切城市"
+      ],
+      "note": ""
+    },
+    {
+      "id": "W2",
+      "status": "need",
+      "editables": [
+        "时钟+电量",
+        "Clock+Battery",
+        "时间信息",
+        "点阵时钟 + 环形电量 + 百分比",
+        "点击切电量"
+      ],
+      "note": ""
+    },
+    {
+      "id": "W3",
+      "status": "need",
+      "editables": [
+        "模拟时钟",
+        "Analog Clock",
+        "时间信息",
+        "点阵表盘 + 块段指针 + 橙秒点 + 农历周条",
+        "—"
+      ],
+      "note": ""
+    },
+    {
+      "id": "W4",
+      "status": "need",
+      "editables": [
+        "待办",
+        "Todo",
+        "健康生活",
+        "任务列表 + 复选框",
+        "点击勾选"
+      ],
+      "note": ""
+    },
+    {
+      "id": "W5",
+      "status": "need",
+      "editables": [
+        "天气",
+        "Weather",
+        "天气环境",
+        "温度点阵 + 7 个预报小卡",
+        "点击切城市"
+      ],
+      "note": ""
+    },
+    {
+      "id": "W6",
+      "status": "need",
+      "editables": [
+        "喝水",
+        "Water",
+        "健康生活",
+        "水量点阵 + 杯图 + ± 按钮",
+        "增减水量"
+      ],
+      "note": ""
+    },
+    {
+      "id": "W7",
+      "status": "need",
+      "editables": [
+        "倒计时 1",
+        "Countdown I",
+        "系统工具",
+        "倒计时点阵 + 圆角滑块",
+        "—"
+      ],
+      "note": ""
+    },
+    {
+      "id": "W8",
+      "status": "need",
+      "editables": [
+        "月历",
+        "Month",
+        "时间信息",
+        "大日期点阵 + 农历 + 星期胶囊",
+        "—"
+      ],
+      "note": ""
+    },
+    {
+      "id": "W9",
+      "status": "need",
+      "editables": [
+        "音乐",
+        "Music",
+        "健康生活",
+        "点阵音符 + 标题 + 播放按钮",
+        "点击播放/切歌"
+      ],
+      "note": ""
+    },
+    {
+      "id": "W11",
+      "status": "need",
+      "editables": [
+        "日期+进度环",
+        "Date+Rings",
+        "时间信息",
+        "月日点阵 + 农历 + 3 个迷你进度环",
+        "实时环更新"
+      ],
+      "note": ""
+    },
+    {
+      "id": "W12",
+      "status": "need",
+      "editables": [
+        "倒计时 2",
+        "Countdown II",
+        "系统工具",
+        "倒计时点阵 + 蓝色滑块",
+        "—"
+      ],
+      "note": ""
+    },
+    {
+      "id": "W13",
+      "status": "need",
+      "editables": [
+        "小时钟",
+        "Mini Clock",
+        "时间信息",
+        "点阵时钟 + 日期文字行",
+        "—"
+      ],
+      "note": ""
+    },
+    {
+      "id": "W14",
+      "status": "need",
+      "editables": [
+        "小天气",
+        "Mini Weather",
+        "天气环境",
+        "天气点阵图标 + 条件 + 范围",
+        "同步主天气卡"
+      ],
+      "note": ""
+    },
+    {
+      "id": "W15",
+      "status": "need",
+      "editables": [
+        "指南针",
+        "Compass",
+        "其它",
+        "点阵 N/E/S/W + 中央箭头",
+        "点击转方位"
+      ],
+      "note": ""
+    },
+    {
+      "id": "W16",
+      "status": "need",
+      "editables": [
+        "一周预报",
+        "Weekly Forecast",
+        "天气环境",
+        "当前温 + 6 天预报列",
+        "点击切城市"
+      ],
+      "note": ""
+    },
+    {
+      "id": "W17",
+      "status": "need",
+      "editables": [
+        "手电筒",
+        "Flashlight",
+        "天气环境",
+        "光束 + 手电筒身 + 黑缝",
+        "点击开关"
+      ],
+      "note": ""
+    },
+    {
+      "id": "W18",
+      "status": "need",
+      "editables": [
+        "海拔气压",
+        "Altitude+Pressure",
+        "天气环境",
+        "海拔/气压点阵 + 分隔线",
+        "点击刷新传感器"
+      ],
+      "note": ""
+    },
+    {
+      "id": "W19",
+      "status": "need",
+      "editables": [
+        "录音机",
+        "Recorder",
+        "系统工具",
+        "麦克风/波形 + 计时 + 录制点",
+        "三态：idle→rec→pause"
+      ],
+      "note": ""
+    },
+    {
+      "id": "W20",
+      "status": "need",
+      "editables": [
+        "FM 收音机",
+        "FM Radio",
+        "系统工具",
+        "收音机图标 / 频率+MHz+调谐尺",
+        "OFF/ON + 切频道"
+      ],
+      "note": ""
+    },
+    {
+      "id": "W21",
+      "status": "need",
+      "editables": [
+        "计步器",
+        "Pedometer",
+        "健康生活",
+        "步数点阵 + 进度条 + 距离/热量",
+        "点击累加"
+      ],
+      "note": ""
+    },
+    {
+      "id": "W22",
+      "status": "need",
+      "editables": [
+        "无网通信",
+        "Mesh",
+        "系统工具",
+        "信号点阵图标 + 距离 + 设备数",
+        "切组网状态"
+      ],
+      "note": ""
+    },
+    {
+      "id": "W23",
+      "status": "need",
+      "editables": [
+        "噪声测试",
+        "Noise (dB)",
+        "系统工具",
+        "dB 点阵 + 6 段柱状计 + 等级",
+        "点击采样"
+      ],
+      "note": ""
+    },
+    {
+      "id": "W24",
+      "status": "need",
+      "editables": [
+        "后台录像",
+        "Background Video",
+        "系统工具",
+        "摄像机 / 计时 + 录制点",
+        "三态：idle→rec→pause"
+      ],
+      "note": ""
+    },
+    {
+      "id": "W25",
+      "status": "need",
+      "editables": [
+        "雨盾模式",
+        "Rain Shield",
+        "系统工具",
+        "雨伞 / ON 点阵",
+        "OFF/ON 切换"
+      ],
+      "note": ""
+    },
+    {
+      "id": "W26",
+      "status": "need",
+      "editables": [
+        "氛围灯",
+        "Ambient Light",
+        "系统工具",
+        "灯泡 + 5 色彩环 + 灯效",
+        "切 4 种灯效"
+      ],
+      "note": ""
+    },
+    {
+      "id": "W27",
+      "status": "need",
+      "editables": [
+        "投影仪",
+        "Projector",
+        "系统工具",
+        "投影仪点阵图标 / ON 点阵 / 输入源",
+        "OFF/ON 切换"
+      ],
+      "note": ""
+    },
+    {
+      "id": "W28",
+      "status": "need",
+      "editables": [
+        "点阵屏开关",
+        "Matrix Display",
+        "系统工具",
+        "点阵屏幕图标 / ON·OFF 点阵字 / 亮度与休眠状态",
+        "点击卡片或开关快速切换点阵屏开启/休眠"
+      ],
+      "note": ""
+    },
+    {
+      "id": "W29",
+      "status": "need",
+      "editables": [
+        "正圆黑盘点阵钟",
+        "Dot Matrix Circular Clock",
+        "时间信息",
+        "深灰正圆表盘 / 12·3·6·9点阵字模 / 分段白色时分针 / 竖直橙色点阵秒针 / 橙蓝同心轴心（纯正圆无外部框体）",
+        "实时转动走时，点击卡片切换扫秒/跳秒模式"
+      ],
+      "note": ""
+    },
+    {
+      "id": "W30",
+      "status": "need",
+      "editables": [
+        "极简极白胶囊钟",
+        "Capsule Minimal Clock",
+        "时间信息",
+        "陶瓷纯白正圆表盘 / 极粗圆角胶囊黑时针 / 深灰修长分针 / 纯黑轴心 / 标志性克莱因红点（纯正圆无外部背景）",
+        "包豪斯极简指针走时，点击红点切换秒针环绕/经典定格"
+      ],
+      "note": ""
+    },
+    {
+      "id": "W31",
+      "status": "need",
+      "editables": [
+        "刻度光环轨道钟",
+        "Orbital Ticks Clock",
+        "时间信息",
+        "陶瓷浅灰正圆表盘 / 36段放射刻度环 / 悬浮灰色轨道进度球 / 居中现代数字时间 05:00（纯正圆无方圆框体）",
+        "居中数字实时计时，轨道球随时间旋转，点击切换分秒进度"
+      ],
+      "note": ""
+    }
+  ]
+}

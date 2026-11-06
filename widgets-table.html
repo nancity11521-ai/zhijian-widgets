@@ -428,6 +428,192 @@ td.editable-td:focus{
   opacity: 1;
 }
 
+/* 线上同步弹窗与角标样式 */
+.sync-badge{
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 3px 10px;
+  border-radius: 20px;
+  background: rgba(46,110,224,0.08);
+  border: 1px solid rgba(46,110,224,0.3);
+  color: #2e6ee0;
+  vertical-align: middle;
+  margin-left: 10px;
+}
+.sync-badge.online{
+  background: rgba(16,185,129,0.08);
+  border-color: rgba(16,185,129,0.35);
+  color: #059669;
+}
+.sync-badge.local{
+  background: rgba(245,158,11,0.08);
+  border-color: rgba(245,158,11,0.35);
+  color: #d97706;
+}
+.sync-modal-overlay{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.sync-modal-overlay.show{
+  display: flex;
+}
+.sync-modal-box{
+  background: #ffffff;
+  border-radius: 14px;
+  max-width: 680px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 24px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  border: 1px solid #e0e0e6;
+  font-family: inherit;
+}
+.sync-modal-header{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.sync-modal-title{
+  font-size: 17px;
+  font-weight: 700;
+  color: #111118;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sync-close-btn{
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: #888;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+.sync-close-btn:hover{
+  background: #f0f0f4;
+  color: #111;
+}
+.sync-summary-banner{
+  background: #f8f9fc;
+  border: 1px solid #e2e8f0;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #334155;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+.sync-methods-list{
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.sync-card{
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 16px;
+  background: #ffffff;
+}
+.sync-card.active-card{
+  border-color: #f0813c;
+  background: #fffcf9;
+}
+.sync-card-title{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #111;
+  margin-bottom: 6px;
+}
+.badge-rec{
+  font-size: 10px;
+  background: #f0813c;
+  color: #fff;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-weight: 700;
+}
+.badge-opt{
+  font-size: 10px;
+  background: #64748b;
+  color: #fff;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-weight: 700;
+}
+.sync-card-desc{
+  font-size: 12px;
+  color: #64748b;
+  line-height: 1.6;
+  margin-bottom: 10px;
+}
+.sync-act-btn{
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  color: #1e293b;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .2s;
+}
+.sync-act-btn:hover{
+  background: #e2e8f0;
+}
+.sync-act-btn.primary{
+  background: #f0813c;
+  border-color: #f0813c;
+  color: #fff;
+}
+.sync-act-btn.primary:hover{
+  background: #dd6e29;
+}
+.sync-act-btn.success{
+  background: #10b981;
+  border-color: #10b981;
+  color: #fff;
+}
+.sync-act-btn.success:hover{
+  background: #059669;
+}
+.sync-json-preview{
+  width: 100%;
+  height: 80px;
+  margin-top: 10px;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+  background: #f1f5f9;
+  font-family: monospace;
+  font-size: 11px;
+  padding: 8px;
+  color: #334155;
+  resize: vertical;
+}
+.gh-token-input{
+  flex: 1;
+  padding: 7px 10px;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  font-size: 12px;
+  font-family: monospace;
+}
+
 @media print{
   body{background:#fff;color:#111;padding:0;}
   .top-control-bar, .nav-links{display:none;}
@@ -437,7 +623,7 @@ td.editable-td:focus{
 }
 </style></head><body data-page-node-id="RFh2GpFtFGg8YjvULJ4AXM"><div class="header-box">
   <div class="title-row">
-    <h1>至简 · 桌面小组件需求决策与清单</h1>
+    <h1>至简 · 桌面小组件需求决策与清单 <span class="sync-badge" id="syncBadge">🌐 线上自动同步已连接</span></h1>
     <div class="nav-links">
       <a class="nav-link" href="index.html">← 返回小组件看板</a>
       <a class="nav-link highlight" href="doc.html" target="_blank">📝 查看完整要求PRD</a>
@@ -445,7 +631,7 @@ td.editable-td:focus{
   </div>
   <p class="sub">
     30 款小组件 · 5×7 LED 点阵与正圆时钟系列 · 固定 2×2 (200×200) / 4×2 (422×200) 规格。<br>
-    <b>💡 在线决策工作表：</b>点击右侧 <b>【需要 / 待定 / 不需要】</b> 进行分类（选【不需要】会自动划线）；表格内文字与备注均可直接点击编辑打字。决策后点击 <b>【💾 保存决策】</b>。
+    <b>💡 在线决策工作表：</b>点击右侧 <b>【需要 / 待定 / 不需要】</b> 进行分类（选【不需要】会自动划线）；表格内文字与备注均可直接点击编辑打字。决策后点击 <b>【☁️ 保存并同步到网上】</b>。
   </p>
 </div>
 
@@ -459,7 +645,8 @@ td.editable-td:focus{
     <button class="f-btn btn-f-not-need" data-filter="not-need" onclick="filterRows('not-need')">🚫 不需要 (<span id="cntNotNeed">0</span>)</button>
   </div>
   <div class="top-actions">
-    <button class="act-btn btn-save" onclick="saveDecisions()">💾 保存决策与修改</button>
+    <button class="act-btn btn-save" onclick="saveDecisions()">☁️ 保存并同步到网上</button>
+    <button class="act-btn" onclick="openSyncModal()">🌐 线上同步管理</button>
     <button class="act-btn" onclick="exportDecisionsMarkdown()">📥 导出决策清单</button>
     <button class="act-btn btn-reset" onclick="resetDecisions()">🔄 恢复默认</button>
   </div>
@@ -1064,6 +1251,58 @@ td.editable-td:focus{
     <div class="note-input" contenteditable="true" placeholder="点击输入要求备注..."></div>
   </td>
 </tr></tbody></table>
+
+<!-- 线上同步管理弹窗 -->
+<div class="sync-modal-overlay" id="syncModalOverlay" onclick="if(event.target===this)closeSyncModal()">
+  <div class="sync-modal-box">
+    <div class="sync-modal-header">
+      <div class="sync-modal-title">
+        <span style="font-size:22px">☁️</span>
+        <span>同步决策至线上网站 (GitHub Pages)</span>
+      </div>
+      <button class="sync-close-btn" onclick="closeSyncModal()">✕</button>
+    </div>
+    
+    <div class="sync-summary-banner" id="syncSummaryBanner">
+      📊 当前决策统计：正在汇总...
+    </div>
+
+    <div class="sync-methods-list">
+      <!-- 推荐方案 1：一键复制给南城 -->
+      <div class="sync-card active-card">
+        <div class="sync-card-title">
+          <span class="badge-rec">推荐 · 零门槛</span>
+          <b>方案 1：一键复制决策数据，发给南城秒级入库推送</b>
+        </div>
+        <p class="sync-card-desc">
+          点击下方按钮将您当前的 30 项组件决策打包复制。直接在当前对话框按 <b>Command+V 发送给南城</b>，南城将立即把数据提交并推送到 GitHub 线上仓库，全网实时生效！
+        </p>
+        <div style="display:flex;gap:10px;align-items:center;margin-top:10px;flex-wrap:wrap;">
+          <button class="sync-act-btn primary" onclick="copyDecisionJson()">📋 一键复制决策数据并提示</button>
+          <button class="sync-act-btn" onclick="downloadDecisionJson()">📥 下载 decisions.json 文件</button>
+        </div>
+        <textarea id="syncJsonPreview" class="sync-json-preview" readonly onclick="this.select()" placeholder="此处自动呈现完整决策 JSON..."></textarea>
+      </div>
+
+      <!-- 方案 2：在线自动化 GitHub 直推 -->
+      <div class="sync-card">
+        <div class="sync-card-title">
+          <span class="badge-opt">高级 · 自动化</span>
+          <b>方案 2：配置 GitHub 访问令牌 (PAT) 直接线上推送</b>
+        </div>
+        <p class="sync-card-desc">
+          若您希望以后在网页上点击保存时完全不需人工介入、全自动实时直推 GitHub，可在此填入具备 repo 权限的 GitHub Token（仅保存在您本地浏览器中）：
+        </p>
+        <div style="display:flex;gap:8px;margin-top:8px;">
+          <input type="password" id="ghTokenInput" class="gh-token-input" placeholder="输入 GitHub Token (ghp_xxx 或 gho_xxx)" />
+          <button class="sync-act-btn success" onclick="pushToGitHubOnline()">🚀 立即直推到 GitHub</button>
+        </div>
+        <div id="ghSyncStatus" style="font-size:11px;color:#888;margin-top:6px;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- 吐司通知 -->
 <div class="table-toast" id="tableToast">
   <span id="tToastIcon">✅</span>
@@ -1159,7 +1398,11 @@ function filterRows(type, syncSelect = true) {
   });
 }
 
-function saveDecisions() {
+const GITHUB_REPO = 'nancity11521-ai/zhijian-widgets';
+const GITHUB_FILE_PATH = 'decisions.json';
+const GH_TOKEN_KEY = 'zhijian_github_pat_token';
+
+function getDecisionPayload() {
   const rows = document.querySelectorAll('tbody tr');
   const data = [];
   rows.forEach(r => {
@@ -1173,51 +1416,230 @@ function saveDecisions() {
     
     data.push({ id, status, editables, note });
   });
+
+  const needCnt = data.filter(d => d.status === 'need').length;
+  const pendingCnt = data.filter(d => d.status === 'pending').length;
+  const notNeedCnt = data.filter(d => d.status === 'not-need').length;
+
+  return {
+    version: '1.0',
+    updatedAt: new Date().toISOString(),
+    time: new Date().toLocaleString(),
+    total: data.length,
+    counts: { need: needCnt, pending: pendingCnt, notNeed: notNeedCnt },
+    data
+  };
+}
+
+function saveDecisions() {
+  const payload = getDecisionPayload();
   
+  // 1. 本地缓存备份
   try {
-    localStorage.setItem(DECISION_STORAGE_KEY, JSON.stringify({ data, time: new Date().toLocaleString() }));
-    showToast('💾 决策与修改已成功保存至本地！', '✅');
+    localStorage.setItem(DECISION_STORAGE_KEY, JSON.stringify(payload));
   } catch(e) {
-    alert('保存失败: ' + e);
+    console.warn('Local storage save failed:', e);
+  }
+
+  // 2. 更新同步面板数据并弹出同步窗口
+  updateSyncModalContent(payload);
+  openSyncModal();
+  showToast('💾 本地已暂存，请选择线上同步方式', '☁️');
+}
+
+function updateSyncModalContent(payload) {
+  if (!payload) payload = getDecisionPayload();
+  const summaryEl = document.getElementById('syncSummaryBanner');
+  if (summaryEl && payload.counts) {
+    summaryEl.innerHTML = `📊 <b>当前决策统计：</b>全部 ${payload.total} 款 · <span style="color:#059669">✅ 需要 ${payload.counts.need}</span> · <span style="color:#d97706">⏳ 待定 ${payload.counts.pending}</span> · <span style="color:#ef4444">🚫 不需要 ${payload.counts.notNeed}</span> · <span style="color:#64748b;font-size:11px">时间：${payload.time}</span>`;
+  }
+  const preview = document.getElementById('syncJsonPreview');
+  if (preview) {
+    preview.value = JSON.stringify(payload, null, 2);
+  }
+
+  const tokenInput = document.getElementById('ghTokenInput');
+  if (tokenInput && !tokenInput.value) {
+    const savedTok = localStorage.getItem(GH_TOKEN_KEY);
+    if (savedTok) tokenInput.value = savedTok;
   }
 }
 
-function loadDecisions() {
-  const raw = localStorage.getItem(DECISION_STORAGE_KEY);
-  if (!raw) {
-    updateCounts();
+function openSyncModal() {
+  updateSyncModalContent();
+  const modal = document.getElementById('syncModalOverlay');
+  if (modal) modal.classList.add('show');
+}
+
+function closeSyncModal() {
+  const modal = document.getElementById('syncModalOverlay');
+  if (modal) modal.classList.remove('show');
+}
+
+function copyDecisionJson() {
+  const preview = document.getElementById('syncJsonPreview');
+  if (!preview) return;
+  const jsonStr = preview.value;
+  navigator.clipboard.writeText(jsonStr).then(() => {
+    showToast('📋 决策数据已复制！请在对话框发送给南城', '✅');
+    alert('✅ 复制成功！\n\n请直接回到 AI 对话框，按 Command+V 粘贴发送给南城。\n南城将立即将最新决策写入 decisions.json 并推送至 GitHub 线上仓库，全球实时生效！');
+  }).catch(() => {
+    preview.select();
+    document.execCommand('copy');
+    showToast('📋 已复制至剪贴板', '✅');
+  });
+}
+
+function downloadDecisionJson() {
+  const payload = getDecisionPayload();
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'decisions.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('📥 decisions.json 下载成功', '✅');
+}
+
+async function pushToGitHubOnline() {
+  const tokenInput = document.getElementById('ghTokenInput');
+  const token = tokenInput ? tokenInput.value.trim() : '';
+  const statusEl = document.getElementById('ghSyncStatus');
+
+  if (!token) {
+    alert('请输入具备 repo 写入权限的 GitHub Token (PAT)');
     return;
   }
+  localStorage.setItem(GH_TOKEN_KEY, token);
+
+  if (statusEl) statusEl.innerHTML = '<span style="color:#2563eb">⏳ 正在同步推送至 GitHub 线上仓库...</span>';
+
+  const payload = getDecisionPayload();
+  const contentBase64 = btoa(unescape(encodeURIComponent(JSON.stringify(payload, null, 2))));
+
   try {
-    const parsed = JSON.parse(raw);
-    if (parsed && parsed.data) {
-      const rowMap = {};
-      document.querySelectorAll('tbody tr').forEach(r => {
-        const id = r.querySelector('.idx').textContent.trim();
-        rowMap[id] = r;
-      });
-      parsed.data.forEach(item => {
-        const r = rowMap[item.id];
-        if (r) {
-          const btn = r.querySelector(`.st-btn.btn-${item.status}`);
-          if (btn) setStatus(btn, item.status);
-          if (item.editables) {
-            const tds = r.querySelectorAll('.editable-td');
-            item.editables.forEach((html, i) => {
-              if (tds[i]) tds[i].innerHTML = html;
-            });
-          }
-          if (item.note) {
-            const noteEl = r.querySelector('.note-input');
-            if (noteEl) noteEl.innerHTML = item.note;
-          }
-        }
-      });
+    // 1. 获取当前 decisions.json 的 sha (如果已有)
+    const getRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${GITHUB_FILE_PATH}`, {
+      headers: {
+        'Authorization': `token ${token}`,
+        'Accept': 'application/vnd.github.v3+json'
+      }
+    });
+
+    let sha = null;
+    if (getRes.ok) {
+      const fileData = await getRes.json();
+      sha = fileData.sha;
+    }
+
+    // 2. PUT 提交更新 decisions.json
+    const putRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${GITHUB_FILE_PATH}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `token ${token}`,
+        'Content-Type': 'application/json',
+        'Accept': 'application/vnd.github.v3+json'
+      },
+      body: JSON.stringify({
+        message: `feat(decisions): 同步更新小组件需求决策清单 (✅${payload.counts.need}/🚫${payload.counts.notNeed})`,
+        content: contentBase64,
+        sha: sha || undefined
+      })
+    });
+
+    if (putRes.ok) {
+      if (statusEl) statusEl.innerHTML = '<span style="color:#059669">✅ 已成功推送至 GitHub！GitHub Pages 约 30 秒内全网同步生效。</span>';
+      showToast('🚀 已成功直推到 GitHub 线上仓库！', '✅');
+      updateSyncBadge('online', payload.time);
+    } else {
+      const err = await putRes.json();
+      if (statusEl) statusEl.innerHTML = `<span style="color:#ef4444">❌ 推送失败：${err.message || 'Token 权限不足或网络异常'}</span>`;
     }
   } catch(e) {
-    console.error('加载决策失败:', e);
+    if (statusEl) statusEl.innerHTML = `<span style="color:#ef4444">❌ 网络连接错误：${e.message}</span>`;
   }
+}
+
+function updateSyncBadge(source, time) {
+  const badge = document.getElementById('syncBadge');
+  if (!badge) return;
+  if (source === 'online') {
+    badge.className = 'sync-badge online';
+    badge.innerHTML = `🟢 线上版本已同步 (${time || '最新'})`;
+  } else {
+    badge.className = 'sync-badge local';
+    badge.innerHTML = `🟠 本地暂存决策 (${time || '本地'})`;
+  }
+}
+
+function applyDecisionData(items) {
+  const rowMap = {};
+  document.querySelectorAll('tbody tr').forEach(r => {
+    const id = r.querySelector('.idx').textContent.trim();
+    rowMap[id] = r;
+  });
+  items.forEach(item => {
+    const r = rowMap[item.id];
+    if (r) {
+      const btn = r.querySelector(`.st-btn.btn-${item.status}`);
+      if (btn) setStatus(btn, item.status);
+      if (item.editables) {
+        const tds = r.querySelectorAll('.editable-td');
+        item.editables.forEach((html, i) => {
+          if (tds[i]) tds[i].innerHTML = html;
+        });
+      }
+      if (item.note) {
+        const noteEl = r.querySelector('.note-input');
+        if (noteEl) noteEl.innerHTML = item.note;
+      }
+    }
+  });
   updateCounts();
+}
+
+async function loadDecisions() {
+  let applied = false;
+
+  // 1. 优先尝试从线上 decisions.json 实时拉取已发布的官方决策
+  try {
+    const res = await fetch(`./decisions.json?t=${Date.now()}`, { cache: 'no-store' });
+    if (res.ok) {
+      const onlinePayload = await res.json();
+      if (onlinePayload && onlinePayload.data && onlinePayload.data.length > 0) {
+        applyDecisionData(onlinePayload.data);
+        updateSyncBadge('online', onlinePayload.time);
+        applied = true;
+      }
+    }
+  } catch(e) {
+    console.log('Online decisions.json not loaded, checking local fallback:', e);
+  }
+
+  // 2. 如果本地缓存有数据
+  const rawLocal = localStorage.getItem(DECISION_STORAGE_KEY);
+  if (rawLocal) {
+    try {
+      const localPayload = JSON.parse(rawLocal);
+      if (localPayload && localPayload.data) {
+        // 如果线上未加载成功，使用本地缓存
+        if (!applied) {
+          applyDecisionData(localPayload.data);
+          updateSyncBadge('local', localPayload.time);
+          applied = true;
+        }
+      }
+    } catch(e) {
+      console.warn('Local storage load error:', e);
+    }
+  }
+
+  if (!applied) {
+    updateCounts();
+  }
 }
 
 function resetDecisions() {
