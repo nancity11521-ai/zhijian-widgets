@@ -272,6 +272,69 @@ td.iact{color: #64646e; font-size: 12px;}
   box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3);
 }
 
+/* 表头决策状态筛选控件 */
+.th-status-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 2px 0;
+}
+.th-title-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #222228;
+}
+.th-filter-badge {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: #e6e6ee;
+  color: #555562;
+  transition: all .2s;
+}
+.th-filter-badge.need { background: #d1fae5; color: #065f46; }
+.th-filter-badge.pending { background: #fef3c7; color: #92400e; }
+.th-filter-badge.not-need { background: #fee2e2; color: #991b1b; }
+
+.th-select-box {
+  width: 100%;
+  max-width: 175px;
+  position: relative;
+}
+.th-select-box select {
+  width: 100%;
+  box-sizing: border-box;
+  appearance: none;
+  -webkit-appearance: none;
+  background: #ffffff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23555562' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 8px center;
+  border: 1px solid #d4d4dc;
+  border-radius: 6px;
+  padding: 5px 24px 5px 10px;
+  font-size: 12px;
+  font-family: inherit;
+  font-weight: 500;
+  color: #222228;
+  cursor: pointer;
+  outline: none;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  transition: all .15s ease;
+}
+.th-select-box select:hover {
+  border-color: #f0813c;
+  background-color: #fffaf6;
+  color: #e0681e;
+}
+.th-select-box select:focus {
+  border-color: #f0813c;
+  box-shadow: 0 0 0 2px rgba(240, 129, 60, 0.2);
+}
+
 /* 状态关联行样式 */
 /* 1. 不需要状态：整行划线淡化 */
 tr.row-not-need td:not(.status-cell):not(.note-cell){
@@ -412,7 +475,22 @@ td.editable-td:focus{
     <th style="min-width:90px;">分类</th>
     <th style="min-width:180px;">核心元素</th>
     <th style="min-width:120px;">交互说明</th>
-    <th style="width:190px;text-align:center;">决策状态（需要 / 待定 / 不需要）</th>
+    <th style="width:205px;text-align:center;">
+      <div class="th-status-header">
+        <div class="th-title-row">
+          <span>决策状态</span>
+          <span class="th-filter-badge" id="thFilterBadge">全部</span>
+        </div>
+        <div class="th-select-box">
+          <select id="thStatusFilter" onchange="filterRows(this.value)" title="点击按决策状态筛选表格">
+            <option id="optAll" value="all">🔍 筛选：全部 (26)</option>
+            <option id="optNeed" value="need">✅ 只看：需要 (26)</option>
+            <option id="optPending" value="pending">⏳ 只看：待定 (0)</option>
+            <option id="optNotNeed" value="not-need">🚫 只看：不需要 (0)</option>
+          </select>
+        </div>
+      </div>
+    </th>
     <th style="min-width:170px;">业务备注 / 调整要求</th>
   </tr>
 </thead><tbody data-page-node-id="kGPVZWMHsJ1VSLp6bcS7iF"><tr data-id="W1">
@@ -933,6 +1011,13 @@ function setStatus(btn, status) {
   btn.classList.add('active');
   
   updateCounts();
+
+  // 若当前开启了特定状态筛选，更新可见性以保持筛选视图准确
+  const curFilter = document.getElementById('thStatusFilter') ? document.getElementById('thStatusFilter').value : 'all';
+  if (curFilter && curFilter !== 'all') {
+    filterRows(curFilter, false);
+  }
+
   showToast(status === 'need' ? '✅ 已标记为【需要】' : (status === 'pending' ? '⏳ 已标记为【待定】' : '🚫 已标记为【不需要】并自动划除'), status === 'need' ? '✅' : (status === 'pending' ? '⏳' : '✂️'));
 }
 
@@ -952,12 +1037,37 @@ function updateCounts() {
   document.getElementById('cntNeed').textContent = need;
   document.getElementById('cntPending').textContent = pending;
   document.getElementById('cntNotNeed').textContent = notNeed;
+
+  // 同步更新表头下拉筛选项文案与统计数
+  const optAll = document.getElementById('optAll');
+  const optNeed = document.getElementById('optNeed');
+  const optPending = document.getElementById('optPending');
+  const optNotNeed = document.getElementById('optNotNeed');
+  if (optAll) optAll.textContent = `🔍 筛选：全部 (${rows.length})`;
+  if (optNeed) optNeed.textContent = `✅ 只看：需要 (${need})`;
+  if (optPending) optPending.textContent = `⏳ 只看：待定 (${pending})`;
+  if (optNotNeed) optNotNeed.textContent = `🚫 只看：不需要 (${notNeed})`;
 }
 
-function filterRows(type) {
+function filterRows(type, syncSelect = true) {
+  // 顶部按键状态联动
   document.querySelectorAll('.filters .f-btn').forEach(b => b.classList.remove('active'));
   const activeBtn = document.querySelector(`.filters .f-btn[data-filter="${type}"]`);
   if (activeBtn) activeBtn.classList.add('active');
+  
+  // 表头下拉选择框联动
+  if (syncSelect) {
+    const thSelect = document.getElementById('thStatusFilter');
+    if (thSelect && thSelect.value !== type) {
+      thSelect.value = type;
+    }
+  }
+  // 表头小标签指示器
+  const thBadge = document.getElementById('thFilterBadge');
+  if (thBadge) {
+    thBadge.className = 'th-filter-badge ' + (type === 'all' ? '' : type);
+    thBadge.textContent = type === 'all' ? '全部' : (type === 'need' ? '只看需要' : (type === 'pending' ? '只看待定' : '只看不需要'));
+  }
   
   const rows = document.querySelectorAll('tbody tr');
   rows.forEach(r => {
