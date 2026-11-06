@@ -1398,6 +1398,7 @@ function filterRows(type, syncSelect = true) {
   });
 }
 
+const KVDB_URL = 'https://kvdb.io/TWLmDPvUZUxTAtyanTJquT/zhijian_decisions';
 const GITHUB_REPO = 'nancity11521-ai/zhijian-widgets';
 const GITHUB_FILE_PATH = 'decisions.json';
 const GH_TOKEN_KEY = 'zhijian_github_pat_token';
@@ -1431,7 +1432,21 @@ function getDecisionPayload() {
   };
 }
 
-function saveDecisions() {
+async function pushToCloudKV(payload) {
+  try {
+    const res = await fetch(KVDB_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    return res.ok;
+  } catch(e) {
+    console.warn('KVDB sync error:', e);
+    return false;
+  }
+}
+
+async function saveDecisions(silent = false) {
   const payload = getDecisionPayload();
   
   // 1. 本地缓存备份
@@ -1441,10 +1456,24 @@ function saveDecisions() {
     console.warn('Local storage save failed:', e);
   }
 
-  // 2. 更新同步面板数据并弹出同步窗口
+  // 2. 更新同步指示器状态
+  updateSyncBadge('syncing');
+  if (!silent) showToast('☁️ 正在秒级同步至全网云端...', '⏳');
+
+  // 3. 异步秒级推送到全球云端数据库 (KVDB Edge)
+  const success = await pushToCloudKV(payload);
+  if (success) {
+    updateSyncBadge('online', payload.time);
+    if (!silent) showToast(`✅ 云端同步成功！(需要 ${payload.counts.need} / 不需要 ${payload.counts.notNeed})`, '☁️');
+  } else {
+    updateSyncBadge('local', payload.time);
+    if (!silent) {
+      showToast('💾 本地已暂存，网络恢复后将自动同步云端', '⚠️');
+    }
+  }
+
+  // 更新同步面板中的数据
   updateSyncModalContent(payload);
-  openSyncModal();
-  showToast('💾 本地已暂存，请选择线上同步方式', '☁️');
 }
 
 function updateSyncModalContent(payload) {
@@ -1568,10 +1597,16 @@ function updateSyncBadge(source, time) {
   if (!badge) return;
   if (source === 'online') {
     badge.className = 'sync-badge online';
-    badge.innerHTML = `🟢 线上版本已同步 (${time || '最新'})`;
+    badge.innerHTML = `🟢 全网云端实时已同步 (${time || '最新'})`;
+  } else if (source === 'syncing' || source === 'local-pushing') {
+    badge.className = 'sync-badge';
+    badge.innerHTML = `⏳ 正在秒级同步至全网云端...`;
+  } else if (source === 'static') {
+    badge.className = 'sync-badge';
+    badge.innerHTML = `🌐 官方初始清单 (${time || '预设'})`;
   } else {
     badge.className = 'sync-badge local';
-    badge.innerHTML = `🟠 本地暂存决策 (${time || '本地'})`;
+    badge.innerHTML = `🟠 本地暂存决策 (${time || '未云端同步'})`;
   }
 }
 
@@ -1603,38 +1638,73 @@ function applyDecisionData(items) {
 
 async function loadDecisions() {
   let applied = false;
+  const rawLocal = localStorage.getItem(DECISION_STORAGE_KEY);
+  let localPayload = null;
+  if (rawLocal) {
+    try {
+      localPayload = JSON.parse(rawLocal);
+    } catch(e) {
+      console.warn('Local storage parse error:', e);
+    }
+  }
 
-  // 1. 优先尝试从线上 decisions.json 实时拉取已发布的官方决策
+  // 1. 优先尝试从全球实时云端数据库 (KVDB Edge) 拉取最新决策
+  let cloudPayload = null;
   try {
-    const res = await fetch(`./decisions.json?t=${Date.now()}`, { cache: 'no-store' });
+    const res = await fetch(`${KVDB_URL}?t=${Date.now()}`, { cache: 'no-store' });
     if (res.ok) {
-      const onlinePayload = await res.json();
-      if (onlinePayload && onlinePayload.data && onlinePayload.data.length > 0) {
-        applyDecisionData(onlinePayload.data);
-        updateSyncBadge('online', onlinePayload.time);
-        applied = true;
+      const data = await res.json();
+      if (data && data.data && Array.isArray(data.data) && data.data.length > 0) {
+        cloudPayload = data;
       }
     }
   } catch(e) {
-    console.log('Online decisions.json not loaded, checking local fallback:', e);
+    console.log('Cloud KVDB not reachable, checking fallback:', e);
   }
 
-  // 2. 如果本地缓存有数据
-  const rawLocal = localStorage.getItem(DECISION_STORAGE_KEY);
-  if (rawLocal) {
+  // 2. 智能仲裁：如果本地有用户决策修改（如不需要数 > 0 或待定数 > 0），且云端尚未同步
+  const localHasEdits = localPayload && localPayload.counts && (localPayload.counts.notNeed > 0 || localPayload.counts.pending > 0);
+  const cloudHasEdits = cloudPayload && cloudPayload.counts && (cloudPayload.counts.notNeed > 0 || cloudPayload.counts.pending > 0);
+
+  if (localHasEdits && (!cloudHasEdits || (localPayload.updatedAt && cloudPayload.updatedAt && new Date(localPayload.updatedAt) > new Date(cloudPayload.updatedAt)))) {
+    // 优先采用本地最新决策，并自动静默秒级同步至全网云端
+    applyDecisionData(localPayload.data);
+    updateSyncBadge('local-pushing', localPayload.time);
+    applied = true;
+    showToast(`☁️ 检测到本地暂存的 ${localPayload.counts.need} 项需要决策，已自动推送到全网云端！`, '🚀');
+    pushToCloudKV(localPayload).then(ok => {
+      if (ok) {
+        updateSyncBadge('online', localPayload.time);
+      }
+    });
+  } else if (cloudPayload) {
+    // 云端有最新决策，直接加载云端数据
+    applyDecisionData(cloudPayload.data);
+    updateSyncBadge('online', cloudPayload.time);
+    try { localStorage.setItem(DECISION_STORAGE_KEY, JSON.stringify(cloudPayload)); } catch(e){}
+    applied = true;
+  } else {
+    // 3. 云端尚无决策时，降级尝试 ./decisions.json 静态数据
     try {
-      const localPayload = JSON.parse(rawLocal);
-      if (localPayload && localPayload.data) {
-        // 如果线上未加载成功，使用本地缓存
-        if (!applied) {
-          applyDecisionData(localPayload.data);
-          updateSyncBadge('local', localPayload.time);
-          applied = true;
+      const res = await fetch(`./decisions.json?t=${Date.now()}`, { cache: 'no-store' });
+      if (res.ok) {
+        const staticPayload = await res.json();
+        if (staticPayload && staticPayload.data && staticPayload.data.length > 0) {
+          if (!localPayload) {
+            applyDecisionData(staticPayload.data);
+            updateSyncBadge('static', staticPayload.time);
+            applied = true;
+          }
         }
       }
-    } catch(e) {
-      console.warn('Local storage load error:', e);
-    }
+    } catch(e) {}
+  }
+
+  // 4. 若以上均未应用且本地有缓存
+  if (!applied && localPayload && localPayload.data) {
+    applyDecisionData(localPayload.data);
+    updateSyncBadge('local', localPayload.time);
+    applied = true;
   }
 
   if (!applied) {
